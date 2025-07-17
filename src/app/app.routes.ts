@@ -237,9 +237,7 @@ export const routes: Routes = [
   },
   {
     path: 'online-job-application-portal',
-    loadComponent: () => import('./features/online-job-application-portal/index.component').then(m => m.OnlineJobApplicationPortalComponent),
-    canActivate: [PermissionGuard],
-    data: { roles: ['Admin', 'HR', 'Employee', 'Manager', 'Applicant'] }
+    loadComponent: () => import('./features/online-job-application-portal/index.component').then(m => m.OnlineJobApplicationPortalComponent)
   },
   {
     path: 'performance-management',
