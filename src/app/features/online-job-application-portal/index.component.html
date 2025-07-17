@@ -42,31 +42,57 @@
         <button class="tab active">All jobs</button>
         <button class="tab">New to you</button>
       </div>
-      <div class="job-cards">
-        <div class="job-card" *ngFor="let job of jobs">
+      <div *ngIf="loading" class="loading-spinner">Loading jobs...</div>
+      <div *ngIf="error" class="error-message">{{ error }}</div>
+      <div class="job-cards" *ngIf="!loading && !error">
+        <div class="job-card" *ngFor="let job of jobs" (click)="selectJob(job)" [class.selected]="selectedJob?.id === job.id">
           <div class="job-card-header">
-            <div class="job-title">{{ job.title }}</div>
-            <img *ngIf="job.logo" [src]="job.logo" class="job-logo" alt="logo" />
+            <div class="job-title">{{ job.position_title }}</div>
+            <!-- Optionally show logo if available -->
           </div>
-          <div class="job-company">{{ job.company }}</div>
-          <div class="job-location">{{ job.location }}</div>
-          <div class="job-salary">{{ job.salary }}</div>
+          <div class="job-company">{{ job.department?.department_name }}</div>
+          <div class="job-location">{{ job.employment_type }}</div>
+          <div class="job-salary">{{ job.salary_range }}</div>
           <ul class="job-tags">
-            <li *ngFor="let tag of job.tags">{{ tag }}</li>
+            <li>{{ job.qualifications }}</li>
           </ul>
           <div class="job-meta">
-            <span class="job-date">{{ job.date }}</span>
+            <span class="job-date">Deadline: {{ job.application_deadline | date }}</span>
             <span class="bookmark material-symbols-outlined">bookmark</span>
           </div>
         </div>
       </div>
     </div>
     <div class="job-details-panel">
-      <div class="job-details-placeholder">
-        <div class="placeholder-img"></div>
-        <h3>Select a job</h3>
-        <p>Display details here</p>
-      </div>
+      <ng-container *ngIf="selectedJob; else placeholder">
+        <div class="job-card job-details-card">
+          <div class="job-card-header">
+            <div class="job-title">{{ selectedJob.position_title }}</div>
+            <!-- Optionally show logo if available -->
+          </div>
+          <div class="job-company">{{ selectedJob.department?.department_name }}</div>
+          <div class="job-location">{{ selectedJob.employment_type }}</div>
+          <div class="job-salary">{{ selectedJob.salary_range }}</div>
+          <ul class="job-tags">
+            <li>{{ selectedJob.qualifications }}</li>
+          </ul>
+          <div class="job-meta">
+            <span class="job-date">Deadline: {{ selectedJob.application_deadline | date }}</span>
+            <span class="bookmark material-symbols-outlined">bookmark</span>
+          </div>
+          <div class="job-description">
+            <strong>Description:</strong>
+            <div>{{ selectedJob.job_description }}</div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #placeholder>
+        <div class="job-details-placeholder">
+          <div class="placeholder-img"></div>
+          <h3>Select a job</h3>
+          <p>Display details here</p>
+        </div>
+      </ng-template>
     </div>
   </section>
 </div> 
