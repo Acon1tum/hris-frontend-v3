@@ -1,0 +1,34 @@
+<div class="session-warning-overlay" [class.visible]="isVisible">
+  <div class="session-warning-dialog" [class.visible]="isVisible">
+    <div class="dialog-header">
+      <h3>Session Timeout Warning</h3>
+      <div class="warning-icon">
+        <i class="material-icons">warning</i>
+      </div>
+    </div>
+    
+    <div class="dialog-content">
+      <p>Your session will expire due to inactivity.</p>
+      <div class="countdown">
+        <span class="time-display">{{ formatTime(timeLeft) }}</span>
+        <span class="time-label">remaining</span>
+      </div>
+      <p>Do you want to extend your session?</p>
+    </div>
+    
+    <div class="dialog-actions">
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="logout()">
+        Logout Now
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-primary" 
+        (click)="extendSession()">
+        Extend Session
+      </button>
+    </div>
+  </div>
+</div> 

@@ -1,0 +1,75 @@
+<aside class="sidebar" 
+       [class.open]="isOpen" 
+       [class.collapsed]="!isMobile && isCollapsed">
+  <!-- Sidebar Header -->
+  <div class="sidebar-header">
+    <div class="logo">
+      <img alt="Company Logo" class="logo-icon" src="assets/images/QuanbyLogo.png"/>
+      <span class="logo-text" *ngIf="!isCollapsed || isMobile">Quanby HRIS</span>
+    </div>  
+  </div>
+
+  <!-- Sidebar Navigation -->
+  <div class="sidebar-content">
+    <nav class="sidebar-nav">
+      <!-- NAVIGATION section header -->
+      <div class="sidebar-section-header" *ngIf="!isCollapsed || isMobile">NAVIGATION</div>
+      <ul class="nav-list">
+        <li class="nav-item" *ngFor="let item of menuItems">
+          <!-- Main menu item -->
+          <a [routerLink]="item.children && item.children.length > 0 ? null : item.path" 
+             routerLinkActive="active"
+             class="nav-link"
+             [class.has-submenu]="item.children && item.children.length > 0"
+             [class.expanded]="isMenuItemExpanded(item.name)"
+             (mouseenter)="showTooltip($event, item.name)"
+             (mouseleave)="hideTooltip()"
+             (mousemove)="moveTooltip($event)"
+             (click)="item.children && item.children.length > 0 ? toggleMenuItem(item.name, $event) : onMenuItemClick()">
+            <span class="nav-icon material-symbols-outlined">{{ item.icon }}</span>
+            <span class="nav-arrow-collapsed material-symbols-outlined"
+                  *ngIf="item.children && item.children.length > 0 && isCollapsed && !isMobile">
+              chevron_right
+            </span>
+            <span class="nav-text" *ngIf="!isCollapsed || isMobile">{{ item.name }}</span>
+            <span class="nav-badge" *ngIf="(item.badge && !isCollapsed) || isMobile">{{ item.badge }}</span>
+            <span class="nav-arrow material-symbols-outlined" 
+                  *ngIf="item.children && item.children.length > 0 && (!isCollapsed && !isMobile)"
+                  [class.rotated]="isMenuItemExpanded(item.name)">
+              expand_more
+            </span>
+          </a>
+          
+          <!-- Submenu items -->
+          <ul class="submenu" 
+              *ngIf="item.children && item.children.length > 0 && (!isCollapsed || isMobile)"
+              [class.expanded]="isMenuItemExpanded(item.name)">
+            <li class="submenu-item" *ngFor="let child of item.children">
+              <a [routerLink]="child.path" 
+                 routerLinkActive="active"
+                 class="submenu-link"
+                 (click)="onMenuItemClick()">
+                <span class="submenu-icon material-symbols-outlined">{{ child.icon }}</span>
+                <span class="submenu-text">{{ child.name }}</span>
+                <span class="submenu-badge" *ngIf="child.badge">{{ child.badge }}</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</aside>
+
+<!-- Sidebar Overlay - only show on mobile -->
+<div class="sidebar-overlay" 
+     [class.active]="isOpen && isMobile" 
+     *ngIf="isMobile">
+</div> 
+
+<!-- Tooltip for collapsed sidebar -->
+<div *ngIf="tooltip.visible && isCollapsed && !isMobile" 
+     class="sidebar-tooltip" 
+     [ngStyle]="{ top: tooltip.y + 'px', left: tooltip.x + 'px' }">
+  {{ tooltip.text }}
+</div> 

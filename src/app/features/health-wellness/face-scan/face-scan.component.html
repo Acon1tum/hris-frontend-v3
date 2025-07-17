@@ -1,0 +1,54 @@
+<div class="face-scan-page-container">
+  <h2 class="face-scan-title">Face Scan</h2>
+  <div *ngIf="!modelsLoaded && !error" class="face-scan-loading">Loading face detection models...</div>
+  <div *ngIf="error" class="face-scan-error">{{ error }}</div>
+  <div class="face-scan-main-flex" *ngIf="modelsLoaded && !error">
+    <div class="face-scan-camera-area">
+      <div class="face-scan-video-wrapper">
+        <video #videoElement class="face-scan-video" autoplay playsinline></video>
+        <div class="face-scan-blur"></div>
+        <div class="face-scan-overlay">
+          <div *ngIf="isScanning" class="face-scan-anim-line"></div>
+        </div>
+      </div>
+      <button *ngIf="!cameraOpen" class="face-scan-btn" (click)="openCamera()" [disabled]="!modelsLoaded">Open Camera</button>
+      <button *ngIf="cameraOpen && !isScanning" class="face-scan-btn" (click)="startFaceScan()" [disabled]="!modelsLoaded">Start Face Scan</button>
+      <div class="face-scan-result">
+        <span *ngIf="scanResult">Scan Result: {{ scanResult }}</span>
+      </div>
+    </div>
+    <div *ngIf="faceScanReport" class="face-scan-report">
+      <h3 class="face-scan-report-title">Face Scan Report</h3>
+      <div class="face-scan-report-grid">
+        <div class="face-scan-report-card excellent">
+          <div class="report-label">Expression</div>
+          <div class="report-value">{{ faceScanReport.expression }}</div>
+        </div>
+        <div class="face-scan-report-card excellent">
+          <div class="report-label">Age Group</div>
+          <div class="report-value">{{ faceScanReport.ageGroup }}</div>
+        </div>
+        <div class="face-scan-report-card" [ngClass]="faceScanReport.mole ? 'good' : 'excellent'">
+          <div class="report-label">Mole</div>
+          <div class="report-value">{{ faceScanReport.mole ? 'Present' : 'None' }}</div>
+        </div>
+        <div class="face-scan-report-card" [ngClass]="faceScanReport.pimples ? 'average' : 'excellent'">
+          <div class="report-label">Pimples</div>
+          <div class="report-value">{{ faceScanReport.pimples ? 'Present' : 'None' }}</div>
+        </div>
+        <div class="face-scan-report-card" [ngClass]="faceScanReport.clearSkin ? 'excellent' : 'average'">
+          <div class="report-label">Clear Skin</div>
+          <div class="report-value">{{ faceScanReport.clearSkin ? 'Yes' : 'No' }}</div>
+        </div>
+        <div class="face-scan-report-card excellent">
+          <div class="report-label">Face Shape</div>
+          <div class="report-value">{{ faceScanReport.faceShape }}</div>
+        </div>
+        <div class="face-scan-report-card" [ngClass]="faceScanReport.paleLips ? 'average' : 'excellent'">
+          <div class="report-label">Pale Lips</div>
+          <div class="report-value">{{ faceScanReport.paleLips ? 'Yes' : 'No' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

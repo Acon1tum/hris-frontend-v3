@@ -1,0 +1,1167 @@
+  <div class="layout-container flex h-full grow flex-col">
+  <div class="layout-content-container max-w-[960px] mx-auto flex-1">
+    <div class="flex flex-wrap justify-between gap-3 p-4">
+      <div class="flex min-w-72 flex-col gap-3">
+        <p class="text-[#111518] tracking-light text-[32px] font-bold leading-tight">{{ title }}</p>
+        <p class="text-[#637988] text-sm font-normal leading-normal">Analyze key personnel data and metrics to gain insights into workforce dynamics.</p>
+      </div>
+    </div>
+
+    <!-- Pie Chart Dashboard Section -->
+    <section class="analytics-section">
+      <h2 class="section-title">Department Distribution</h2>
+      <div class="analytics-grid">
+        <div class="dashboard-blend-card scroll-animate">
+          <div class="w-full flex items-center justify-between">
+            Employees by Department
+            <div class="flex items-center ml-2">
+              <button *ngIf="!isChartEditMode" class="edit-button" (click)="enterChartEditMode()">
+                <span class="material-icons">Edit Chart</span>
+              </button>
+              <ng-container *ngIf="isChartEditMode">
+                <button class="edit-button ml-2" (click)="exitChartEditMode()" title="Done">
+                  <span class="material-icons">Save</span>
+                </button>
+              </ng-container>
+            </div>
+        </div>
+        
+          <!-- Bottom row: Chart type navigation -->
+          <div *ngIf="isChartEditMode" class="w-full mt-2 flex justify-end">
+            <div class="flex items-center">
+              <button class="edit-button" (click)="prevChartType()" title="Previous Chart Type">
+                <span class="material-icons"><</span>
+              </button>
+              <span class="chart-type-label mx-2">{{ getChartTypeLabel() }} Chart</span>
+              <button class="edit-button" (click)="nextChartType()" title="Next Chart Type">
+                <span class="material-icons">></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <!-- Modern Donut Pie Chart -->
+            <svg *ngIf="chartType === 'pie'" width="240" height="240" viewBox="0 0 240 240">
+              <defs>
+                <linearGradient *ngFor="let dept of departmentStats; let i = index"
+                  [attr.id]="'pieGrad' + i"
+                  x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" [attr.stop-color]="getPieColor(i)" stop-opacity="0.8"/>
+                  <stop offset="100%" [attr.stop-color]="getPieColor(i)" stop-opacity="1"/>
+                </linearGradient>
+              </defs>
+              <g *ngIf="departmentStats && departmentStats.length">
+                <ng-container *ngFor="let dept of departmentStats; let i = index">
+                  <circle
+                    [attr.r]="90"
+                    [attr.cx]="120"
+                    [attr.cy]="120"
+                    [attr.stroke-width]="32"
+                    [attr.stroke]="'url(#pieGrad' + i + ')'"
+                    [attr.stroke-dasharray]="getPieDashArray(i)"
+                    [attr.stroke-dashoffset]="getPieDashOffset(i)"
+                    fill="none"
+                    [attr.transform]="'rotate(-90 120 120)'"
+                    filter="url(#pieShadow)"
+                    (mouseenter)="showChartTooltip($event, dept.name, dept.count)"
+                    (mousemove)="moveChartTooltip($event)"
+                    (mouseleave)="hideChartTooltip()"
+                    style="cursor: pointer; transition: stroke 0.3s;"
+                  />
+                </ng-container>
+                <!-- Donut hole -->
+                <circle r="60" cx="120" cy="120" fill="#fff"/>
+                <!-- Center label -->
+                <text x="120" y="120" text-anchor="middle" alignment-baseline="middle" font-size="1.5rem" font-weight="bold" fill="#1993e5">
+                  {{ getDepartmentTotal() }}
+                </text>
+                <text x="120" y="140" text-anchor="middle" alignment-baseline="middle" font-size="0.9rem" fill="#637988">
+                  Total
+                </text>
+              </g>
+              <filter id="pieShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.10"/>
+              </filter>
+            </svg>
+
+            <!-- Modern Bar Chart -->
+            <svg *ngIf="chartType === 'bar'" width="320" height="220" viewBox="0 0 320 220">
+              <defs>
+                <linearGradient *ngFor="let dept of departmentStats; let i = index"
+                  [attr.id]="'barGrad' + i"
+                  x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" [attr.stop-color]="getPieColor(i)" stop-opacity="0.9"/>
+                  <stop offset="100%" [attr.stop-color]="getPieColor(i)" stop-opacity="0.6"/>
+                </linearGradient>
+              </defs>
+              <g *ngIf="departmentStats && departmentStats.length">
+                <ng-container *ngFor="let dept of departmentStats; let i = index">
+                  <rect
+                    [attr.x]="40 + i * 40"
+                    [attr.y]="200 - (dept.count / getMaxDeptCount()) * 160"
+                    width="28"
+                    [attr.height]="(dept.count / getMaxDeptCount()) * 160"
+                    [attr.fill]="'url(#barGrad' + i + ')'"
+                    rx="8"
+                    filter="url(#barShadow)"
+                    (mouseenter)="showChartTooltip($event, dept.name, dept.count)"
+                    (mousemove)="moveChartTooltip($event)"
+                    (mouseleave)="hideChartTooltip()"
+                    style="cursor: pointer; transition: fill 0.3s;"
+                  />
+                  <!-- Value label -->
+                  <text
+                    [attr.x]="54 + i * 40"
+                    [attr.y]="190 - (dept.count / getMaxDeptCount()) * 160"
+                    text-anchor="middle"
+                    font-size="0.9rem"
+                    fill="#111518"
+                    font-weight="bold">
+                    {{ dept.count }}
+                  </text>
+                </ng-container>
+                <!-- X Axis -->
+                <line x1="30" y1="200" x2="310" y2="200" stroke="#e5e7eb" stroke-width="2"/>
+                <!-- Y Axis -->
+                <line x1="30" y1="40" x2="30" y2="200" stroke="#e5e7eb" stroke-width="2"/>
+              </g>
+              <filter id="barShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.10"/>
+              </filter>
+            </svg>
+
+            <!-- Modern Line Chart -->
+            <svg *ngIf="chartType === 'line'" width="320" height="220" viewBox="0 0 320 220">
+              <polyline
+                *ngIf="departmentStats && departmentStats.length"
+                [attr.points]="getLineChartPoints(40, 40)"
+                fill="none"
+                stroke="#1993e5"
+                stroke-width="4"
+                filter="url(#lineShadow)"
+                style="transition: stroke 0.3s;"
+              />
+              <ng-container *ngFor="let dept of departmentStats; let i = index">
+                <circle
+                  [attr.cx]="54 + i * 40"
+                  [attr.cy]="200 - (dept.count / getMaxDeptCount()) * 160"
+                  r="7"
+                  [attr.fill]="getPieColor(i)"
+                  stroke="#fff"
+                  stroke-width="2"
+                  (mouseenter)="showChartTooltip($event, dept.name, dept.count)"
+                  (mousemove)="moveChartTooltip($event)"
+                  (mouseleave)="hideChartTooltip()"
+                  style="cursor: pointer; transition: fill 0.3s;"
+                />
+                <!-- Value label -->
+                <text
+                  [attr.x]="54 + i * 40"
+                  [attr.y]="190 - (dept.count / getMaxDeptCount()) * 160"
+                  text-anchor="middle"
+                  font-size="0.9rem"
+                  fill="#111518"
+                  font-weight="bold">
+                  {{ dept.count }}
+                </text>
+              </ng-container>
+              <!-- X Axis -->
+              <line x1="30" y1="200" x2="310" y2="200" stroke="#e5e7eb" stroke-width="2"/>
+              <!-- Y Axis -->
+              <line x1="30" y1="40" x2="30" y2="200" stroke="#e5e7eb" stroke-width="2"/>
+              <filter id="lineShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1993e5" flood-opacity="0.15"/>
+              </filter>
+            </svg>
+
+            <!-- Modern Area Chart -->
+            <svg *ngIf="chartType === 'area'" width="320" height="220" viewBox="0 0 320 220">
+              <defs>
+                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#1993e5" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#1993e5" stop-opacity="0.05"/>
+                </linearGradient>
+              </defs>
+              <polygon
+                *ngIf="departmentStats && departmentStats.length"
+                [attr.points]="getAreaChartPoints(40, 40)"
+                fill="url(#areaGrad)"
+                filter="url(#areaShadow)"
+              />
+              <polyline
+                *ngIf="departmentStats && departmentStats.length"
+                [attr.points]="getLineChartPoints(40, 40)"
+                fill="none"
+                stroke="#1993e5"
+                stroke-width="4"
+                style="transition: stroke 0.3s;"
+              />
+              <ng-container *ngFor="let dept of departmentStats; let i = index">
+                <circle
+                  [attr.cx]="54 + i * 40"
+                  [attr.cy]="200 - (dept.count / getMaxDeptCount()) * 160"
+                  r="7"
+                  [attr.fill]="getPieColor(i)"
+                  stroke="#fff"
+                  stroke-width="2"
+                  (mouseenter)="showChartTooltip($event, dept.name, dept.count)"
+                  (mousemove)="moveChartTooltip($event)"
+                  (mouseleave)="hideChartTooltip()"
+                  style="cursor: pointer; transition: fill 0.3s;"
+                />
+                <!-- Value label -->
+                <text
+                  [attr.x]="54 + i * 40"
+                  [attr.y]="190 - (dept.count / getMaxDeptCount()) * 160"
+                  text-anchor="middle"
+                  font-size="0.9rem"
+                  fill="#111518"
+                  font-weight="bold">
+                  {{ dept.count }}
+                </text>
+              </ng-container>
+              <!-- X Axis -->
+              <line x1="30" y1="200" x2="310" y2="200" stroke="#e5e7eb" stroke-width="2"/>
+              <!-- Y Axis -->
+              <line x1="30" y1="40" x2="30" y2="200" stroke="#e5e7eb" stroke-width="2"/>
+              <filter id="areaShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1993e5" flood-opacity="0.10"/>
+              </filter>
+            </svg>
+          </div>
+
+          <!-- Chart Legend and Info -->
+          <div class="chart-legend" *ngIf="chartType === 'pie'">
+            <div *ngFor="let dept of departmentStats; let i = index" class="legend-item">
+              <span class="legend-color" [style.background]="getPieColor(i)"></span>
+              <span class="legend-label">
+                {{ dept.name }} ({{ dept.count }}) - {{ getDepartmentPercentage(dept) | number:'1.0-1' }}%
+              </span>
+            </div>
+          </div>
+          <div class="chart-legend" *ngIf="chartType === 'bar' || chartType === 'line' || chartType === 'area'">
+            <div class="legend-item" *ngFor="let dept of departmentStats; let i = index">
+              <span class="legend-color" [style.background]="getPieColor(i)"></span>
+              <span class="legend-label">{{ dept.name }}</span>
+            </div>
+            <div class="legend-info mt-2 text-xs text-[#637988]">
+              <span *ngIf="chartType === 'bar'">Bar height = employee count</span>
+              <span *ngIf="chartType === 'line'">Line point = employee count</span>
+              <span *ngIf="chartType === 'area'">Area = employee count trend</span>
+            </div>
+          </div>
+        </div>
+          </div>
+        </section>
+        
+    <!-- Combined Stats & Analytics Section -->
+    <section class="dashboard-overview">
+      <div class="section-header">
+        <h2>Dashboard Overview</h2>
+        <div class="header-actions">
+          <button *ngIf="isEditMode" class="add-button" (click)="addNewCard()">
+            Add New Card
+          </button>
+          <button class="edit-button" (click)="toggleEditMode()">
+            <span class="material-icons">{{ isEditMode ? '' : '' }}</span>
+            {{ isEditMode ? 'Save Card Changes' : 'Edit Cards' }}
+          </button>
+              </div>
+            </div>
+
+      <div class="stats-grid"
+           cdkDropList
+           (cdkDropListDropped)="onDrop($event)"
+           #dropList="cdkDropList">
+        <div *ngFor="let card of statCards"
+             class="stat-card"
+             [class.colored-shadow]="card.color && card.color !== '#fff'"
+             cdkDrag
+             [cdkDragDisabled]="!isEditMode"
+             [class.edit-mode]="isEditMode"
+             [class.hidden]="!card.isVisible"
+             [ngStyle]="{'background': card.color || '#fff'}"
+             (click)="onCardClick(card)"
+             (cdkDragStarted)="onDragStarted($event)"
+             (cdkDragEnded)="onDragEnded($event)">
+          <div class="stat-header">
+            <div class="stat-title">
+              <img [src]="card.icon" [alt]="card.title" class="stat-icon">
+              <h3>{{ card.title }}</h3>
+            </div>
+          </div>
+          <div class="stat-value">{{ getFormattedValue(card) }}</div>
+          <div class="stat-description">{{ card.description }}</div>
+          <div *ngIf="isEditMode" class="edit-overlay">
+            <button 
+              class="absolute top-3 right-3 p-2 rounded-full text-red-500 hover:text-white hover:bg-red-500 transition duration-200"
+              (click)="removeCard(card); $event.stopPropagation()" 
+              title="Remove card"
+            >
+              <span class="material-icons">delete</span>
+            </button>
+            <span class="edit-instruction">Drag to reorder, click edit to customize</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Employee Table -->
+    <div class="flex flex-col gap-4 p-4 scroll-animate">
+      <div *ngIf="loadingEmployees" class="flex items-center justify-center py-8">
+        <span class="text-blue-500 text-lg font-semibold">Loading employees...</span>
+      </div>
+      <div *ngIf="employeeLoadError" class="flex items-center justify-center py-8">
+        <span class="text-red-500 text-lg font-semibold">{{ employeeLoadError }}</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <h2 class="text-[#111518] text-[22px] font-bold leading-tight tracking-[-0.015em]">Employee Table</h2>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
+            <span class="text-[#637988] text-sm">Show</span>
+            <div class="relative">
+              <select
+                class="appearance-none rounded-lg border border-[#dce1e5] pr-8 pl-2 py-1 text-sm text-[#111518]"
+                [(ngModel)]="pageSize"
+                (change)="onPageSizeChange($event)">
+                <option [value]="5">5</option>
+                <option [value]="10">10</option>
+                <option [value]="20">20</option>
+                <option [value]="50">50</option>
+              </select>
+            </div>
+            <span class="text-[#637988] text-sm">entries</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="text" placeholder="Search..." class="rounded-lg border border-[#dce1e5] px-3 py-1 text-sm" [(ngModel)]="searchTerm" (input)="onSearch($event)">
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-[#dce1e5] bg-white overflow-hidden">
+        <table class="flex-1">
+          <thead>
+            <tr class="bg-blue-100 text-black">
+              <th class="table-column-120 px-4 py-3 text-left text-[#111518] w-[400px] text-sm font-medium leading-normal">Employee</th>
+              <th class="table-column-240 px-4 py-3 text-left text-[#111518] w-[400px] text-sm font-medium leading-normal">Department</th>
+              <th class="table-column-120 px-4 py-3 text-left text-[#111518] w-[400px] text-sm font-medium leading-normal">Position</th>
+              <th class="table-column-120 px-4 py-3 text-left text-[#111518] w-[400px] text-sm font-medium leading-normal">Status</th>
+              <th class="table-column-120 px-4 py-3 text-left text-[#111518] w-[400px] text-sm font-medium leading-normal">Actions</th>
+                </tr>
+              </thead>
+          <tbody>
+            <tr *ngFor="let employee of paginatedEmployees; let i = index" 
+                class="border-t border-t-[#dce1e5] hover:bg-blue-50 transition-all duration-300 scroll-animate"
+                [style.transition-delay]="i * 50 + 'ms'">
+              <td class="table-column-120 h-[72px] px-4 py-2 w-[400px]">
+                    <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10">
+                    <img [src]="employee.profileImage" [alt]="employee.firstName + ' ' + employee.lastName" 
+                         class="h-10 w-10 rounded-full object-cover">
+                  </div>
+                      <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">
+                      {{employee.firstName}} {{employee.lastName}}
+                    </div>
+                    <div class="text-sm text-gray-500">{{employee.email}}</div>
+                      </div>
+                    </div>
+                  </td>
+              <td class="table-column-240 h-[72px] px-4 py-2 w-[400px] text-[#637988] text-sm font-normal leading-normal">
+                {{ employee.department }}
+                  </td>
+              <td class="table-column-120 h-[72px] px-4 py-2 w-[400px] text-[#637988] text-sm font-normal leading-normal">
+                {{ employee.position }}
+                  </td>
+              <td class="table-column-120 h-[72px] px-4 py-2 w-[400px]">
+                <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f0f3f4] text-[#111518] text-sm font-medium leading-normal w-full">
+                  <span class="truncate">{{ employee.status }}</span>
+                </button>
+                  </td>
+              <td class="table-column-120 h-[72px] px-4 py-2 w-[400px]">
+                <div class="flex items-center gap-2">
+                  <button class="p-2 text-[#1993e5] hover:text-[#1476b8] transition-colors" (click)="onEditEmployee(employee)">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                  <button class="p-2 text-[#e73508] hover:text-[#c42d06] transition-colors" (click)="onDeleteEmployee(employee)">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+      <!-- Pagination Controls -->
+      <div class="flex items-center justify-between px-4 py-3 scroll-animate">
+        <div class="text-sm text-[#637988]">
+          Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, totalItems) }} of {{ totalItems }} entries
+        </div>
+        <div class="flex items-center gap-2">
+          <button 
+            class="flex items-center justify-center w-8 h-8 rounded-lg border border-[#dce1e5] disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="currentPage === 1"
+            (click)="onPageChange(1)">
+            <span class="material-symbols-outlined text-lg">first_page</span>
+          </button>
+          <button 
+            class="flex items-center justify-center w-8 h-8 rounded-lg border border-[#dce1e5] disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="currentPage === 1"
+            (click)="onPageChange(currentPage - 1)">
+            <span class="material-symbols-outlined text-lg">chevron_left</span>
+          </button>
+          <div class="flex items-center gap-1">
+            <button 
+              *ngFor="let page of getPageNumbers()"
+              class="flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-300 hover:scale-110"
+              [class.border-[#1993e5]]="page === currentPage"
+              [class.bg-[#1993e5]]="page === currentPage"
+              [class.text-white]="page === currentPage"
+              [class.border-[#dce1e5]]="page !== currentPage"
+              (click)="onPageChange(page)">
+              {{ page }}
+            </button>
+          </div>
+          <button 
+            class="flex items-center justify-center w-8 h-8 rounded-lg border border-[#dce1e5] disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="currentPage === totalPages"
+            (click)="onPageChange(currentPage + 1)">
+            <span class="material-symbols-outlined text-lg">chevron_right</span>
+          </button>
+          <button 
+            class="flex items-center justify-center w-8 h-8 rounded-lg border border-[#dce1e5] disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="currentPage === totalPages"
+            (click)="onPageChange(totalPages)">
+            <span class="material-symbols-outlined text-lg">last_page</span>
+          </button>
+        </div>
+      </div>
+      </div>
+  </div>
+</div>
+
+<!-- Edit Employee Modal -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Edit Employee</h2>
+      <button class="close-button" (click)="closeEditModal($event)">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <form [formGroup]="editEmployeeForm" (ngSubmit)="onSubmitEdit()">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" formControlName="firstName" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" formControlName="lastName" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" formControlName="email" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="department">Department</label>
+          <select id="department" formControlName="department" class="form-control">
+            <option value="">Select Department</option>
+            <option *ngFor="let dept of departmentStats" [value]="dept.name">
+              {{dept.name}}
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="position">Position</label>
+          <input type="text" id="position" formControlName="position" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="hireDate">Hire Date</label>
+          <input type="date" id="hireDate" formControlName="hireDate" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" formControlName="status" class="form-control">
+            <option value="Active">Active</option>
+            <option value="On Leave">On Leave</option>
+            <option value="Terminated">Terminated</option>
+          </select>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeEditModal($event)">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!editEmployeeForm.valid">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Customize Modal -->
+<div class="modal-overlay" *ngIf="showCustomizeModal" (click)="closeCustomizeModal($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Customize Card</h2>
+      <button class="close-button" (click)="closeCustomizeModal($event)">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <!-- Card Preview -->
+      <div class="stat-card mb-6" [ngStyle]="{'background': customizeForm.get('color')?.value || '#fff'}">
+        <div class="stat-header">
+          <div class="stat-title">
+            <img [src]="selectedCard?.icon" [alt]="customizeForm.get('title')?.value" class="stat-icon">
+            <h3>{{ customizeForm.get('title')?.value }}</h3>
+          </div>
+        </div>
+        <div class="stat-value">
+          {{ getFormattedValue(getPreviewCard()) }}
+        </div>
+        <div class="stat-description">{{ customizeForm.get('description')?.value }}</div>
+      </div>
+      <!-- End Card Preview -->
+      <form [formGroup]="customizeForm" (ngSubmit)="saveCustomization()">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <select id="title" formControlName="title" class="form-control" (change)="onTitleChange($event)">
+            <option value="Total Employees">Total Employees</option>
+            <option value="Pending Requests">Pending Requests</option>
+            <option value="Recent Movements">Recent Movements</option>
+            <option value="Employee Turnover Rate">Employee Turnover Rate</option>
+            <option value="Average Satisfaction Level">Average Satisfaction Level</option>
+            <option value="Performance Rating">Performance Rating</option>
+            <option value="Total Active Employees">Total Active Employees</option>
+            <option value="Total Inactive Employees">Total Inactive Employees</option>
+            <option value="Total Onleave Employees">Total Onleave Employees</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description</label>
+          <input type="text" id="description" formControlName="description" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="color">Color</label>
+          <div class="color-options">
+            <button *ngFor="let color of availableColors" 
+                    type="button"
+                    class="color-option"
+                    [style.background-color]="color.value"
+                    [class.selected]="customizeForm.get('color')?.value === color.value"
+                    (click)="customizeForm.patchValue({color: color.value})">
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="dataType">Data Type</label>
+          <select id="dataType" formControlName="dataType" class="form-control">
+            <option value="number">Number</option>
+            <option value="percentage">Percentage</option>
+            <option value="rating">Rating (0-5)</option>
+          </select>
+        </div>
+        
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="selectedCard && removeCard(selectedCard); closeCustomizeModal($event)">
+            Delete Card
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="closeCustomizeModal($event)">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!customizeForm.valid">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Chart Tooltip -->
+<div *ngIf="chartTooltip.visible" class="chart-tooltip" [ngStyle]="{'left.px': chartTooltip.x + 12, 'top.px': chartTooltip.y - 24}">
+  <div class="font-semibold">{{ chartTooltip.label }}</div>
+  <div class="text-xs text-[#637988]">{{ chartTooltip.value }} employees</div>
+</div>
+
+<style>
+  @container(max-width:120px){.table-column-120{display: none;}}
+  @container(max-width:240px){.table-column-240{display: none;}}
+  @container(max-width:360px){.table-column-360{display: none;}}
+  @container(max-width:480px){.table-column-480{display: none;}}
+  @container(max-width:600px){.table-column-600{display: none;}}
+  @container(max-width:720px){.table-column-720{display: none;}}
+
+  /* Animation Keyframes */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Animation Classes */
+  .scroll-animate {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s, transform 0.6s;
+    will-change: opacity, transform;
+  }
+
+  .scroll-animate.visible {
+    opacity: 1;
+    transform: translateY(0);
+    animation: fadeInUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  /* Staggered Animation for Cards */
+  .lg\:col-span-2 > div:nth-child(1) { animation-delay: 100ms; }
+  .lg\:col-span-2 > div:nth-child(2) { animation-delay: 200ms; }
+  .lg\:col-span-2 > div:nth-child(3) { animation-delay: 300ms; }
+  .lg\:col-span-2 > div:nth-child(4) { animation-delay: 400ms; }
+  .lg\:col-span-2 > div:nth-child(5) { animation-delay: 500ms; }
+  .lg\:col-span-2 > div:nth-child(6) { animation-delay: 600ms; }
+
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: modalSlideIn 0.3s ease-out;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1a202c;
+  }
+
+  .close-button {
+    background: none;
+    border: none;
+    color: #718096;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .close-button:hover {
+    background-color: #f7fafc;
+    color: #4a5568;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #4a5568;
+    font-weight: 500;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  }
+
+  .modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background-color: #4299e1;
+    color: white;
+    border: none;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-color: #3182ce;
+  }
+
+  .btn-primary:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    background-color: #edf2f7;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+  }
+
+  .btn-secondary:hover {
+    background-color: #e2e8f0;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .edit-button {
+    background: none;
+    border: none;
+    color: #637988;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .edit-button.active {
+    background-color: #1993e5;
+    color: white;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-card.edit-mode {
+    background: #f8fafc;
+    border: 2px dashed #1993e5;
+    cursor: pointer;
+  }
+
+  .stat-card.edit-mode:hover {
+    background: #f0f7ff;
+    border-color: #0d6efd;
+  }
+
+  .stat-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    background: #f0f3f4;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1993e5;
+  }
+
+  .stat-title h3 {
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .stat-title p {
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .stat-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #111518;
+  }
+
+  .stat-change {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    color: #637988;
+  }
+
+  .stat-change.positive {
+    color: #10b981;
+  }
+
+  .stat-change.negative {
+    color: #ef4444;
+  }
+
+  .grid.edit-mode {
+    cursor: pointer;
+  }
+
+  .grid.edit-mode .stat-card {
+    position: relative;
+  }
+
+  .grid.edit-mode .stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(25, 147, 229, 0.05);
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .grid.edit-mode .stat-card:hover::after {
+    opacity: 1;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .color-options {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .color-option {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .color-option:hover {
+    transform: scale(1.1);
+  }
+
+  .color-option.selected {
+    border-color: #111518;
+    transform: scale(1.1);
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 4px;
+    border: 2px solid #e2e8f0;
+    cursor: pointer;
+  }
+
+  .stat-card {
+    --card-color: #1993e5;
+    cursor: pointer;
+  }
+
+  .stat-card.edit-mode {
+    position: relative;
+  }
+
+  .stat-card.edit-mode::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+
+  .stat-card.edit-mode:hover::before {
+    opacity: 1;
+  }
+
+  .chart-tooltip {
+    position: fixed;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 0.5rem 0.75rem;
+    pointer-events: none;
+    font-size: 0.95rem;
+    min-width: 100px;
+    color: #111518;
+    transition: opacity 0.15s;
+  }
+
+  .dashboard-blend-card {
+    background: linear-gradient(135deg, #f8fafc 60%, #e0e7ef 100%);
+    border: 1.5px solid #e5e7eb;
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 16px 0 rgba(25, 147, 229, 0.06), 0 1.5px 4px 0 rgba(0,0,0,0.03);
+    padding: 2rem 2rem 1.5rem 2rem;
+    margin-bottom: 2rem;
+    transition: box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-blend-card .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1993e5;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .dashboard-blend-card .chart-container {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px 0 rgba(25, 147, 229, 0.04);
+    padding: 1.5rem 1rem 1rem 1rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .dashboard-blend-card .chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.5rem;
+    margin-top: 0.5rem;
+    padding-left: 0.5rem;
+  }
+
+  .dashboard-blend-card .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.98rem;
+    color: #374151;
+  }
+
+  .dashboard-blend-card .legend-color {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    display: inline-block;
+    border: 2px solid #e5e7eb;
+  }
+
+  /* Make sure the drag preview is styled correctly */
+  .cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 1.25rem;
+    box-shadow: 0 8px 24px rgba(25, 147, 229, 0.15), 0 2px 8px rgba(0,0,0,0.08);
+    background: #fff;
+    opacity: 0.95;
+    z-index: 1000;
+    width: 320px; /* or match your card width */
+    pointer-events: none;
+    transform: scale(1.04) rotate(1deg);
+  }
+
+  .cdk-drag-placeholder {
+    opacity: 0;
+    background: #e5e7eb;
+    border: 2px dashed #1993e5;
+    border-radius: 1.25rem;
+    min-height: 160px;
+    transition: all 0.3s;
+  }
+
+  .edit-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.92);
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 10;
+    transition: opacity 0.2s;
+  }
+
+  .edit-actions {
+    display: flex;
+    gap: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .drag-handle {
+    cursor: grab;
+    color: #1993e5;
+    background: #e0e7ef;
+    border-radius: 50%;
+    padding: 0.5rem;
+    font-size: 1.6rem;
+    box-shadow: 0 2px 8px rgba(25, 147, 229, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+  }
+  .drag-handle:hover {
+    background: #1993e5;
+    color: #fff;
+  }
+
+  .edit-btn {
+    background: #f0f3f4;
+    color: #1993e5;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .edit-btn:hover {
+    background: #e0e7ef;
+  }
+
+  .remove-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    z-index: 20;
+  }
+
+  .remove-btn:hover {
+    background: #b91c1c;
+  }
+
+  .edit-instruction {
+    color: #637988;
+    font-size: 0.875rem;
+  }
+
+  .btn-danger {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-right: auto;
+  }
+  .btn-danger:hover {
+    background: #b91c1c;
+  }
+</style>

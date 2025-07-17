@@ -1,0 +1,514 @@
+<div class="leave-balance-container">
+  <div class="flex-1 p-8 bg-[var(--background-color)]">
+    <header class="mb-8">
+      <h2 class="text-[var(--text-primary)] text-3xl font-bold">{{ title }}</h2>
+      <p class="text-[var(--text-secondary)] text-sm">{{ subtitle }}</p>
+    </header>
+
+    <!-- Filters and Controls -->
+    <div class="mb-6 flex justify-between items-center flex-wrap gap-4">
+      <div class="flex items-center gap-4 flex-wrap">
+        <!-- Search Input -->
+        <div class="relative w-full max-w-md">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <span class="material-symbols-outlined text-[var(--text-secondary)]">search</span>
+          </div>
+          <input 
+            class="search-input" 
+            placeholder="Search by employee name or ID" 
+            type="search" 
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()"
+          />
+        </div>
+        
+        <!-- Department Filter -->
+        <div class="relative">
+          <select 
+            class="filter-select"
+            [(ngModel)]="selectedDepartment"
+            (change)="onDepartmentChange()"
+          >
+            <option value="">All Departments</option>
+            <option *ngFor="let department of departments" [value]="department.id">
+              {{ department.department_name }}
+            </option>
+          </select>
+        </div>
+        
+        <!-- Year Filter -->
+        <div class="relative">
+          <select 
+            class="filter-select"
+            [(ngModel)]="selectedYear"
+            (change)="onYearChange()"
+          >
+            <option *ngFor="let year of getYearOptions()" [value]="year">
+              {{ year }}
+            </option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2">
+        <button 
+          class="btn-secondary flex items-center gap-2"
+          (click)="refreshData()"
+          [disabled]="isLoading"
+        >
+          <span class="material-symbols-outlined">refresh</span>
+          Refresh
+        </button>
+        
+        <button 
+          class="btn-success flex items-center gap-2"
+          (click)="exportToCSV()"
+          [disabled]="isExporting || employees.length === 0"
+        >
+          <span class="material-symbols-outlined">file_download</span>
+          Export CSV
+        </button>
+        
+        <button 
+          class="btn-primary flex items-center gap-2"
+          (click)="exportToPDF()"
+          [disabled]="isExporting || employees.length === 0"
+        >
+          <span class="material-symbols-outlined">picture_as_pdf</span>
+          Export PDF
+        </button>
+        
+        <button 
+          class="btn-primary flex items-center gap-2" 
+          (click)="adjustCredits()"
+        >
+          <span class="material-symbols-outlined">add_circle</span>
+          Adjust Credits
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex items-center justify-center py-12">
+      <div class="loading-spinner"></div>
+      <span class="ml-3 text-[var(--text-secondary)]">Loading leave balances...</span>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !isLoading" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div class="flex items-center">
+        <span class="material-symbols-outlined text-red-500 mr-2">error</span>
+        <span class="text-red-700">{{ error }}</span>
+      </div>
+    </div>
+
+    <!-- Employee Leave Balance Table -->
+    <div *ngIf="!isLoading && !error" class="overflow-x-auto shadow-md rounded-lg">
+      <table class="min-w-full divide-y divide-[var(--border-color)] table">
+        <thead>
+          <tr>
+            <th scope="col">Employee</th>
+            <th scope="col">Department</th>
+            <th scope="col">Total Credits</th>
+            <th scope="col">Used Credits</th>
+            <th scope="col">Remaining Credits</th>
+            <th scope="col">Progress</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-[var(--border-color)]">
+          <tr *ngFor="let employee of filteredEmployees" class="hover:bg-[var(--hover-color)] transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <div class="h-10 w-10 rounded-full bg-[var(--primary-color)] flex items-center justify-center">
+                    <span class="text-white font-medium">{{ employee.name.charAt(0) }}</span>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-[var(--text-primary)]">{{ employee.name }}</div>
+                  <div class="text-sm text-[var(--text-secondary)]">ID: {{ employee.id }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-[var(--text-primary)]">{{ employee.department }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-[var(--primary-color)]">{{ getTotalAccrued(employee) }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-yellow-600">{{ getTotalUsed(employee) }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-green-600">{{ getTotalRemaining(employee) }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-1 bg-gray-200 rounded-full h-2 mr-2">
+                  <div 
+                    class="h-2 rounded-full transition-all duration-300"
+                    [ngClass]="{
+                      'bg-red-500': getProgressPercentage(employee) <= 25,
+                      'bg-yellow-500': getProgressPercentage(employee) > 25 && getProgressPercentage(employee) <= 50,
+                      'bg-green-500': getProgressPercentage(employee) > 50
+                    }"
+                    [style.width.%]="getProgressPercentage(employee)"
+                  ></div>
+                </div>
+                <span class="text-sm text-[var(--text-secondary)]">{{ getProgressPercentage(employee) }}%</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex items-center gap-2">
+                <button 
+                  class="text-[var(--primary-color)] hover:text-[var(--primary-color-dark)] transition-colors"
+                  (click)="viewDetails(employee)"
+                  title="View Details"
+                >
+                  <span class="material-symbols-outlined">visibility</span>
+                </button>
+                <button 
+                  class="text-blue-600 hover:text-blue-800 transition-colors"
+                  (click)="adjustCredits(employee)"
+                  title="Adjust Credits"
+                >
+                  <span class="material-symbols-outlined">edit</span>
+                </button>
+                <button 
+                  class="text-green-600 hover:text-green-800 transition-colors"
+                  (click)="initializeBalance(employee)"
+                  title="Initialize Balance"
+                >
+                  <span class="material-symbols-outlined">refresh</span>
+                </button>
+                <button 
+                  class="text-purple-600 hover:text-purple-800 transition-colors"
+                  (click)="loadAdjustmentHistory(employee)"
+                  title="View Adjustment History"
+                >
+                  <span class="material-symbols-outlined">history</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && !error && filteredEmployees.length === 0" class="text-center py-12">
+      <span class="material-symbols-outlined text-[var(--text-secondary)] text-6xl mb-4">person_off</span>
+      <h3 class="text-[var(--text-primary)] text-lg font-medium mb-2">No employees found</h3>
+      <p class="text-[var(--text-secondary)]">Try adjusting your search criteria or filters.</p>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!isLoading && !error && totalPages > 1" class="flex items-center justify-between mt-6">
+      <div class="text-sm text-[var(--text-secondary)]">
+        Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ currentPage * itemsPerPage > totalResults ? totalResults : currentPage * itemsPerPage }} of {{ totalResults }} results
+      </div>
+      <div class="flex items-center gap-2">
+        <button 
+          class="pagination-btn"
+          (click)="onPageChange(currentPage - 1)"
+          [disabled]="currentPage === 1"
+        >
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        
+        <button 
+          *ngFor="let page of getPaginationPages()"
+          class="pagination-btn"
+          [ngClass]="{'active': page === currentPage}"
+          (click)="onPageChange(page)"
+        >
+          {{ page }}
+        </button>
+        
+        <button 
+          class="pagination-btn"
+          (click)="onPageChange(currentPage + 1)"
+          [disabled]="currentPage === totalPages"
+        >
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Employee Details Modal -->
+  <div *ngIf="showEmployeeModal" class="employee-modal">
+    <div class="employee-modal-backdrop" (click)="closeEmployeeModal()"></div>
+    <div class="modal-content">
+      <button class="modal-close-btn" (click)="closeEmployeeModal()" aria-label="Close">&times;</button>
+      <div class="flex items-center gap-4 mb-6">
+        <div class="bg-[var(--primary-color)] rounded-full p-2 flex items-center justify-center shadow-md">
+          <span class="material-symbols-outlined text-white text-3xl">person</span>
+        </div>
+        <div>
+          <h3 class="text-2xl font-bold mb-1">{{ selectedEmployee?.name }}</h3>
+          <div class="text-sm text-[var(--text-secondary)]">Employee ID: <span class="font-semibold">{{ selectedEmployee?.id }}</span></div>
+          <div class="text-sm text-[var(--text-secondary)]">Department: <span class="font-semibold">{{ selectedEmployee?.department }}</span></div>
+        </div>
+      </div>
+      <hr class="my-4 border-[var(--border-color)]">
+      
+      <!-- Summary Statistics -->
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="flex flex-col items-center">
+          <span class="text-xs text-[var(--text-secondary)]">Total Credits</span>
+          <span class="text-lg font-bold text-[var(--primary-color)]">{{ getTotalAccrued(selectedEmployee!) }}</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <span class="text-xs text-[var(--text-secondary)]">Used Credits</span>
+          <span class="text-lg font-bold text-yellow-600">{{ getTotalUsed(selectedEmployee!) }}</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <span class="text-xs text-[var(--text-secondary)]">Remaining Credits</span>
+          <span class="text-lg font-bold text-green-600">{{ getTotalRemaining(selectedEmployee!) }}</span>
+        </div>
+      </div>
+      
+      <!-- Leave Balance Details -->
+      <div class="mb-4">
+        <h4 class="text-lg font-semibold mb-3">Leave Balance Details</h4>
+        <div class="space-y-3">
+          <div *ngFor="let balance of selectedEmployee?.leave_balances" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div>
+              <div class="font-medium">{{ balance.leave_type.leave_type_name }}</div>
+              <div class="text-sm text-[var(--text-secondary)]">{{ balance.leave_type.description }}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm text-[var(--text-secondary)]">{{ balance.total_credits - balance.used_credits }} / {{ balance.total_credits }}</div>
+              <div class="text-xs text-[var(--text-secondary)]">Used: {{ balance.used_credits }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Adjust Credits Modal -->
+  <div *ngIf="showEmployeeAdjustModal" class="employee-adjust-modal">
+    <div class="employee-adjust-modal-backdrop" (click)="closeEmployeeAdjustModal()"></div>
+    <div class="modal-content max-w-2xl">
+      <button class="modal-close-btn" (click)="closeEmployeeAdjustModal()" aria-label="Close">&times;</button>
+      <h3 class="text-xl font-bold mb-4">Adjust Leave Credits</h3>
+      
+      <!-- Error Message -->
+      <div *ngIf="adjustmentError" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+        <div class="flex items-center">
+          <span class="material-symbols-outlined text-red-500 mr-2">error</span>
+          <span class="text-red-700">{{ adjustmentError }}</span>
+        </div>
+      </div>
+      
+      <!-- Adjustment Form -->
+      <form [formGroup]="adjustmentForm" (ngSubmit)="submitAdjustment()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <!-- Employee Selection -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Employee</label>
+            <select 
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              formControlName="personnel_id"
+              [class.border-red-500]="adjustmentForm.get('personnel_id')?.invalid && adjustmentForm.get('personnel_id')?.touched"
+              (change)="onEmployeeSelectionChange()"
+            >
+              <option value="">Select Employee</option>
+              <option *ngFor="let employee of employees" [value]="employee.id">
+                {{ employee.name }} - {{ employee.department }}
+              </option>
+            </select>
+            <div *ngIf="adjustmentForm.get('personnel_id')?.invalid && adjustmentForm.get('personnel_id')?.touched" class="text-red-500 text-sm mt-1">
+              Please select an employee
+            </div>
+          </div>
+          
+          <!-- Leave Type Selection -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Leave Type</label>
+            <select 
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              formControlName="leave_type_id"
+              [class.border-red-500]="adjustmentForm.get('leave_type_id')?.invalid && adjustmentForm.get('leave_type_id')?.touched"
+            >
+              <option value="">Select Leave Type</option>
+              <option *ngFor="let leaveType of getAvailableLeaveTypes()" [value]="leaveType.id">
+                {{ leaveType.leave_type_name }}
+              </option>
+            </select>
+            <div *ngIf="adjustmentForm.get('leave_type_id')?.invalid && adjustmentForm.get('leave_type_id')?.touched" class="text-red-500 text-sm mt-1">
+              Please select a leave type
+            </div>
+          </div>
+          
+          <!-- Year -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Year</label>
+            <select 
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              formControlName="year"
+              [class.border-red-500]="adjustmentForm.get('year')?.invalid && adjustmentForm.get('year')?.touched"
+            >
+              <option *ngFor="let year of getYearOptions()" [value]="year">{{ year }}</option>
+            </select>
+          </div>
+          
+          <!-- Adjustment Type -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Adjustment Type</label>
+            <select 
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              formControlName="adjustment_type"
+            >
+              <option value="increase">Credit (Increase)</option>
+              <option value="decrease">Debit (Decrease)</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Current Balance Display -->
+        <div *ngIf="adjustmentForm.get('personnel_id')?.value && adjustmentForm.get('leave_type_id')?.value" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <div class="flex items-center mb-2">
+            <span class="material-symbols-outlined text-blue-600 mr-2">info</span>
+            <span class="font-medium">Current Balance Information</span>
+          </div>
+          <div class="text-sm">
+            <div><strong>Current Balance:</strong> {{ getCurrentBalance() }} credits</div>
+          </div>
+        </div>
+        
+        <!-- Amount and Reason -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Adjustment Amount</label>
+            <input 
+              type="number" 
+              step="0.01" 
+              min="0.01"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              formControlName="adjustment_amount"
+              [class.border-red-500]="adjustmentForm.get('adjustment_amount')?.invalid && adjustmentForm.get('adjustment_amount')?.touched"
+              placeholder="Enter amount"
+            />
+            <div *ngIf="adjustmentForm.get('adjustment_amount')?.invalid && adjustmentForm.get('adjustment_amount')?.touched" class="text-red-500 text-sm mt-1">
+              Please enter a valid amount greater than 0
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2">Reason for Adjustment</label>
+          <textarea 
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            formControlName="reason"
+            [class.border-red-500]="adjustmentForm.get('reason')?.invalid && adjustmentForm.get('reason')?.touched"
+            placeholder="Please provide a detailed reason for this adjustment (minimum 10 characters)"
+            rows="3"
+          ></textarea>
+          <div *ngIf="adjustmentForm.get('reason')?.invalid && adjustmentForm.get('reason')?.touched" class="text-red-500 text-sm mt-1">
+            Please provide a reason (minimum 10 characters)
+          </div>
+        </div>
+        
+        <div class="flex justify-end gap-2">
+          <button 
+            type="button" 
+            class="btn-secondary" 
+            (click)="closeEmployeeAdjustModal()"
+            [disabled]="isSubmittingAdjustment"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn-primary"
+            [disabled]="adjustmentForm.invalid || isSubmittingAdjustment"
+          >
+            <span *ngIf="isSubmittingAdjustment" class="material-symbols-outlined animate-spin mr-2">refresh</span>
+            {{ isSubmittingAdjustment ? 'Saving...' : 'Save Adjustment' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Adjustment History Modal -->
+  <div *ngIf="showAdjustmentHistory" class="employee-adjust-modal">
+    <div class="employee-adjust-modal-backdrop" (click)="closeAdjustmentHistory()"></div>
+    <div class="modal-content max-w-4xl">
+      <button class="modal-close-btn" (click)="closeAdjustmentHistory()" aria-label="Close">&times;</button>
+      <h3 class="text-xl font-bold mb-4">Leave Credit Adjustment History</h3>
+      
+      <div *ngIf="selectedEmployeeForAdjust" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+        <div class="flex items-center mb-2">
+          <span class="material-symbols-outlined text-blue-600 mr-2">person</span>
+          <span class="font-medium">{{ selectedEmployeeForAdjust.name }}</span>
+        </div>
+        <div class="text-sm text-gray-600">
+          Department: {{ selectedEmployeeForAdjust.department }} | Year: {{ selectedYear }}
+        </div>
+      </div>
+      
+      <!-- Loading State -->
+      <div *ngIf="isLoadingHistory" class="flex items-center justify-center py-8">
+        <div class="loading-spinner"></div>
+        <span class="ml-3 text-[var(--text-secondary)]">Loading adjustment history...</span>
+      </div>
+      
+      <!-- History Table -->
+      <div *ngIf="!isLoadingHistory" class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Leave Type</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reason</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created By</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let adjustment of adjustmentHistory">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {{ adjustment.created_at | date:'short' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {{ adjustment.leave_type.leave_type_name }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium" [ngClass]="getAdjustmentTypeClass(adjustment.adjustment_type)">
+                {{ formatAdjustmentType(adjustment.adjustment_type) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {{ adjustment.adjustment_amount }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {{ adjustment.previous_balance }} → {{ adjustment.new_balance }}
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-900">
+                {{ adjustment.reason }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {{ adjustment.created_by_user.username }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div *ngIf="adjustmentHistory.length === 0" class="text-center py-8">
+          <span class="material-symbols-outlined text-gray-400 text-4xl mb-2">history</span>
+          <p class="text-gray-500">No adjustment history found for this employee.</p>
+        </div>
+      </div>
+      
+      <div class="flex justify-end mt-6">
+        <button class="btn-secondary" (click)="closeAdjustmentHistory()">Close</button>
+      </div>
+    </div>
+  </div>
+</div> 

@@ -1,0 +1,22 @@
+<div class="recruitment-container">
+  <div class="page-header">
+    <h1>{{ title }}</h1>
+    <p>Manage job postings, applicants, and recruitment analytics</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card" *ngFor="let feature of recruitmentFeatures">
+      <div class="feature-icon">{{ feature.icon }}</div>
+      <h3>{{ feature.name }}</h3>
+      <p>{{ feature.description }}</p>
+      <button class="btn btn-primary">Access</button>
+    </div>
+  </div>
+  <div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="action-buttons">
+      <button class="btn btn-secondary">Post Job</button>
+      <button class="btn btn-secondary">View Applicants</button>
+      <button class="btn btn-secondary">Schedule Interview</button>
+    </div>
+  </div>
+</div> 

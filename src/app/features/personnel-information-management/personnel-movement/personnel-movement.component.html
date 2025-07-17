@@ -1,0 +1,493 @@
+<div class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden">
+  <div class="flex h-full grow flex-col">
+    <div class="flex flex-1">
+      <main class="flex-1 p-8 w-full">
+        <header class="mb-8">
+          <div class="flex justify-between items-start">
+            <div>
+              <h2 class="text-3xl font-bold text-gray-900">Personnel Movements</h2>
+              <p class="text-[var(--secondary-text-color)] mt-1">Manage and oversee all personnel movements within the organization.</p>
+            </div>
+            <div class="flex gap-3">
+              <button 
+                class="nav-shortcut-btn workflows-btn"
+                (click)="onNavigateToWorkflows()"
+                title="Go to Workflows"
+              >
+                <span class="material-symbols-outlined">workflow</span>
+                <span class="nav-shortcut-text">Workflows</span>
+              </button>
+              <button 
+                class="nav-shortcut-btn audit-btn"
+                (click)="onNavigateToAuditTrail()"
+                title="Go to Audit Trail"
+              >
+                <span class="material-symbols-outlined">history</span>
+                <span class="nav-shortcut-text">Audit Trail</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <div class="mb-6 flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+              <input 
+                class="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] transition-shadow sm:w-64 md:w-80" 
+                placeholder="Search movements..." 
+                type="text"
+                [(ngModel)]="searchTerm"
+                (input)="onSearch()"
+              />
+            </div>
+            <button class="secondary-btn flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium">
+              <span class="material-symbols-outlined text-base">filter_list</span>
+              Filter
+            </button>
+          </div>
+          <button 
+            class="primary-btn flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium shadow-sm"
+            (click)="onNewMovement()"
+          >
+            <span class="material-symbols-outlined text-base">add_circle_outline</span>
+            New Movement
+          </button>
+        </div>
+
+        <div class="bg-white shadow-sm rounded-xl overflow-hidden border border-[var(--border-color)]">
+          <div class="overflow-x-auto @container">
+            <table class="w-full min-w-[1000px]">
+              <thead class="bg-gray-50 border-b border-[var(--border-color)]">
+                <tr>
+                  <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-120">
+                    Employee Name
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-240">
+                    Department
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-360">
+                    Current Role
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-480">
+                    Movement Type
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-600">
+                    Effective Date
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-720">
+                    Status
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-840">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[var(--border-color)]">
+                <tr 
+                  *ngFor="let movement of paginatedMovements" 
+                  class="hover:bg-gray-50 transition-colors"
+                >
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-120">
+                    {{ movement.employeeName }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--secondary-text-color)] table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-240">
+                    {{ movement.department }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--secondary-text-color)] table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-360">
+                    {{ movement.currentRole }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-480">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="getMovementTypeClass(movement.movementType)">
+                      {{ movement.movementType }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-[var(--secondary-text-color)] table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-600">
+                    {{ movement.effectiveDate }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-720">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="getStatusClass(movement.status)">
+                      {{ movement.status }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-840">
+                    <div class="flex items-center gap-2">
+                      <button 
+                        class="action-btn view-btn"
+                        (click)="onViewMovement(movement)"
+                        title="View Details"
+                      >
+                        <span class="material-symbols-outlined">visibility</span>
+                      </button>
+                      <button 
+                        class="action-btn edit-btn"
+                        (click)="onEditMovement(movement)"
+                        title="Edit Movement"
+                      >
+                        <span class="material-symbols-outlined">edit</span>
+                      </button>
+                      <button 
+                        class="action-btn delete-btn"
+                        (click)="onDeleteMovement(movement)"
+                        title="Delete Movement"
+                      >
+                        <span class="material-symbols-outlined">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <style>
+              @container(max-width:120px){.table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-120{display: none;}}
+              @container(max-width:240px){.table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-240{display: none;}}
+              @container(max-width:360px){.table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-360{display: none;}}
+              @container(max-width:480px){.table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-480{display: none;}}
+              @container(max-width:600px){.table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-600{display: none;}}
+              @container(max-width:720px){.table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-720{display: none;}}
+              @container(max-width:840px){.table-5c43ca4e-ffe7-4f36-a2e2-eadc743d0232-column-840{display: none;}}
+            </style>
+          </div>
+          <div class="px-6 py-4 border-t border-[var(--border-color)] flex items-center justify-between">
+            <p class="text-sm text-gray-500">
+              Showing <span class="font-medium">{{ startItem }}</span> to <span class="font-medium">{{ endItem }}</span> of <span class="font-medium">{{ totalItems }}</span> results
+            </p>
+            <div class="flex gap-2">
+              <button 
+                class="secondary-btn px-3 py-1.5 rounded-md text-sm font-medium disabled:opacity-50" 
+                [disabled]="currentPage === 1"
+                (click)="previousPage()"
+              >
+                Previous
+              </button>
+              <button 
+                class="primary-btn px-3 py-1.5 rounded-md text-sm font-medium"
+                [disabled]="currentPage === totalPages"
+                (click)="nextPage()"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<!-- New Movement Modal -->
+<div 
+  *ngIf="showNewMovementModal" 
+  class="modal-overlay">
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-lg p-8 relative">
+    <button 
+      class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold focus:outline-none"
+      (click)="closeNewMovementModal()"
+      aria-label="Close"
+    >
+      &times;
+    </button>
+    <h3 class="text-xl font-bold mb-4">Create New Movement</h3>
+    <form (ngSubmit)="createMovement()" autocomplete="off">
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Employee Name</label>
+        <input 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+          [(ngModel)]="newMovement.employeeName"
+          name="employeeName"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Department</label>
+        <select 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+          [(ngModel)]="newMovement.department"
+          name="department"
+          required
+        >
+          <option value="" disabled selected>Select department</option>
+          <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Current Role</label>
+        <input 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+          [(ngModel)]="newMovement.currentRole"
+          name="currentRole"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Movement Type</label>
+        <select 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+          [(ngModel)]="newMovement.movementType"
+          name="movementType"
+          required
+        >
+          <option value="Promotion">Promotion</option>
+          <option value="Transfer">Transfer</option>
+          <option value="Demotion">Demotion</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Effective Date</label>
+        <input 
+          type="date"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+          [(ngModel)]="newMovement.effectiveDate"
+          name="effectiveDate"
+          required
+        />
+      </div>
+      <div class="mb-6">
+        <label class="block text-sm font-medium mb-1">Status</label>
+        <select 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+          [(ngModel)]="newMovement.status"
+          name="status"
+          required
+        >
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
+      <div class="flex justify-end gap-3">
+        <button 
+          type="button" 
+          class="secondary-btn px-4 py-2 rounded-lg"
+          (click)="closeNewMovementModal()"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          class="primary-btn px-4 py-2 rounded-lg"
+          [disabled]="!newMovement.employeeName || !newMovement.department || !newMovement.currentRole || !newMovement.movementType || !newMovement.effectiveDate"
+        >
+          Create
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- View Movement Modal -->
+<div *ngIf="showViewMovementModal && selectedMovement" class="modal-overlay">
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl p-8 relative max-h-[90vh] overflow-y-auto">
+    <button 
+      class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold focus:outline-none"
+      (click)="closeViewMovementModal()"
+      aria-label="Close"
+    >
+      &times;
+    </button>
+    <h3 class="text-xl font-bold mb-6">Movement Details</h3>
+    
+    <!-- Employee Information Section -->
+    <div class="mb-6">
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">Employee Information</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+          <span class="text-sm font-medium text-gray-500">Employee Name:</span>
+          <span class="text-sm text-gray-900 font-medium">{{ selectedMovement.employeeName }}</span>
+        </div>
+        <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+          <span class="text-sm font-medium text-gray-500">Movement Type:</span>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="getMovementTypeClass(selectedMovement.movementType)">
+            {{ selectedMovement.movementType }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Department & Role Changes Section -->
+    <div class="mb-6">
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">Department & Role Changes</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-3">
+          <div class="flex justify-between items-center pb-2 border-b border-gray-100">
+            <span class="text-sm font-medium text-gray-500">Previous Department:</span>
+            <span class="text-sm text-gray-900">{{ selectedMovement.previousDepartment || 'N/A' }}</span>
+          </div>
+          <div class="flex justify-between items-center pb-2 border-b border-gray-100">
+            <span class="text-sm font-medium text-gray-500">Current Department:</span>
+            <span class="text-sm text-gray-900 font-medium">{{ selectedMovement.department }}</span>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center pb-2 border-b border-gray-100">
+            <span class="text-sm font-medium text-gray-500">Previous Role:</span>
+            <span class="text-sm text-gray-900">{{ selectedMovement.previousRole || 'N/A' }}</span>
+          </div>
+          <div class="flex justify-between items-center pb-2 border-b border-gray-100">
+            <span class="text-sm font-medium text-gray-500">Current Role:</span>
+            <span class="text-sm text-gray-900 font-medium">{{ selectedMovement.currentRole }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Movement Details Section -->
+    <div class="mb-6">
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">Movement Details</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+          <span class="text-sm font-medium text-gray-500">Effective Date:</span>
+          <span class="text-sm text-gray-900">{{ selectedMovement.effectiveDate }}</span>
+        </div>
+        <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+          <span class="text-sm font-medium text-gray-500">Status:</span>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="getStatusClass(selectedMovement.status)">
+            {{ selectedMovement.status }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approval Information Section -->
+    <div class="mb-6" *ngIf="selectedMovement.approvedBy || selectedMovement.approvedDate">
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">Approval Information</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex justify-between items-center pb-3 border-b border-gray-100" *ngIf="selectedMovement.approvedBy">
+          <span class="text-sm font-medium text-gray-500">Approved By:</span>
+          <span class="text-sm text-gray-900">{{ selectedMovement.approvedBy }}</span>
+        </div>
+        <div class="flex justify-between items-center pb-3 border-b border-gray-100" *ngIf="selectedMovement.approvedDate">
+          <span class="text-sm font-medium text-gray-500">Approval Date:</span>
+          <span class="text-sm text-gray-900">{{ selectedMovement.approvedDate }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reasons Section -->
+    <div class="mb-6" *ngIf="selectedMovement.reasons">
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">Reasons for Movement</h4>
+      <div class="bg-gray-50 rounded-lg p-4">
+        <p class="text-sm text-gray-700 leading-relaxed">{{ selectedMovement.reasons }}</p>
+      </div>
+    </div>
+
+    <!-- Remarks Section -->
+    <div class="mb-6" *ngIf="selectedMovement.remarks">
+      <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">Remarks</h4>
+      <div class="bg-blue-50 rounded-lg p-4">
+        <p class="text-sm text-gray-700 leading-relaxed">{{ selectedMovement.remarks }}</p>
+      </div>
+    </div>
+
+    <div class="flex justify-end mt-6">
+      <button 
+        type="button" 
+        class="primary-btn px-4 py-2 rounded-lg"
+        (click)="closeViewMovementModal()"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Movement Modal -->
+<div 
+  *ngIf="showEditMovementModal && selectedMovement" 
+  class="modal-overlay">
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-lg p-8 relative">
+    <button 
+      class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold focus:outline-none"
+      (click)="closeEditMovementModal()"
+      aria-label="Close"
+    >
+      &times;
+    </button>
+    <h3 class="text-xl font-bold mb-4">Edit Movement</h3>
+    <p class="text-sm text-gray-600 mb-6">Editing movement for {{ selectedMovement.employeeName }}</p>
+    <form (ngSubmit)="updateMovement()" autocomplete="off">
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Employee Name</label>
+        <input 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+          [(ngModel)]="editMovement.employeeName"
+          name="editEmployeeName"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Department</label>
+        <select 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+          [(ngModel)]="editMovement.department"
+          name="editDepartment"
+          required
+        >
+          <option value="" disabled>Select department</option>
+          <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Current Role</label>
+        <input 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+          [(ngModel)]="editMovement.currentRole"
+          name="editCurrentRole"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Movement Type</label>
+        <select 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+          [(ngModel)]="editMovement.movementType"
+          name="editMovementType"
+          required
+        >
+          <option value="Promotion">Promotion</option>
+          <option value="Transfer">Transfer</option>
+          <option value="Demotion">Demotion</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Effective Date</label>
+        <input 
+          type="date"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+          [(ngModel)]="editMovement.effectiveDate"
+          name="editEffectiveDate"
+          required
+        />
+      </div>
+      <div class="mb-6">
+        <label class="block text-sm font-medium mb-1">Status</label>
+        <select 
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+          [(ngModel)]="editMovement.status"
+          name="editStatus"
+          required
+        >
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
+      <div class="flex justify-end gap-3">
+        <button 
+          type="button" 
+          class="secondary-btn px-4 py-2 rounded-lg"
+          (click)="closeEditMovementModal()"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          class="primary-btn px-4 py-2 rounded-lg"
+          [disabled]="!editMovement.employeeName || !editMovement.department || !editMovement.currentRole || !editMovement.movementType || !editMovement.effectiveDate"
+        >
+          Update
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

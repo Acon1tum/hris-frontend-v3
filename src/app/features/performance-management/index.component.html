@@ -1,0 +1,375 @@
+<div class="flex flex-1 justify-center py-5">
+  <div class="layout-content-container flex flex-col max-w-[960px] flex-1 fade-in">
+    <div class="flex flex-wrap justify-between gap-3 p-4">
+      <div class="flex min-w-72 flex-col gap-3">
+        <p class="text-[#0d141c] tracking-light text-[32px] font-bold leading-tight">Performance Overview</p>
+        <p class="text-[#49739c] text-sm font-normal leading-normal">Monitor key performance indicators across the organization.</p>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-4 px-4 py-6">
+      <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#cedbe8] p-6">
+        <p class="text-[#0d141c] text-base font-medium leading-normal">Satisfaction Trends</p>
+        <p class="text-[#0d141c] tracking-light text-[32px] font-bold leading-tight truncate">
+          {{ satisfactionTrends[5] ? satisfactionTrends[5] + '%' : 'N/A' }}
+        </p>
+        <div class="flex gap-1">
+          <p class="text-[#49739c] text-base font-normal leading-normal">Last 6 Months</p>
+          <p class="text-[#078838] text-base font-medium leading-normal">
+            <!-- Show change if possible -->
+            <ng-container *ngIf="satisfactionTrends[4] && satisfactionTrends[5]">
+              {{ (satisfactionTrends[5] - satisfactionTrends[4]) >= 0 ? '+' : '' }}{{ (satisfactionTrends[5] - satisfactionTrends[4]).toFixed(1) }}%
+            </ng-container>
+          </p>
+        </div>
+        <div class="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
+          <svg width="100%" height="148" viewBox="0 0 472 148" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <ng-container *ngIf="satisfactionTrends.length === 6">
+              <path
+                [attr.d]="getSatisfactionTrendsPath(satisfactionTrends)"
+                fill="url(#paint0_linear_1131_5935)"
+              ></path>
+              <path
+                [attr.d]="getSatisfactionTrendsLine(satisfactionTrends)"
+                stroke="#49739c"
+                stroke-width="3"
+                stroke-linecap="round"
+              ></path>
+            </ng-container>
+            <defs>
+              <linearGradient id="paint0_linear_1131_5935" x1="236" y1="1" x2="236" y2="149" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#e7edf4"></stop>
+                <stop offset="1" stop-color="#e7edf4" stop-opacity="0"></stop>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="flex justify-around">
+            <p class="text-[#49739c] text-[13px] font-bold leading-normal tracking-[0.015em]">Jan</p>
+            <p class="text-[#49739c] text-[13px] font-bold leading-normal tracking-[0.015em]">Feb</p>
+            <p class="text-[#49739c] text-[13px] font-bold leading-normal tracking-[0.015em]">Mar</p>
+            <p class="text-[#49739c] text-[13px] font-bold leading-normal tracking-[0.015em]">Apr</p>
+            <p class="text-[#49739c] text-[13px] font-bold leading-normal tracking-[0.015em]">May</p>
+            <p class="text-[#49739c] text-[13px] font-bold leading-normal tracking-[0.015em]">Jun</p>
+            <p class="text-[#49739c] text-[13px] font-bold leading-normal tracking-[0.015em]">Jul</p>
+            <p class="text-[#49739c] text-[13px] font-bold leading-normal tracking-[0.015em]">Aug</p>
+            <p class="text-[#49739c] text-[13px] font-bold leading-normal tracking-[0.015em]">Sep</p>
+            <p class="text-[#49739c] text-[13px] font-bold leading-normal tracking-[0.015em]">Oct</p>
+            <p class="text-[#49739c] text-[13px] font-bold leading-normal tracking-[0.015em]">Nov</p>
+            <p class="text-[#49739c] text-[13px] font-bold leading-normal tracking-[0.015em]">Dec</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#cedbe8] p-6">
+        <p class="text-[#0d141c] text-base font-medium leading-normal">Identify Key Responsibilities Data</p>
+        <p class="text-[#0d141c] tracking-light text-[32px] font-bold leading-tight truncate">
+          {{ getMaxDeptResolutionTime() }} hours
+        </p>
+        <div class="flex gap-1">
+          <p class="text-[#49739c] text-base font-normal leading-normal">Current Quarter</p>
+          <p class="text-[#e73908] text-base font-medium leading-normal">&nbsp;</p>
+        </div>
+        <div class="flex flex-col items-stretch">
+          <!-- Bars Row -->
+          <div class="grid grid-flow-col gap-6 items-end justify-items-center px-3" style="min-height: 120px;" (mouseleave)="hoveredDept = null">
+            <ng-container *ngFor="let dept of departmentStats">
+              <div class="relative w-full flex items-end justify-center"
+                   (mouseenter)="hoveredDept = dept.name">
+              <div
+                class="border-[#49739c] border-t-2 w-full"
+                [style.height]="(resolutionTimeByDepartment[dept.name] / getMaxDeptResolutionTime() * 100) + 'px'"
+                [style.background]="'linear-gradient(to top, ' + getDepartmentBarColor(dept.name, 0.1) + ', ' + getDepartmentBarColor(dept.name, 0.7) + ')'"
+                [style.opacity]="!selectedDepartment || selectedDepartment === dept.name ? 1 : 0.3"
+                style="min-height: 10px; max-height: 100px; border-radius: 6px 6px 0 0;"
+              ></div>
+                <ng-container *ngIf="hoveredDept === dept.name">
+                  <div
+                    class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 rounded text-xs text-white whitespace-nowrap opacity-100 z-10 shadow-lg"
+                    [style.background]="getDepartmentBarColor(dept.name, 0.7)">
+                    {{ dept.name }}
+                    <span class="ml-2 font-semibold">
+                    [ {{ resolutionTimeByDepartment[dept.name] ? resolutionTimeByDepartment[dept.name] + ' hrs' : '' }} ]
+                    </span>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </div>
+          <!-- Department Names Row -->
+          <div class="grid grid-cols-3 gap-y-4 gap-x-6 pt-6 px-3 mt-2">
+            <ng-container *ngFor="let dept of departmentStats">
+              <div class="flex flex-col items-center text-center space-y-1" [style.opacity]="!selectedDepartment || selectedDepartment === dept.name ? 1 : 0.3">
+                <span
+                  class="inline-block w-4 h-4 rounded-full"
+                  [style.background]="getDepartmentBarColor(dept.name, 0.7)"
+                ></span>
+                <span
+                  class="text-[#49739c] text-[10px] font-bold leading-normal tracking-[0.015em] break-words max-w-[70px]"
+                >
+                  {{ dept.name }}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="text-[#0d141c] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Filters</h3>
+    <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+      <label class="flex flex-col min-w-40 flex-1">
+        <select
+          class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d141c] focus:outline-0 focus:ring-0 border border-[#cedbe8] bg-slate-50 focus:border-[#cedbe8] h-14 bg-[image:--select-button-svg] placeholder:text-[#49739c] p-[15px] text-base font-normal leading-normal"
+          [(ngModel)]="selectedDepartment"
+          name="department"
+          (ngModelChange)="onDepartmentChange()"
+        >
+          <option value="">All Departments</option>
+          <option *ngFor="let dept of departmentStats" [value]="dept.name">{{ dept.name }}</option>
+        </select>
+      </label>
+    </div>
+    <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3" *ngIf="selectedDepartment">
+      <label class="flex flex-col min-w-40 flex-1">
+        <select
+          class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d141c] focus:outline-0 focus:ring-0 border border-[#cedbe8] bg-slate-50 focus:border-[#cedbe8] h-14 bg-[image:--select-button-svg] placeholder:text-[#49739c] p-[15px] text-base font-normal leading-normal"
+          [ngClass]="{'popup-in': selectedDepartment}"
+          [(ngModel)]="selectedRole"
+          name="role"
+          (ngModelChange)="onRoleChange()"
+        >
+          <option value="">All Role</option>
+          <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+        </select>
+      </label>
+    </div>
+    <h3 class="text-[#0d141c] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4 flex items-center justify-between">
+      Identify Key Responsibilities
+      <button type="button"
+        class="ml-4 px-3 py-1 rounded bg-[#0c7ff2] text-white text-sm font-semibold hover:bg-[#095ecb] transition-colors"
+        (click)="openCustomKpiModal()">
+        + Add Custom Responsibility
+      </button>
+    </h3>
+    <!-- Modal for Custom Responsibility -->
+    <div *ngIf="showCustomKpiModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-xs flex flex-col gap-4 relative">
+        <h4 class="text-lg font-bold mb-2">Add Custom Responsibility</h4>
+        <label class="flex flex-col gap-1">
+          <span class="text-sm font-medium">Title</span>
+          <input type="text" class="form-input border border-[#cedbe8] rounded px-2 py-1" [(ngModel)]="customKpiTitle" placeholder="Enter KPI title" />
+        </label>
+        <label class="flex flex-col gap-1">
+          <span class="text-sm font-medium">Value</span>
+          <input type="text" class="form-input border border-[#cedbe8] rounded px-2 py-1" [(ngModel)]="customKpiValue" placeholder="Enter KPI value (optional)" />
+        </label>
+        <div class="flex gap-2 justify-end mt-2">
+          <button type="button" class="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300" (click)="closeCustomKpiModal()">Cancel</button>
+          <button type="button" class="px-3 py-1 rounded bg-[#0c7ff2] text-white hover:bg-[#095ecb]" (click)="saveCustomKpi()">Save</button>
+        </div>
+      </div>
+    </div>
+    <div class="p-4" [ngClass]="{'move-down': !moveDownChecklist, 'move-down-active': moveDownChecklist}">
+      <div class="mb-4 flex gap-2 items-center">
+        <span class="text-sm font-medium">Show:</span>
+        <div class="inline-flex rounded-md shadow-sm bg-[#f1f5f9] border border-[#cedbe8]">
+          <button type="button"
+            class="px-3 py-1 text-sm font-medium focus:outline-none transition-colors rounded-l-md"
+            [ngClass]="{'bg-[#0c7ff2] text-white': checkedFilter === 'all', 'text-[#0c7ff2]': checkedFilter !== 'all'}"
+            (click)="checkedFilter = 'all'; onCheckedFilterChange()">
+            All
+          </button>
+          <button type="button"
+            class="px-3 py-1 text-sm font-medium focus:outline-none transition-colors border-l border-[#cedbe8]"
+            [ngClass]="{'bg-[#0c7ff2] text-white': checkedFilter === 'checked', 'text-[#0c7ff2]': checkedFilter !== 'checked'}"
+            (click)="checkedFilter = 'checked'; onCheckedFilterChange()">
+            Checked
+          </button>
+          <button type="button"
+            class="px-3 py-1 text-sm font-medium focus:outline-none transition-colors rounded-r-md border-l border-[#cedbe8]"
+            [ngClass]="{'bg-[#0c7ff2] text-white': checkedFilter === 'unchecked', 'text-[#0c7ff2]': checkedFilter !== 'unchecked'}"
+            (click)="checkedFilter = 'unchecked'; onCheckedFilterChange()">
+            Unchecked
+          </button>
+        </div>
+      </div>
+      <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" [ngClass]="{'fade-in': fadeInChecklist}">
+        <li *ngFor="let kpi of filteredCustomKPIs; let i = index" class="flex items-center gap-3 p-3 bg-white rounded-lg border border-[#cedbe8]">
+          <input type="checkbox" [id]="'kpi-check-' + i" class="form-checkbox h-5 w-5 text-[#0c7ff2] border-[#cedbe8] rounded cursor-not-allowed opacity-60" [checked]="kpi.checked" disabled />
+          <label [for]="'kpi-check-' + i" class="flex flex-col cursor-pointer">
+            <span class="text-[#0d141c] text-base font-medium leading-normal">{{ kpi.title }}</span>
+            <span class="text-[#49739c] text-sm">{{ kpi.value }}</span>
+            <span *ngIf="!selectedDepartment" class="text-xs text-blue-500 mt-1">{{ getKpiDepartmentLabel(kpi) }}</span>
+            <span *ngIf="selectedDepartment" class="text-xs text-blue-500 mt-1">{{ getKpiRoleLabel(kpi) }}</span>
+          </label>
+        </li>
+      </ul>
+    </div>
+    <h3 class="text-[#0d141c] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">KPI Table</h3>
+    <div class="px-4 py-3 @container">
+      <div class="flex overflow-hidden rounded-lg border border-[#cedbe8] bg-white shadow-sm">
+        <table class="flex-1 min-w-full rounded-lg overflow-hidden">
+          <thead>
+            <tr class="bg-[#f8fafc] sticky top-0 z-10">
+              <th class="px-6 py-4 text-left text-[#0d141c] text-base font-bold leading-normal">KPI Name</th>
+              <th class="px-6 py-4 text-left text-[#0d141c] text-base font-bold leading-normal">Description</th>
+              <th class="px-6 py-4 text-left text-[#0d141c] text-base font-bold leading-normal">Target Value</th>
+              <th class="px-6 py-4 text-left text-[#0d141c] text-base font-bold leading-normal">Unit</th>
+              <th class="px-6 py-4 text-left text-[#0d141c] text-base font-bold leading-normal">Frequency</th>
+              <th class="px-6 py-4 text-left text-[#0d141c] text-base font-bold leading-normal">Weight (%)</th>
+              <th class="px-6 py-4 text-left text-[#0d141c] text-base font-bold leading-normal">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let kpi of kpiTableData; let i = index" class="even:bg-[#f1f5f9] hover:bg-[#e0e7ef] transition-colors border-b border-[#e5e7eb]">
+              <td class="px-6 py-3 text-[#0d141c] text-sm font-medium leading-normal">{{ kpi.name }}</td>
+              <td class="px-6 py-3 text-[#49739c] text-sm leading-normal">{{ kpi.description }}</td>
+              <td class="px-6 py-3 text-[#0d141c] text-sm leading-normal">{{ kpi.targetValue }}</td>
+              <td class="px-6 py-3 text-[#0d141c] text-sm leading-normal">{{ kpi.unit }}</td>
+              <td class="px-6 py-3 text-[#0d141c] text-sm leading-normal">{{ kpi.frequency }}</td>
+              <td class="px-6 py-3 text-[#0d141c] text-sm leading-normal">{{ kpi.weight }}</td>
+              <td class="px-6 py-3 text-right">
+                <div class="flex items-center gap-2 justify-end">
+                  <button class="kpi-action-btn edit" (click)="openEditKpiModal(i)" title="Edit">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 16l3.5-0.5L15 6.01a1.414 1.414 0 0 0-2-2L3.5 13.5 2 16z"/>
+                      <path d="M12.5 4.5l2 2"/>
+                    </svg>
+                  </button>
+                  <button class="kpi-action-btn delete" (click)="deleteKpi(i)" title="Delete">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#ef4444" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3.5" y="5.5" width="11" height="9" rx="1.5"/>
+                      <path d="M7 8.5v3"/>
+                      <path d="M11 8.5v3"/>
+                      <path d="M5.5 5.5V4.5A1.5 1.5 0 0 1 7 3h4a1.5 1.5 0 0 1 1.5 1.5v1"/>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button class="px-5 py-2 rounded-lg bg-[#0c7ff2] text-white text-sm font-semibold shadow hover:bg-[#095ecb] transition-colors" (click)="openAddKpiModal()">+ Add KPI</button>
+      </div>
+    </div>
+    <!-- Add/Edit KPI Modal -->
+    <div *ngIf="showAddKpiModal || editKpiIndex !== null" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 animate-fade-in">
+      <div class="relative bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg flex flex-col gap-6 min-w-[320px]">
+        <button type="button" aria-label="Close" (click)="editKpiIndex !== null ? cancelEditKpi() : closeAddKpiModal()" class="absolute top-4 right-4 text-[#49739c] hover:text-[#0c7ff2] text-2xl font-bold focus:outline-none">&times;</button>
+        <h4 class="text-2xl font-bold text-[#0d141c] mb-2 text-center">{{ editKpiIndex !== null ? 'Edit KPI' : 'Add KPI' }}</h4>
+        <hr class="border-[#e5e7eb] mb-2" />
+        <form (ngSubmit)="editKpiIndex !== null ? saveEditKpi() : addKpiToTable()" autocomplete="off">
+          <div class="flex flex-col gap-4">
+            <label class="flex flex-col gap-1">
+              <span class="text-sm font-medium">KPI Name</span>
+              <input type="text" class="form-input border border-[#cedbe8] rounded-lg px-3 py-2 text-[#0d141c] focus:border-[#0c7ff2] focus:ring-2 focus:ring-[#0c7ff2]/20 transition-all" [(ngModel)]="editKpiIndex !== null ? editKpiData.name : newKpi.name" name="kpiName" placeholder="Enter KPI name" required />
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-sm font-medium">Description</span>
+              <input type="text" class="form-input border border-[#cedbe8] rounded-lg px-3 py-2 text-[#0d141c] focus:border-[#0c7ff2] focus:ring-2 focus:ring-[#0c7ff2]/20 transition-all" [(ngModel)]="editKpiIndex !== null ? editKpiData.description : newKpi.description" name="kpiDescription" placeholder="Enter description" required />
+            </label>
+            <div class="flex flex-col md:flex-row md:flex-wrap gap-4">
+              <label class="flex flex-col gap-1 flex-1 min-w-0">
+                <span class="text-sm font-medium">Target Value</span>
+                <input type="text" class="form-input border border-[#cedbe8] rounded-lg px-3 py-2 text-[#0d141c] focus:border-[#0c7ff2] focus:ring-2 focus:ring-[#0c7ff2]/20 transition-all w-full min-w-0 max-w-full" [(ngModel)]="editKpiIndex !== null ? editKpiData.targetValue : newKpi.targetValue" name="kpiTargetValue" placeholder="Target value" required />
+              </label>
+              <label class="flex flex-col gap-1 flex-1 min-w-0">
+                <span class="text-sm font-medium">Unit</span>
+                <input type="text" class="form-input border border-[#cedbe8] rounded-lg px-3 py-2 text-[#0d141c] focus:border-[#0c7ff2] focus:ring-2 focus:ring-[#0c7ff2]/20 transition-all w-full min-w-0 max-w-full" [(ngModel)]="editKpiIndex !== null ? editKpiData.unit : newKpi.unit" name="kpiUnit" placeholder="Unit" required />
+              </label>
+            </div>
+            <div class="flex flex-col md:flex-row md:flex-wrap gap-4">
+              <label class="flex flex-col gap-1 flex-1 min-w-0">
+                <span class="text-sm font-medium">Frequency</span>
+                <input type="text" class="form-input border border-[#cedbe8] rounded-lg px-3 py-2 text-[#0d141c] focus:border-[#0c7ff2] focus:ring-2 focus:ring-[#0c7ff2]/20 transition-all w-full min-w-0 max-w-full" [(ngModel)]="editKpiIndex !== null ? editKpiData.frequency : newKpi.frequency" name="kpiFrequency" placeholder="Frequency" required />
+              </label>
+              <label class="flex flex-col gap-1 flex-1 min-w-0">
+                <span class="text-sm font-medium">Weight (%)</span>
+                <input type="text" class="form-input border border-[#cedbe8] rounded-lg px-3 py-2 text-[#0d141c] focus:border-[#0c7ff2] focus:ring-2 focus:ring-[#0c7ff2]/20 transition-all w-full min-w-0 max-w-full" [(ngModel)]="editKpiIndex !== null ? editKpiData.weight : newKpi.weight" name="kpiWeight" placeholder="Weight (%)" required />
+              </label>
+            </div>
+          </div>
+          <div class="flex gap-2 justify-end mt-6">
+            <button type="button" class="px-4 py-2 rounded-lg border border-[#cedbe8] bg-white text-[#0d141c] text-sm font-medium hover:bg-[#f1f5f9] transition-colors" (click)="editKpiIndex !== null ? cancelEditKpi() : closeAddKpiModal()">Cancel</button>
+            <button type="submit" class="px-4 py-2 rounded-lg bg-[#0c7ff2] text-white text-sm font-semibold shadow hover:bg-[#095ecb] transition-colors" [disabled]="editKpiIndex !== null ? !(editKpiData.name && editKpiData.description && editKpiData.targetValue && editKpiData.unit && editKpiData.frequency && editKpiData.weight) : !(newKpi.name && newKpi.description && newKpi.targetValue && newKpi.unit && newKpi.frequency && newKpi.weight)">{{ editKpiIndex !== null ? 'Save' : 'Add' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Communication Settings and Actions -->
+    <div class="mt-10 bg-[#f8fafc] rounded-xl p-6 flex flex-col gap-6">
+      <div class="flex flex-col gap-4">
+        <span class="text-[#0d141c] text-base font-medium mb-2">Communication Settings</span>
+        <div class="flex flex-col gap-4">
+          <label class="flex items-center gap-3 text-[#0d141c] text-sm font-normal">
+            Notify Employees?
+            <span class="relative inline-block w-10 align-middle select-none">
+              <input type="checkbox" id="notifyEmployees" class="sr-only" [(ngModel)]="notifyEmployees" />
+              <span class="block w-10 h-6 bg-[#e5e7eb] rounded-full shadow-inner"></span>
+              <span class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform" [ngStyle]="{'transform': notifyEmployees ? 'translateX(16px)' : 'none', 'box-shadow': notifyEmployees ? '0 0 0 2px #0c7ff2' : 'none', 'background': notifyEmployees ? '#0c7ff2' : '#fff'}"></span>
+            </span>
+          </label>
+          <label class="flex items-center gap-3 text-[#0d141c] text-sm font-normal">
+            Effective From
+            <input type="date" class="form-input border border-[#e5e7eb] rounded px-2 py-1 text-[#0d141c] font-normal bg-white focus:border-[#0c7ff2] focus:ring-1 focus:ring-[#0c7ff2]/20 transition-all" [(ngModel)]="effectiveFrom" />
+          </label>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2 mt-2">
+        <div class="flex gap-2">
+          <button class="px-4 py-2 rounded border border-[#cedbe8] bg-transparent text-[#0d141c] text-sm font-medium hover:bg-[#e5e7eb] transition-colors">Save as Draft</button>
+          <button class="px-4 py-2 rounded border border-[#22c55e] bg-transparent text-[#22c55e] text-sm font-medium hover:bg-[#22c55e] hover:text-white transition-colors">Publish KPIs to Role</button>
+          <button class="px-4 py-2 rounded border border-[#cedbe8] bg-transparent text-[#0d141c] text-sm font-medium hover:bg-[#e5e7eb] transition-colors">Export KPI Template</button>
+        </div>
+      </div>
+    </div>
+    <!-- Delete KPI Confirmation Modal -->
+    <div *ngIf="showDeleteConfirm" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 animate-fade-in">
+      <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-xs flex flex-col gap-6 min-w-[280px] items-center">
+        <div class="text-3xl text-[#ef4444] mb-2">&#9888;</div>
+        <div class="text-lg font-semibold text-[#0d141c] text-center">Are you sure you want to delete this KPI?</div>
+        <div class="flex gap-3 justify-center mt-2">
+          <button type="button" class="px-4 py-2 rounded-lg border border-[#cedbe8] bg-white text-[#0d141c] text-sm font-medium hover:bg-[#f1f5f9] transition-colors" (click)="cancelDeleteKpi()">Cancel</button>
+          <button type="button" class="px-4 py-2 rounded-lg bg-[#ef4444] text-white text-sm font-semibold shadow hover:bg-[#b91c1c] transition-colors" (click)="confirmDeleteKpi()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
+
+<style>
+.kpi-action-btn {
+  background: none;
+  border: none;
+  padding: 0.18rem 0.28rem;
+  cursor: pointer;
+  vertical-align: middle;
+  border-radius: 0.4rem;
+  display: flex;
+  align-items: center;
+  transition: background 0.15s;
+}
+.kpi-action-btn svg {
+  display: block;
+  transition: stroke 0.15s;
+}
+.kpi-action-btn.edit svg {
+  stroke: #2563eb;
+}
+.kpi-action-btn.edit:hover {
+  background: #e0e7ef;
+}
+.kpi-action-btn.edit:hover svg {
+  stroke: #0c7ff2;
+}
+.kpi-action-btn.delete svg {
+  stroke: #ef4444;
+}
+.kpi-action-btn.delete:hover {
+  background: #fef2f2;
+}
+.kpi-action-btn.delete:hover svg {
+  stroke: #b91c1c;
+}
+</style> 

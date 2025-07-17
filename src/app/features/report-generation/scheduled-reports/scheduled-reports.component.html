@@ -1,0 +1,323 @@
+<!-- Scheduled Reports Section -->
+<div id="scheduled" class="scheduled-reports-section">
+  <div class="section-header">
+    <h2>Scheduled Reports</h2>
+    <div class="header-actions">
+      <button class="btn-primary" (click)="openCreateScheduledReport()">
+        <i class="fas fa-plus"></i>
+        Create Schedule
+      </button>
+    </div>
+  </div>
+
+  <div class="scheduled-reports-grid">
+    <div class="scheduled-report-card" *ngFor="let report of scheduledReports" (click)="openViewScheduledReport(report)">
+      <div class="report-header">
+        <div class="report-info">
+          <h3>{{ report.name }}</h3>
+          <span class="report-type">{{ report.reportType }}</span>
+        </div>
+        <div class="status-badge" [ngClass]="report.status">
+          {{ report.status }}
+        </div>
+      </div>
+      
+      <p class="description">{{ report.description }}</p>
+      
+      <div class="schedule-info">
+        <div class="schedule-item">
+          <i class="fas fa-clock"></i>
+          <span>{{ getFrequencyLabel(report.frequency) }}</span>
+        </div>
+        <div class="schedule-item">
+          <i class="fas fa-calendar"></i>
+          <span>{{ report.schedule.hour }}:{{ report.schedule.minute.toString().padStart(2, '0') }} {{ report.schedule.timezone }}</span>
+        </div>
+        <div class="schedule-item">
+          <i [class]="getFormatIcon(report.format)"></i>
+          <span>{{ report.format.toUpperCase() }}</span>
+        </div>
+      </div>
+
+      <div class="report-meta">
+        <div class="meta-item">
+          <span class="label">Department:</span>
+          <span class="value">{{ report.department }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">Recipients:</span>
+          <span class="value">{{ report.recipients.length }} people</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">Next Run:</span>
+          <span class="value">{{ getTimeAgo(report.nextRun) }}</span>
+        </div>
+        <div class="meta-item" *ngIf="report.lastRun">
+          <span class="label">Last Run:</span>
+          <span class="value">{{ getTimeAgo(report.lastRun) }}</span>
+        </div>
+      </div>
+
+      <div class="report-actions" (click)="$event.stopPropagation()">
+        <button class="btn-icon" 
+                (click)="toggleScheduledReportStatus(report)"
+                [title]="report.status === 'active' ? 'Pause Schedule' : 'Activate Schedule'">
+          <i [class]="report.status === 'active' ? 'fas fa-pause' : 'fas fa-play'"></i>
+        </button>
+        <button class="btn-icon" 
+                (click)="runScheduledReportNow(report)"
+                title="Run Now">
+          <i class="fas fa-play"></i>
+        </button>
+        <button class="btn-icon" 
+                (click)="openEditScheduledReport(report)"
+                title="Edit Schedule">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-icon" 
+                (click)="deleteScheduledReport(report.id)"
+                title="Delete Schedule">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scheduled Report View/Edit/Create Modal -->
+<div class="modal" *ngIf="showViewScheduledReportModal || showScheduledReportModal" role="dialog" aria-modal="true">
+  <div class="modal-content">
+    <button class="close-btn" (click)="closeScheduledReportModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+    <ng-container *ngIf="showViewScheduledReportModal && selectedScheduledReport">
+      <div class="modal-title">Scheduled Report Details</div>
+      <div class="modal-form" style="grid-template-columns: 1fr;">
+        <div class="form-group"><span class="form-label">Name:</span> {{ selectedScheduledReport.name }}</div>
+        <div class="form-group"><span class="form-label">Description:</span> {{ selectedScheduledReport.description }}</div>
+        <div class="form-group"><span class="form-label">Type:</span> {{ selectedScheduledReport.reportType }}</div>
+        <div class="form-group"><span class="form-label">Department:</span> {{ selectedScheduledReport.department }}</div>
+        <div class="form-group"><span class="form-label">Status:</span> {{ selectedScheduledReport.status }}</div>
+        <div class="form-group"><span class="form-label">Recipients:</span> {{ selectedScheduledReport.recipients.join(', ') }}</div>
+        <div class="form-group"><span class="form-label">Next Run:</span> {{ getTimeAgo(selectedScheduledReport.nextRun) }}</div>
+        <div class="form-group"><span class="form-label">Last Run:</span> {{ getTimeAgo(selectedScheduledReport.lastRun) }}</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" (click)="openEditScheduledReport(selectedScheduledReport)">Edit</button>
+        <button class="btn-danger" (click)="deleteScheduledReport(selectedScheduledReport.id)">Delete</button>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="showScheduledReportModal">
+      <div class="modal-title">{{ isEditScheduledReport ? 'Edit' : 'Create' }} Scheduled Report</div>
+      <form #schedForm="ngForm" (ngSubmit)="saveScheduledReport(selectedScheduledReport!)" class="modal-form" autocomplete="off">
+        <div class="form-group" style="grid-column: span 2;">
+          <label class="form-label" for="sched-name">Name</label>
+          <input id="sched-name" [(ngModel)]="selectedScheduledReport!.name" name="name" required />
+        </div>
+        <div class="form-group" style="grid-column: span 2;">
+          <label class="form-label" for="sched-description">Description</label>
+          <textarea id="sched-description" [(ngModel)]="selectedScheduledReport!.description" name="description"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sched-department">Department</label>
+          <select id="sched-department" [(ngModel)]="selectedScheduledReport!.department" name="department">
+            <option *ngFor="let dept of departmentOptions" [value]="dept">{{ dept }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sched-status">Status</label>
+          <select id="sched-status" [(ngModel)]="selectedScheduledReport!.status" name="status">
+            <option value="active">Active</option>
+            <option value="paused">Paused</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column: span 2;">
+          <label class="form-label">Recipients</label>
+          <div class="recipients-input" tabindex="0" (blur)="closeRecipientsDropdown()">
+            <ng-container *ngFor="let recipient of selectedScheduledReport!.recipients; let i = index">
+              <span class="recipient-tag">
+                {{ recipient }}
+                <button type="button" class="remove-tag" (click)="selectedScheduledReport!.recipients.splice(i,1)"><i class="fas fa-times"></i></button>
+              </span>
+            </ng-container>
+            <div class="dropdown" style="position: relative;">
+              <button type="button" class="btn-secondary" (click)="showRecipientsDropdown = !showRecipientsDropdown">
+                <i class="fas fa-caret-down"></i> Add Recipients
+              </button>
+              <div class="dropdown-menu" *ngIf="showRecipientsDropdown" style="position: absolute; left: 0; top: 2.2rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); min-width: 220px; z-index: 10;">
+                <div *ngFor="let option of recipientOptions" style="padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;" (click)="toggleRecipient(option)">
+                  <input type="checkbox" [checked]="isRecipientSelected(option)" (click)="$event.stopPropagation()" />
+                  <span>{{ option }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-actions" style="grid-column: span 2;">
+          <button class="btn-primary" type="submit">Save</button>
+          <button class="btn-secondary" type="button" (click)="closeScheduledReportModal()">Cancel</button>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+</div>
+
+<!-- Alert Triggers Section -->
+<div id="alerts" class="alert-triggers-section">
+  <div class="section-header">
+    <h2>Alert Triggers</h2>
+    <div class="header-actions">
+      <button class="btn-primary" (click)="openCreateAlertTrigger()">
+        <i class="fas fa-plus"></i>
+        Create Alert
+      </button>
+    </div>
+  </div>
+
+  <div class="alert-triggers-grid">
+    <div class="alert-trigger-card" *ngFor="let trigger of alertTriggers" (click)="openViewAlertTrigger(trigger)">
+      <div class="trigger-header">
+        <div class="trigger-info">
+          <div class="trigger-icon">
+            <i [class]="getAlertTypeIcon(trigger.type)" 
+               [style.color]="getSeverityColor(trigger.severity)"></i>
+          </div>
+          <div class="trigger-details">
+            <h3>{{ trigger.name }}</h3>
+            <span class="trigger-type">{{ trigger.type.replace('_', ' ') }}</span>
+          </div>
+        </div>
+        <div class="trigger-badges">
+          <div class="severity-badge" [style.background-color]="getSeverityColor(trigger.severity)">
+            {{ trigger.severity }}
+          </div>
+          <div class="status-badge" [ngClass]="trigger.status">
+            {{ trigger.status }}
+          </div>
+        </div>
+      </div>
+      
+      <p class="description">{{ trigger.description }}</p>
+      
+      <div class="trigger-conditions">
+        <h4>Conditions:</h4>
+        <div class="condition-item" *ngFor="let condition of trigger.conditions">
+          <span class="field">{{ condition.field }}</span>
+          <span class="operator">{{ condition.operator }}</span>
+          <span class="value" *ngIf="condition.value">{{ condition.value }}</span>
+          <span class="threshold" *ngIf="condition.threshold">{{ condition.threshold }}</span>
+        </div>
+      </div>
+
+      <div class="trigger-meta">
+        <div class="meta-item">
+          <span class="label">Scope:</span>
+          <span class="value">{{ trigger.scope }}</span>
+        </div>
+        <div class="meta-item" *ngIf="trigger.targetDepartment">
+          <span class="label">Department:</span>
+          <span class="value">{{ trigger.targetDepartment }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">Channels:</span>
+          <span class="value">{{ getNotificationChannelsText(trigger.notificationChannels) }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">Recipients:</span>
+          <span class="value">{{ trigger.recipients.length }} people</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">Triggered:</span>
+          <span class="value">{{ trigger.triggerCount }} times</span>
+        </div>
+        <div class="meta-item" *ngIf="trigger.lastTriggered">
+          <span class="label">Last Triggered:</span>
+          <span class="value">{{ getTimeAgo(trigger.lastTriggered) }}</span>
+        </div>
+      </div>
+
+      <div class="trigger-actions" (click)="$event.stopPropagation()">
+        <button class="btn-icon" 
+                (click)="toggleAlertTriggerStatus(trigger)"
+                [title]="trigger.status === 'active' ? 'Deactivate Alert' : 'Activate Alert'">
+          <i [class]="trigger.status === 'active' ? 'fas fa-pause' : 'fas fa-play'"></i>
+        </button>
+        <button class="btn-icon" 
+                (click)="testAlertTrigger(trigger)"
+                title="Test Alert">
+          <i class="fas fa-vial"></i>
+        </button>
+        <button class="btn-icon" 
+                (click)="openEditAlertTrigger(trigger)"
+                title="Edit Alert">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-icon" 
+                (click)="deleteAlertTrigger(trigger.id)"
+                title="Delete Alert">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Alert Trigger View/Edit/Create Modal -->
+<div class="modal" *ngIf="showViewAlertTriggerModal || showAlertTriggerModal">
+  <div class="modal-content">
+    <button class="close-btn" (click)="closeAlertTriggerModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+    <ng-container *ngIf="showViewAlertTriggerModal && selectedAlertTrigger">
+      <div class="modal-title">Alert Trigger Details</div>
+      <div class="modal-form" style="grid-template-columns: 1fr;">
+        <div class="form-group"><span class="form-label">Name:</span> {{ selectedAlertTrigger.name }}</div>
+        <div class="form-group"><span class="form-label">Description:</span> {{ selectedAlertTrigger.description }}</div>
+        <div class="form-group"><span class="form-label">Type:</span> {{ selectedAlertTrigger.type }}</div>
+        <div class="form-group"><span class="form-label">Severity:</span> {{ selectedAlertTrigger.severity }}</div>
+        <div class="form-group"><span class="form-label">Status:</span> {{ selectedAlertTrigger.status }}</div>
+        <div class="form-group"><span class="form-label">Recipients:</span> {{ selectedAlertTrigger.recipients.join(', ') }}</div>
+        <div class="form-group"><span class="form-label">Last Triggered:</span> {{ getTimeAgo(selectedAlertTrigger.lastTriggered) }}</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" (click)="openEditAlertTrigger(selectedAlertTrigger)"><i class="fas fa-edit"></i> Edit</button>
+        <button class="btn-danger" (click)="deleteAlertTrigger(selectedAlertTrigger.id)"><i class="fas fa-trash"></i> Delete</button>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="showAlertTriggerModal">
+      <div class="modal-title">{{ isEditAlertTrigger ? 'Edit' : 'Create' }} Alert Trigger</div>
+      <form #alertForm="ngForm" (ngSubmit)="saveAlertTrigger(selectedAlertTrigger!)" class="modal-form">
+        <div class="form-group">
+          <label class="form-label" for="alert-name">Name</label>
+          <input id="alert-name" [(ngModel)]="selectedAlertTrigger!.name" name="name" required placeholder="Enter alert name" aria-label="Alert Name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="alert-description">Description</label>
+          <textarea id="alert-description" [(ngModel)]="selectedAlertTrigger!.description" name="description" placeholder="Enter description" aria-label="Description"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="alert-severity">Severity</label>
+          <select id="alert-severity" [(ngModel)]="selectedAlertTrigger!.severity" name="severity" aria-label="Severity">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="alert-status">Status</label>
+          <select id="alert-status" [(ngModel)]="selectedAlertTrigger!.status" name="status" aria-label="Status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column: span 2;">
+          <label class="form-label" for="alert-recipients">Recipients</label>
+          <input id="alert-recipients" [(ngModel)]="selectedAlertTrigger!.recipients" name="recipients" placeholder="Comma separated" aria-label="Recipients" style="width:100%;" />
+        </div>
+        <div class="modal-actions" style="grid-column: span 2;">
+          <button class="btn-primary" type="submit"><i class="fas fa-save"></i> Save</button>
+          <button class="btn-secondary" type="button" (click)="closeAlertTriggerModal()"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+</div>

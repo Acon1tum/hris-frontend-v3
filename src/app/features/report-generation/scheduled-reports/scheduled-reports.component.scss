@@ -1,0 +1,606 @@
+// Mixins
+@mixin flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin button-base {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+// Scheduled Reports Section
+.scheduled-reports-section {
+  margin-bottom: 3rem;
+
+  .section-header {
+    @include flex-between;
+    margin-bottom: 1.5rem;
+
+    .header-actions {
+      .btn-primary {
+        @include button-base;
+        background: var(--primary-color);
+        color: white;
+
+        &:hover {
+          background: var(--primary-hover);
+        }
+      }
+    }
+  }
+}
+
+.scheduled-reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.scheduled-report-card {
+  background: var(--background-primary);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .report-header {
+    @include flex-between;
+    margin-bottom: 1rem;
+
+    .report-info {
+      h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+      }
+
+      .report-type {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: var(--text-light);
+      }
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: capitalize;
+
+      &.active {
+        background: var(--success-color);
+        color: green;
+      }
+
+      &.paused {
+        background: var(--warning-color);
+        color: yellow;
+      }
+
+      &.draft {
+        background: var(--text-secondary);
+        color: red;
+      }
+    }
+  }
+
+  .description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  .schedule-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    .schedule-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+
+      i {
+        width: 1rem;
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .report-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      .label {
+        font-size: 0.75rem;
+        color: var(--text-light);
+      }
+
+      .value {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .report-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+
+    .btn-icon {
+      @include button-base;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      @include flex-center;
+      background: var(--accent-color);
+      color: var(--text-secondary);
+
+      &:hover {
+        background: var(--primary-color);
+        color: white;
+      }
+    }
+  }
+}
+
+// Alert Triggers Section
+.alert-triggers-section {
+  margin-bottom: 3rem;
+
+  .section-header {
+    @include flex-between;
+    margin-bottom: 1.5rem;
+
+    .header-actions {
+      .btn-primary {
+        @include button-base;
+        background: var(--primary-color);
+        color: white;
+
+        &:hover {
+          background: var(--primary-hover);
+        }
+      }
+    }
+  }
+}
+
+.alert-triggers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.alert-trigger-card {
+  background: var(--background-primary);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .trigger-header {
+    @include flex-between;
+    margin-bottom: 1rem;
+
+    .trigger-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      .trigger-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: var(--radius-md);
+        background: var(--accent-color);
+        @include flex-center;
+
+        i {
+          font-size: 1.25rem;
+        }
+      }
+
+      .trigger-details {
+        h3 {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: var(--text-primary);
+          margin-bottom: 0.25rem;
+        }
+
+        .trigger-type {
+          font-size: 0.75rem;
+          text-transform: capitalize;
+          color: var(--text-light);
+        }
+      }
+    }
+
+    .trigger-badges {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: flex-end;
+
+      .severity-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: capitalize;
+        color: white;
+      }
+
+      .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: capitalize;
+        color: white;
+        background: var(--text-secondary);
+
+        &.active {
+          background: var(--success-color, #16a34a);
+          color: white;
+        }
+
+        &.inactive {
+          background: var(--warning-color, #eab308);
+          color: white;
+        }
+
+        &.draft {
+          background: var(--text-secondary, #6b7280);
+          color: white;
+        }
+      }
+    }
+  }
+
+  .description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  .trigger-conditions {
+    margin-bottom: 1rem;
+
+    h4 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .condition-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+
+      .field {
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+
+      .operator {
+        color: var(--primary-color);
+      }
+
+      .value,
+      .threshold {
+        background: var(--accent-color);
+        padding: 0.125rem 0.5rem;
+        border-radius: var(--radius-sm);
+        font-family: monospace;
+      }
+    }
+  }
+
+  .trigger-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      .label {
+        font-size: 0.75rem;
+        color: var(--text-light);
+      }
+
+      .value {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .trigger-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+
+    .btn-icon {
+      @include button-base;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      @include flex-center;
+      background: var(--accent-color);
+      color: var(--text-secondary);
+
+      &:hover {
+        background: var(--primary-color);
+        color: white;
+      }
+    }
+  }
+}
+
+// Responsive styles
+@media (max-width: 900px) {
+  .scheduled-reports-grid,
+  .alert-triggers-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .scheduled-report-card,
+  .alert-trigger-card {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .scheduled-reports-section,
+  .alert-triggers-section {
+    margin-bottom: 1.5rem;
+  }
+  .scheduled-report-card,
+  .alert-trigger-card {
+    padding: 0.75rem;
+    font-size: 0.95rem;
+  }
+  .section-header h2 {
+    font-size: 1.1rem;
+  }
+  .report-header h3,
+  .trigger-header h3 {
+    font-size: 1rem;
+  }
+  .report-meta,
+  .trigger-meta {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: modal-fade-in 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal-content {
+  background: #fff;
+  border-radius: 1.25rem;
+  padding: 2.5rem 2rem 2rem 2rem;
+  min-width: 340px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: modal-scale-in 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes modal-scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.close-btn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: transparent;
+  border: none;
+  font-size: 1.7rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s;
+  &:hover { color: var(--danger-color, #dc2626); }
+}
+.modal-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  padding-bottom: 0.5rem;
+  border-bottom: 1.5px solid #e5e7eb;
+}
+.modal-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem 1.5rem;
+  align-items: flex-start;
+  background: var(--background-secondary, #f9fafb);
+  padding: 1.5rem 1rem 1rem 1rem;
+  border-radius: 1rem;
+  margin-top: 1rem;
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+  }
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+  &:last-child { margin-bottom: 0; }
+}
+.form-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+  text-align: left;
+}
+input, select, textarea {
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  font-size: 1rem;
+  background: var(--background-secondary, #f9fafb);
+  color: var(--text-primary);
+  transition: border 0.2s, box-shadow 0.2s;
+  outline: none;
+  width: 100%;
+  &:focus {
+    border-color: var(--primary-color, #2563eb);
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.08);
+  }
+}
+textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+.recipients-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  align-items: center;
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.7rem;
+  background: var(--background-secondary, #f9fafb);
+  &:focus-within {
+    border-color: var(--primary-color, #2563eb);
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.08);
+  }
+  input {
+    border: none;
+    background: transparent;
+    outline: none;
+    min-width: 80px;
+    font-size: 1rem;
+    flex: 1;
+    padding: 0.2rem 0;
+  }
+}
+.recipient-tag {
+  background: var(--primary-color, #2563eb);
+  color: #fff;
+  border-radius: 0.4rem;
+  padding: 0.18rem 0.7rem 0.18rem 0.5rem;
+  font-size: 0.97rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  .remove-tag {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-left: 0.2rem;
+    &:hover { color: var(--danger-color, #dc2626); }
+  }
+}
+.modal-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 0.7rem;
+    button { width: 100%; }
+  }
+}
+.btn-danger {
+  @include button-base;
+  background: var(--danger-color, #dc2626);
+  color: #fff;
+}
+.btn-secondary {
+  @include button-base;
+  background: var(--background-secondary, #f3f4f6);
+  color: var(--text-primary);
+}
+.btn-primary {
+  @include button-base;
+  background: var(--primary-color, #2563eb);
+  color: #fff;
+  &:hover { background: var(--primary-hover, #1d4ed8); }
+}

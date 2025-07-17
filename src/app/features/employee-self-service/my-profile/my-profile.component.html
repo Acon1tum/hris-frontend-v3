@@ -1,0 +1,240 @@
+<div *ngIf="showToast" class="toast-notification">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 0.5rem; vertical-align: middle;"><circle cx="12" cy="12" r="12" fill="#22c55e"/><path d="M7 13l3 3 7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  {{ toastMessage }}
+</div>
+<div class="my-profile-container">
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-description">
+        <h1 class="page-title">My Profile</h1>
+        <p class="page-description">View and manage your personal information and employment details.</p>
+      </div>
+      <button class="btn-edit-profile" (click)="onEditProfile()">
+        <svg fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+          <path d="M227.31,73.37,182.63,28.69a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96A16,16,0,0,0,227.31,73.37ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.69,147.31,64l24-24L216,84.69Z"></path>
+        </svg>
+        <span>Edit Profile</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="profile-loading">
+    <p>Loading profile...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading && error" class="profile-error">
+    <p>{{ error }}</p>
+    <button (click)="fetchProfile()">Retry</button>
+  </div>
+
+  <!-- Profile Sections -->
+  <ng-container *ngIf="!loading && !error && userProfile">
+    <!-- General Information Section -->
+    <div class="profile-card">
+      <div class="card-header">
+        <h2 class="section-title">General Information</h2>
+      </div>
+      <div class="card-content">
+        <div class="profile-grid">
+          <div *ngFor="let field of generalInformationFields" class="profile-field">
+            <p class="field-label">{{ field.label }}</p>
+            <p class="field-value">{{ field.value }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employment Details Section -->
+    <div class="profile-card">
+      <div class="card-header">
+        <h2 class="section-title">Employment Details</h2>
+      </div>
+      <div class="card-content"> 
+        <div class="profile-grid">
+          <div 
+            *ngFor="let field of employmentDetailsFields"
+            class="profile-field"
+          >
+            <p class="field-label">{{ field.label }}</p>
+            <p class="field-value">{{ field.value }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Membership Information Section -->
+    <div class="profile-card">
+      <div class="card-header">
+        <h2 class="section-title">Membership Information</h2>
+      </div>
+      <div class="card-content">
+        <div class="profile-grid">
+          <div 
+            *ngFor="let field of membershipInformationFields"
+            class="profile-field"
+          >
+            <p class="field-label">{{ field.label }}</p>
+            <p class="field-value">{{ field.value }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Other Information Section -->
+    <div class="profile-card">
+      <div class="card-header">
+        <h2 class="section-title">Other Information</h2>
+      </div>
+      <div class="card-content">
+        <div class="profile-grid">
+          <div 
+            *ngFor="let field of otherInformationFields"
+            class="profile-field"
+          >
+            <p class="field-label">{{ field.label }}</p>
+            <p class="field-value">{{ field.value }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div *ngIf="showEditModal" class="edit-profile-modal-backdrop">
+    <div class="edit-profile-modal">
+      <button class="modal-close-btn" type="button" (click)="onCancelEditProfile()" aria-label="Close">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M6 18L18 6" stroke="#222" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+              <svg fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+          <path d="M227.31,73.37,182.63,28.69a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96A16,16,0,0,0,227.31,73.37ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.69,147.31,64l24-24L216,84.69Z"></path>
+        </svg>
+      <h2>Edit Profile</h2>
+      <form (ngSubmit)="onSaveEditProfile()" [formGroup]="editProfileForm">
+        <div class="modal-fields-grid">
+          <!-- General Information -->
+          <div class="modal-section-header" style="grid-column: 1 / -1;">General Information</div>
+          <div class="modal-form-group">
+            <label>First Name</label>
+            <input formControlName="firstName" type="text" />
+            <div class="modal-error" *ngIf="editProfileForm.get('firstName')?.invalid && editProfileForm.get('firstName')?.touched">First Name is required.</div>
+          </div>
+          <div class="modal-form-group">
+            <label>Middle Name</label>
+            <input formControlName="middleName" type="text" />
+          </div>
+          <div class="modal-form-group">
+            <label>Last Name</label>
+            <input formControlName="lastName" type="text" />
+            <div class="modal-error" *ngIf="editProfileForm.get('lastName')?.invalid && editProfileForm.get('lastName')?.touched">Last Name is required.</div>
+          </div>
+          <div class="modal-form-group">
+            <label>Birthdate</label>
+            <input formControlName="birthdate" type="date" readonly />
+          </div>
+          <div class="modal-form-group">
+            <label>Contact Number</label>
+            <input formControlName="contactNumber" type="text"/>
+          </div>
+          <div class="modal-form-group">
+            <label>Address</label>
+            <input formControlName="address" type="text" readonly />
+          </div>
+          <div class="modal-form-group">
+            <label>Email</label>
+            <input formControlName="email" type="email" readonly />
+            <div class="modal-error" *ngIf="editProfileForm.get('email')?.invalid && editProfileForm.get('email')?.touched">Valid email is required.</div>
+          </div>
+          <div class="modal-form-group">
+            <label>Gender</label>
+            <select formControlName="gender" [disabled]="true">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="modal-form-group">
+            <label>Civil Status</label>
+            <select formControlName="civilStatus" [disabled]="true">
+              <option value="">Select Civil Status</option>
+              <option value="Single">Single</option>
+              <option value="Married">Married</option>
+              <option value="Divorced">Divorced</option>
+              <option value="Widowed">Widowed</option>
+            </select>
+          </div>
+          <div class="modal-form-group">
+            <label>Citizenship</label>
+            <input formControlName="citizenship" type="text" readonly />
+          </div>
+
+          <!-- Employment Details -->
+          <div class="modal-section-header" style="grid-column: 1 / -1;">Employment Details</div>
+          <div class="modal-form-group">
+            <label>Employment Type</label>
+            <input formControlName="employmentType" type="text" readonly />
+          </div>
+          <div class="modal-form-group">
+            <label>Designation</label>
+            <input formControlName="designation" type="text" readonly />
+          </div>
+          <div class="modal-form-group">
+            <label>Department</label>
+            <select formControlName="department" [disabled]="true">
+              <option value="">Select Department</option>
+              <option value="Human Resources">Human Resources</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Finance">Finance</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Operations">Operations</option>
+            </select>
+          </div>
+          <div class="modal-form-group">
+            <label>Appointment Date</label>
+            <input formControlName="appointmentDate" type="date" readonly />
+          </div>
+          <div class="modal-form-group">
+            <label>Start Date</label>
+            <input formControlName="startDate" type="date" readonly />
+          </div>
+          <div class="modal-form-group">
+            <label>Employment Status</label>
+            <input formControlName="employmentStatus" type="text" readonly />
+          </div>
+          <div class="modal-form-group">
+            <label>Job Level</label>
+            <input formControlName="jobLevel" type="text" readonly />
+          </div>
+          <div class="modal-form-group">
+            <label>Job Grade</label>
+            <input formControlName="jobGrade" type="text" readonly />
+          </div>
+
+          <!-- Membership Information -->
+          <div class="modal-section-header" style="grid-column: 1 / -1;">Membership Information</div>
+          <div class="modal-form-group">
+            <label>GSIS</label>
+            <input formControlName="gsis" type="text" readonly />
+          </div>
+          <div class="modal-form-group">
+            <label>Pag-IBIG</label>
+            <input formControlName="pagibig" type="text" readonly />
+          </div>
+          <div class="modal-form-group">
+            <label>PhilHealth</label>
+            <input formControlName="philhealth" type="text" readonly />
+          </div>
+          <div class="modal-form-group">
+            <label>SSS</label>
+            <input formControlName="sss" type="text" readonly />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" [disabled]="editProfileForm.invalid || savingEdit">{{ savingEdit ? 'Saving...' : 'Save' }}</button>
+          <button type="button" (click)="onCancelEditProfile()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

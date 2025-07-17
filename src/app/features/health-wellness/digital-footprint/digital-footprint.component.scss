@@ -1,0 +1,73 @@
+.digital-footprint-page-container {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 2rem;
+}
+.digital-footprint-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #22314f;
+  margin-bottom: 2rem;
+}
+.digital-footprint-loading {
+  font-size: 1.2rem;
+  color: #60758a;
+  margin-bottom: 2rem;
+}
+.digital-footprint-summary-card {
+  background: #f5f8fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(34,49,79,0.07);
+  padding: 1.5rem 2.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 2.5rem;
+}
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.summary-label {
+  font-size: 1rem;
+  color: #60758a;
+}
+.summary-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #22314f;
+}
+.digital-footprint-activities {
+  width: 100%;
+  max-width: 600px;
+}
+.activities-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+.activities-table th, .activities-table td {
+  border: 1px solid #e0e6ed;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+.activities-table th {
+  background: #f0f4f8;
+  color: #22314f;
+  font-weight: 600;
+}
+.activities-table tr:nth-child(even) {
+  background: #f9fbfd;
+}
+.no-activities {
+  color: #b0b8c1;
+  text-align: center;
+  margin-top: 1rem;
+}
+.digital-footprint-placeholder {
+  font-size: 1.2rem;
+  color: #60758a;
+} 

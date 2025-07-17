@@ -1,0 +1,47 @@
+<div class="voice-page-container">
+  <div class="voice-header-row">
+    <h2 class="voice-title">Voice file calculation</h2>
+    <button class="upload-file-btn" (click)="toggleUploadCard()">Upload File</button>
+  </div>
+
+  <div *ngIf="showUploadCard" class="voice-upload-card voice-upload-card-center" [ngClass]="{'voice-upload-card-animate': showUploadCard && !isClosing, 'voice-upload-card-close-animate': isClosing}">
+    <div class="voice-dropzone">
+      <div class="voice-dropzone-inner">
+        <div class="voice-upload-icon">
+          <svg width="48" height="48" fill="none" viewBox="0 0 48 48"><path d="M24 34V14M24 14l-7 7m7-7l7 7" stroke="#4F8CFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="40" height="40" rx="8" stroke="#4F8CFF" stroke-width="2.5" stroke-dasharray="6 6"/></svg>
+        </div>
+        <div class="voice-upload-title">Drag and drop a file anywhere on the page</div>
+        <div class="voice-upload-desc">
+          Your voice file needs to have continuous speech of at least 30 seconds and<br>
+          ideally not more than 5 minutes. The format needs to be aac, aiFF, alac, flac, mp3, mp4, ogg, pcm, wav, wma, m4a.
+        </div>
+        <button class="voice-upload-btn">Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="voice-recent-uploads">
+    <h3 class="voice-recent-title">Recent Uploads <span class="voice-recent-sub">(last 10 uploads)</span></h3>
+    <table class="voice-uploads-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Request ID</th>
+          <th>Score</th>
+          <th>Service Type</th>
+          <th>Preview</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>02-06-2025</td>
+          <td>683d3f84c0ac5a322905bf6b</td>
+          <td>440</td>
+          <td>mentalWellness</td>
+          <td><span class="voice-preview-icon"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#e3f0ff"/><path d="M12 8c-1.657 0-3 1.343-3 3 0 1.657 1.343 3 3 3s3-1.343 3-3c0-1.657-1.343-3-3-3zm0 8c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z" fill="#4F8CFF"/></svg></span></td>
+        </tr>
+        <!-- Add more rows as needed -->
+      </tbody>
+    </table>
+  </div>
+</div> 

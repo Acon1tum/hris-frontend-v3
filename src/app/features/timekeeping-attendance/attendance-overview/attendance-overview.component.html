@@ -1,0 +1,94 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-header-content">
+    <h1 class="page-title">{{ title }}</h1>
+    <p class="page-description">Monitor real-time employee attendance and view daily summaries</p>
+  </div>
+</div>
+
+<!-- Real-time Attendance Section -->
+<div class="content-section">
+  <div class="section-header">
+    <h2 class="section-title">Real-time Attendance</h2>
+    <button class="btn-link" (click)="onViewAll()">
+      View All
+      <svg class="btn-icon" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+        <path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.49a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Attendance Table -->
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Status</th>
+          <th>Time In</th>
+          <th>Time Out</th>
+          <th>Department</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let employee of employees; trackBy: trackByEmployeeId" class="table-row">
+          <td class="employee-name">{{ employee.name }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusBadgeClass(employee.status)">
+              {{ getStatusText(employee.status) }}
+            </span>
+          </td>
+          <td class="time-data">{{ employee.timeIn || 'N/A' }}</td>
+          <td class="time-data">{{ employee.timeOut || 'N/A' }}</td>
+          <td class="department-data">{{ employee.department }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Attendance Summary Section -->
+<div class="content-section">
+  <div class="section-header">
+    <h2 class="section-title">Attendance Summary</h2>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="summary-card-header">
+        <p class="summary-card-label">Total Present</p>
+        <div class="summary-card-icon success-icon">
+          <svg class="icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+          </svg>
+        </div>
+      </div>
+      <p class="summary-card-value">{{ attendanceSummary.totalPresent }}</p>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-card-header">
+        <p class="summary-card-label">Total Absent</p>
+        <div class="summary-card-icon danger-icon">
+          <svg class="icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13H7v-2h10v2z"></path>
+          </svg>
+        </div>
+      </div>
+      <p class="summary-card-value">{{ attendanceSummary.totalAbsent }}</p>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-card-header">
+        <p class="summary-card-label">Total on Leave</p>
+        <div class="summary-card-icon warning-icon">
+          <svg class="icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
+          </svg>
+        </div>
+      </div>
+      <p class="summary-card-value">{{ attendanceSummary.totalOnLeave }}</p>
+    </div>
+  </div>
+</div> 

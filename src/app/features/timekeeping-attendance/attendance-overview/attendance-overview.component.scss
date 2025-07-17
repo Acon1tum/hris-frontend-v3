@@ -1,0 +1,344 @@
+// Color variables
+:host {
+  --primary-color: #0c7ff2;
+  --primary-hover-color: #0a6dcf;
+  --text-primary: #0d141c;
+  --text-secondary: #49739c;
+  --text-on-primary: #ffffff;
+  --border-color: #e1e8ef;
+  --background-light: #f8fafc;
+  --background-active: #eff6ff;
+  --success-bg: #dcfce7;
+  --success-text: #166534;
+  --warning-bg: #fef9c3;
+  --warning-text: #854d0e;
+  --danger-bg: #fee2e2;
+  --danger-text: #991b1b;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+// Page Header
+.page-header {
+  margin-bottom: 2rem;
+  
+  .page-header-content {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+    line-height: 1.2;
+  }
+  
+  .page-description {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// Content Sections
+.content-section {
+  margin-bottom: 2rem;
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+  }
+}
+
+// Buttons
+.btn-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: var(--primary-hover-color);
+  }
+  
+  .btn-icon {
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
+  }
+}
+
+// Table Styles
+.table-container {
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+  
+  thead {
+    background-color: var(--background-light);
+    border-bottom: 1px solid var(--border-color);
+    
+    th {
+      padding: 0.75rem 1.5rem;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-color);
+    }
+  }
+  
+  tbody {
+    .table-row {
+      border-bottom: 1px solid var(--border-color);
+      transition: background-color 0.15s ease;
+      
+      &:hover {
+        background-color: var(--background-light);
+      }
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      td {
+        padding: 1rem 1.5rem;
+        vertical-align: middle;
+        
+        &.employee-name {
+          font-weight: 500;
+          color: var(--text-primary);
+        }
+        
+        &.time-data,
+        &.department-data {
+          color: var(--text-secondary);
+          font-size: 0.875rem;
+        }
+      }
+    }
+  }
+}
+
+// Status Badge
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25;
+  
+  &.status-on-time {
+    background-color: var(--success-bg);
+    color: var(--success-text);
+  }
+  
+  &.status-late {
+    background-color: var(--warning-bg);
+    color: var(--warning-text);
+  }
+  
+  &.status-absent {
+    background-color: var(--danger-bg);
+    color: var(--danger-text);
+  }
+  
+  &.status-default {
+    background-color: var(--border-color);
+    color: var(--text-secondary);
+  }
+}
+
+// Summary Grid
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+// Summary Cards
+.summary-card {
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .summary-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    
+    .summary-card-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+  }
+  
+  .summary-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    
+    .icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      fill: currentColor;
+    }
+    
+    &.success-icon {
+      background-color: var(--success-bg);
+      color: var(--success-text);
+    }
+    
+    &.warning-icon {
+      background-color: var(--warning-bg);
+      color: var(--warning-text);
+    }
+    
+    &.danger-icon {
+      background-color: var(--danger-bg);
+      color: var(--danger-text);
+    }
+  }
+  
+  .summary-card-value {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.2;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .page-header {
+    .page-title {
+      font-size: 1.5rem;
+    }
+  }
+  
+  .content-section {
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      
+      .section-title {
+        font-size: 1.125rem;
+      }
+    }
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    
+    .data-table {
+      min-width: 600px;
+      
+      thead th,
+      tbody td {
+        padding: 0.75rem 1rem;
+      }
+    }
+  }
+  
+  .summary-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .summary-card {
+    padding: 1.25rem;
+    
+    .summary-card-value {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    margin-bottom: 1.5rem;
+    
+    .page-header-content {
+      padding-bottom: 1rem;
+    }
+    
+    .page-title {
+      font-size: 1.25rem;
+    }
+    
+    .page-description {
+      font-size: 0.875rem;
+    }
+  }
+  
+  .content-section {
+    margin-bottom: 1.5rem;
+    
+    .section-header {
+      margin-bottom: 1rem;
+    }
+  }
+  
+  .table-container {
+    .data-table {
+      min-width: 500px;
+      font-size: 0.875rem;
+      
+      thead th {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.6875rem;
+      }
+      
+      tbody td {
+        padding: 0.75rem;
+      }
+    }
+  }
+} 

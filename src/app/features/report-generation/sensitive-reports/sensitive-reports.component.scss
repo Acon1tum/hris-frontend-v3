@@ -1,0 +1,589 @@
+@import '../../../../_mixins.scss';
+
+// --- Modal Styles from scheduled-reports ---
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: modal-fade-in 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal-content {
+  background: #fff;
+  border-radius: 1.25rem;
+  padding: 2.5rem 2rem 2rem 2rem;
+  min-width: 340px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: modal-scale-in 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes modal-scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.close-btn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: transparent;
+  border: none;
+  font-size: 1.7rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s;
+  &:hover { color: var(--danger-color, #dc2626); }
+}
+.modal-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+.modal-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem 1.5rem;
+  align-items: flex-start;
+  background: var(--background-secondary, #f9fafb);
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.form-label {
+  font-size: 0.97rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.1rem;
+}
+input, select, textarea {
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  font-size: 1rem;
+  background: var(--background-secondary, #f9fafb);
+  color: var(--text-primary);
+  transition: border 0.2s, box-shadow 0.2s;
+  outline: none;
+  width: 100%;
+  &:focus {
+    border-color: var(--primary-color, #2563eb);
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.08);
+  }
+}
+textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+.modal-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 0.7rem;
+    button { width: 100%; }
+  }
+}
+.btn-danger {
+  @include button-base;
+  background: var(--danger-color, #dc2626);
+  color: #fff;
+}
+.btn-secondary {
+  @include button-base;
+  background: var(--background-secondary, #f3f4f6);
+  color: var(--text-primary);
+}
+.btn-primary {
+  @include button-base;
+  background: var(--primary-color, #2563eb);
+  color: #fff;
+  &:hover { background: var(--primary-hover, #1d4ed8); }
+}
+// Remove/override old modal-overlay and modal-dialog styles
+.modal-overlay, .modal-dialog, .modal-header, .modal-body, .modal-footer {
+  all: unset;
+}
+
+// RBAC Management Section
+.rbac-management-section {
+  margin-bottom: 3rem;
+
+  .section-header {
+    @include flex-between;
+    margin-bottom: 1.5rem;
+
+    .header-actions {
+      .btn-primary {
+        @include button-base;
+        background: var(--primary-color);
+        color: white;
+
+        &:hover {
+          background: var(--primary-hover);
+        }
+      }
+    }
+  }
+}
+
+// Sensitive Reports
+.sensitive-reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.sensitive-report-card {
+  background: var(--background-primary);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .report-header {
+    @include flex-between;
+    margin-bottom: 1rem;
+
+    .report-info {
+      .sensitivity-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+
+        i {
+          font-size: 1rem;
+        }
+
+        .sensitivity-level {
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+        }
+      }
+
+      h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+      }
+
+      .report-category {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--text-light);
+        text-transform: capitalize;
+
+        i {
+          font-size: 0.875rem;
+        }
+      }
+    }
+
+    .security-badges {
+      display: flex;
+      gap: 0.5rem;
+
+      .badge {
+        width: 2rem;
+        height: 2rem;
+        border-radius: var(--radius-sm);
+        background: var(--accent-color);
+        @include flex-center;
+        color: var(--primary-color);
+
+        i {
+          font-size: 0.875rem;
+        }
+      }
+    }
+  }
+
+  .description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  .report-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+
+      .label {
+        color: var(--text-light);
+      }
+
+      .value {
+        color: var(--text-primary);
+        font-weight: 500;
+      }
+    }
+  }
+
+  .report-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+
+    .btn-icon {
+      @include button-base;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      @include flex-center;
+      background: var(--accent-color);
+      color: var(--text-secondary);
+
+      &:hover {
+        background: var(--primary-color);
+        color: white;
+      }
+    }
+  }
+}
+
+// Role Access Control
+.role-access-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.role-access-card {
+  background: var(--background-primary);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .role-header {
+    @include flex-between;
+    margin-bottom: 1rem;
+
+    .role-info {
+      h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+      }
+
+      p {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: capitalize;
+
+      &.active {
+        background: var(--success-color);
+        color: green;
+      }
+
+      &.expired {
+        background: var(--text-secondary);
+        color: yellow;
+      }
+
+      &.revoked {
+        background: var(--danger-color);
+        color: red;
+      }
+    }
+  }
+
+  .permissions-section,
+  .restrictions-section {
+    margin-bottom: 1rem;
+
+    h4 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .permissions-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+
+      .permission {
+        background: var(--accent-color);
+        color: var(--primary-color);
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+    }
+
+    .restrictions-text {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+  }
+
+  .role-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      .label {
+        font-size: 0.75rem;
+        color: var(--text-light);
+      }
+
+      .value {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .role-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+
+    .btn-icon {
+      @include button-base;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      @include flex-center;
+      background: var(--accent-color);
+      color: var(--text-secondary);
+
+      &:hover {
+        background: var(--primary-color);
+        color: white;
+      }
+    }
+  }
+}
+
+// Access Requests Table
+.access-requests-table {
+  background: var(--background-primary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+
+  .table-container {
+    overflow-x: auto;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.875rem;
+      }
+
+      th {
+        background: var(--background-secondary);
+        font-weight: 600;
+        color: var(--text-primary);
+        white-space: nowrap;
+      }
+
+      td {
+        color: var(--text-secondary);
+        vertical-align: top;
+
+        .requester-info {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+
+          .requester-name {
+            font-weight: 500;
+            color: var(--text-primary);
+          }
+
+          .requester-role,
+          .requester-dept {
+            font-size: 0.75rem;
+            color: var(--text-light);
+          }
+        }
+
+        .report-name {
+          font-weight: 500;
+          color: var(--text-primary);
+        }
+
+        .permissions-badges {
+          display: flex;
+          gap: 0.25rem;
+
+          .permission-badge {
+            background: var(--accent-color);
+            color: var(--primary-color);
+            padding: 0.125rem 0.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+          }
+        }
+
+        .reason {
+          max-width: 200px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .urgency-badge {
+          padding: 0.25rem 0.75rem;
+          border-radius: var(--radius-sm);
+          font-size: 0.75rem;
+          font-weight: 500;
+          text-transform: capitalize;
+          color: #fff;
+          background: var(--success-color, #16a34a);
+          &.low { background: var(--success-color, #16a34a); }
+          &.medium { background: var(--warning-color, #eab308); }
+          &.high { background: var(--danger-color, #dc2626); }
+          &.urgent { background: #dc2626; }
+        }
+        .status-badge {
+          padding: 0.25rem 0.75rem;
+          border-radius: var(--radius-sm);
+          font-size: 0.75rem;
+          font-weight: 500;
+          text-transform: capitalize;
+          color: #fff;
+          background: var(--text-secondary, #6b7280);
+          &.pending { background: var(--warning-color, #eab308); }
+          &.approved { background: var(--success-color, #16a34a); }
+          &.denied { background: var(--danger-color, #dc2626); }
+          &.expired { background: var(--text-secondary, #6b7280); }
+        }
+
+        .requested-date {
+          font-size: 0.875rem;
+        }
+
+        .request-actions {
+          display: flex;
+          gap: 0.5rem;
+
+          .btn-icon {
+            @include button-base;
+            width: 2rem;
+            height: 2rem;
+            padding: 0;
+            @include flex-center;
+            background: var(--accent-color);
+            color: var(--text-secondary);
+
+            &:hover {
+              background: var(--primary-color);
+              color: white;
+            }
+          }
+        }
+      }
+
+      tbody tr {
+        &:hover {
+          background: var(--background-secondary);
+        }
+      }
+    }
+  }
+}
+
+// Responsive improvements
+@media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .access-requests-table {
+    .table-container {
+      table {
+        th, td {
+          padding: 0.75rem 0.5rem;
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+}

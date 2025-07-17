@@ -1,0 +1,196 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-header-content">
+    <div class="page-header-text">
+      <h1 class="page-title">{{ title }}</h1>
+      <p class="page-description">View and manage historical attendance records for your organization.</p>
+    </div>
+    <button class="btn-primary" (click)="onExportLogs()">
+      <svg class="btn-icon" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"></path>
+      </svg>
+      Export Logs
+    </button>
+  </div>
+</div>
+
+<!-- Filters Section -->
+<div class="content-section">
+  <div class="filters-container">
+    <h3 class="filters-title">Filters</h3>
+    
+    <!-- Filter Grid -->
+    <div class="filters-grid">
+      <!-- Date Range Filter -->
+      <div class="filter-field">
+        <label class="filter-label">Date Range</label>
+        <div class="input-container">
+          <svg class="input-icon" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"></path>
+          </svg>
+          <input 
+            type="text" 
+            class="form-input" 
+            placeholder="Select Date Range"
+            [(ngModel)]="filters.dateRange">
+        </div>
+      </div>
+
+      <!-- Employee Filter -->
+      <div class="filter-field">
+        <label class="filter-label">Employee</label>
+        <div class="input-container">
+          <svg class="input-icon" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+          </svg>
+          <select class="form-select" [(ngModel)]="filters.employee">
+            <option *ngFor="let employee of employees" [value]="employee.value">
+              {{ employee.label }}
+            </option>
+          </select>
+          <svg class="select-arrow" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 10l5 5 5-5z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Department Filter -->
+      <div class="filter-field">
+        <label class="filter-label">Department</label>
+        <div class="input-container">
+          <svg class="input-icon" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"></path>
+          </svg>
+          <select class="form-select" [(ngModel)]="filters.department">
+            <option *ngFor="let department of departments" [value]="department.value">
+              {{ department.label }}
+            </option>
+          </select>
+          <svg class="select-arrow" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 10l5 5 5-5z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Log Method Filter -->
+      <div class="filter-field">
+        <label class="filter-label">Log Method</label>
+        <div class="input-container">
+          <svg class="input-icon" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.81 4.47c-.08 0-.16-.02-.23-.06C15.66 3.42 14 3 12.01 3c-1.98 0-3.86.47-5.57 1.41-.24.13-.54.04-.68-.2-.13-.24-.04-.55.2-.68C7.82 2.52 9.86 2 12.01 2c2.13 0 3.99.47 6.03 1.52.25.13.34.43.21.67-.09.18-.26.28-.44.28zM3.5 9.72c-.1 0-.2-.03-.29-.09-.23-.16-.28-.47-.12-.7.99-1.4 2.25-2.5 3.75-3.27C9.98 4.04 14 4.03 17.15 5.65c1.5.77 2.76 1.86 3.75 3.27.16.22.11.54-.12.7-.23.16-.54.11-.7-.12-.9-1.29-2.04-2.25-3.39-2.94-2.87-1.47-6.54-1.47-9.4.01-1.36.7-2.5 1.65-3.4 2.94-.08.14-.23.21-.39.21z"></path>
+          </svg>
+          <select class="form-select" [(ngModel)]="filters.logMethod">
+            <option *ngFor="let method of logMethods" [value]="method.value">
+              {{ method.label }}
+            </option>
+          </select>
+          <svg class="select-arrow" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 10l5 5 5-5z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search and Action Buttons -->
+    <div class="filters-actions">
+      <div class="search-container">
+        <svg class="search-icon" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+        </svg>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search logs by employee, remarks..."
+          [(ngModel)]="filters.searchTerm"
+          (input)="onSearch()">
+      </div>
+      
+      <div class="action-buttons">
+        <button class="btn-secondary" (click)="onClearFilters()">
+          Clear Filters
+        </button>
+        <button class="btn-primary" (click)="onApplyFilters()">
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Attendance Logs Table -->
+<div class="content-section">
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Department</th>
+          <th>Time In</th>
+          <th>Time Out</th>
+          <th>Total Hours</th>
+          <th>Late</th>
+          <th>Undertime</th>
+          <th>Overtime</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let log of paginatedLogs; trackBy: trackByLogId" class="table-row">
+          <td class="employee-name">{{ log.employeeName }}</td>
+          <td class="department-data">{{ log.department }}</td>
+          <td class="time-data">{{ log.timeIn }}</td>
+          <td class="time-data">{{ log.timeOut }}</td>
+          <td class="time-data">{{ log.totalHours }}</td>
+          <td class="time-data" [ngClass]="{ 'late-time': isLateTime(log.late) }">{{ log.late }}</td>
+          <td class="time-data">{{ log.undertime }}</td>
+          <td class="time-data">{{ log.overtime }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusBadgeClass(log.status)">
+              {{ getStatusText(log.status) }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div *ngIf="paginatedLogs.length === 0" class="empty-state">
+      <div class="empty-state-content">
+        <svg class="empty-state-icon" fill="currentColor" height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+        </svg>
+        <h3 class="empty-state-title">No Attendance Logs Found</h3>
+        <p class="empty-state-description">
+          No attendance logs match your current filters. Try adjusting your search criteria.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="totalPages > 1" class="pagination-container">
+    <nav class="pagination">
+      <button 
+        class="pagination-btn"
+        [disabled]="!hasPreviousPage"
+        (click)="previousPage()">
+        Previous
+      </button>
+      
+      <button 
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+        class="pagination-btn"
+        [ngClass]="{ 'pagination-active': currentPage === i + 1 }"
+        (click)="goToPage(i + 1)">
+        {{ i + 1 }}
+      </button>
+      
+      <button 
+        class="pagination-btn"
+        [disabled]="!hasNextPage"
+        (click)="nextPage()">
+        Next
+      </button>
+    </nav>
+  </div>
+</div> 

@@ -1,0 +1,173 @@
+<div class="loan-management-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-actions">
+      <h1 class="page-title">{{ title }}</h1>
+      <button class="btn-new-loan" (click)="onNewLoan()">
+        <svg fill="none" height="18px" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="18px">
+          <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span>New Loan</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs Section -->
+  <div class="tabs-section">
+    <nav class="tabs-nav">
+      <a 
+        *ngFor="let tab of loanTabs" 
+        class="tab-link"
+        [class.active]="tab.active"
+        (click)="onTabClick(tab.id)"
+        href="javascript:void(0)"
+      >
+        {{ tab.label }}
+      </a>
+    </nav>
+  </div>
+
+  <!-- Loan Details Section -->
+  <div class="section-card">
+    <h2 class="section-title">Loan Details</h2>
+    <div class="form-grid form-grid-2">
+      <div class="form-field">
+        <label class="form-label" for="loanBalance">Loan Balance</label>
+        <div class="input-with-prefix">
+          <span class="input-prefix">$</span>
+          <input 
+            class="form-input pl-7" 
+            id="loanBalance" 
+            placeholder="0.00" 
+            type="number"
+            [(ngModel)]="loanBalance"
+          />
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="deductionAmount">Deduction Amount per Payroll</label>
+        <div class="input-with-prefix">
+          <span class="input-prefix">$</span>
+          <input 
+            class="form-input pl-7" 
+            id="deductionAmount" 
+            placeholder="0.00" 
+            type="number"
+            [(ngModel)]="deductionAmount"
+          />
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="deductionPriority">Deduction Priority</label>
+        <select 
+          class="form-input" 
+          id="deductionPriority"
+          [(ngModel)]="deductionPriority"
+        >
+          <option *ngFor="let option of priorityOptions" [value]="option">{{ option }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loan Schedule Section -->
+  <div class="section-card">
+    <h2 class="section-title">Loan Schedule</h2>
+    <div class="form-grid form-grid-3">
+      <div class="form-field">
+        <label class="form-label" for="startDate">Start Date</label>
+        <input 
+          class="form-input" 
+          id="startDate" 
+          type="date"
+          [(ngModel)]="startDate"
+        />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="endDate">End Date</label>
+        <input 
+          class="form-input" 
+          id="endDate" 
+          type="date"
+          [(ngModel)]="endDate"
+        />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="amountPerCutoff">Amount per Cut-off</label>
+        <div class="input-with-prefix">
+          <span class="input-prefix">$</span>
+          <input 
+            class="form-input pl-7" 
+            id="amountPerCutoff" 
+            placeholder="0.00" 
+            type="number"
+            [(ngModel)]="amountPerCutoff"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions Section -->
+  <div class="section-card">
+    <h2 class="section-title">Actions</h2>
+    <div class="actions-grid">
+      <button class="btn btn-primary" (click)="onSaveChanges()">
+        <svg fill="none" height="16px" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="16px">
+          <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
+          <polyline points="17,21 17,13 7,13 7,21"></polyline>
+          <polyline points="7,3 7,8 15,8"></polyline>
+        </svg>
+        Save Changes
+      </button>
+      <button class="btn btn-secondary" (click)="onAddLoan()">
+        <svg fill="none" height="16px" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="16px">
+          <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Add Loan
+      </button>
+      <button class="btn btn-danger" (click)="onCloseLoan()">
+        <svg fill="none" height="16px" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="16px">
+          <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Close Loan
+      </button>
+    </div>
+  </div>
+
+  <!-- Audit Trail Section -->
+  <div class="section-card">
+    <h2 class="section-title section-title-border">Audit Trail</h2>
+    <div class="table-container">
+      <div class="table-wrapper">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Action</th>
+              <th scope="col">User</th>
+              <th scope="col" class="actions-header">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let record of auditTrail; trackBy: trackByRecordId">
+              <td class="record-date">{{ record.date }}</td>
+              <td class="record-action">{{ record.action }}</td>
+              <td class="record-user">{{ record.user }}</td>
+              <td class="record-details">
+                <a class="view-link" (click)="onViewDetails(record)" href="javascript:void(0)">{{ record.details }}</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <span class="table-info">Showing 1-4 of 10 entries</span>
+        <div class="pagination-controls">
+          <button class="btn-pagination" disabled>Previous</button>
+          <button class="btn-pagination">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

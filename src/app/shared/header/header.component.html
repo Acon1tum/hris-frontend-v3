@@ -1,0 +1,70 @@
+<header class="app-header soft-rounded-shadow" [ngClass]="{'collapsed': isSidebarCollapsed, 'public-header': publicMode}" [ngStyle]="publicMode ? {} : headerDynamicStyle">
+  <div *ngIf="!publicMode" class="sidebar-toggle-corner">
+    <button class="sidebar-toggle-btn" (click)="emitToggleSidebar()" aria-label="Toggle sidebar">
+      <span class="material-symbols-outlined">
+        {{ (isSidebarOpenInput && !isSidebarCollapsed) ? 'chevron_left' : 'chevron_right' }}
+      </span>
+    </button>
+  </div>
+  <div class="header-container">
+    <!-- Left: Logo -->
+    <div class="header-left">
+      <span class="app-title" *ngIf="isSidebarCollapsed || isMobile || publicMode">Quanby HRIS</span>
+    </div>
+
+    <div class="header-right">
+      <!-- Search (hidden in publicMode) -->
+      <div class="search-container" *ngIf="!publicMode">
+        <div class="search-input-wrapper">
+          <span class="material-symbols-outlined search-icon">search</span>
+          <input type="text" placeholder="Search..." class="search-input" [(ngModel)]="searchText" (input)="onSearchInput()" aria-label="Search">
+          <button *ngIf="searchText" class="search-clear-btn" (click)="clearSearch()" aria-label="Clear search">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Public Mode: Login/Register -->
+      <div *ngIf="publicMode" class="public-auth-btns">
+        <button class="btn btn-login" (click)="goToLogin()">Login</button>
+        <button class="btn btn-register" (click)="goToRegister()">Register</button>
+      </div>
+
+      <!-- Right: User/Profile Icon (hidden in publicMode) -->
+      <ng-container *ngIf="!publicMode">
+        <ng-container *ngIf="currentUser$ | async as currentUser">
+          <div class="user-container">
+        <button class="user-btn" (click)="toggleUserMenu()" aria-label="User menu">
+          <div class="user-avatar">
+            <img [src]="currentUser.avatar" [alt]="currentUser.name" *ngIf="currentUser.avatar">
+            <span class="material-symbols-outlined" *ngIf="!currentUser.avatar">person</span>
+            <span class="status-indicator" [class.online]="isOnline" aria-label="Online status"></span>
+          </div>
+        </button>
+        <div class="user-dropdown" *ngIf="showUserMenu">
+          <div class="user-info">
+            <div class="user-avatar-large">
+              <img [src]="currentUser.avatar" [alt]="currentUser.name" *ngIf="currentUser.avatar">
+              <span class="material-symbols-outlined" *ngIf="!currentUser.avatar">person</span>
+              <span class="status-indicator" [class.online]="isOnline" aria-label="Online status"></span>
+            </div>
+            <div class="user-details">
+              <h4>{{ currentUser.name || 'User' }}</h4>
+              <p>{{ currentUser.role || 'User' | titlecase }}</p>
+            </div>
+          </div>
+          <div class="user-menu-items">
+            <button class="menu-item" 
+                    *ngFor="let item of userMenuItems"
+                    (click)="onUserAction(item.action)">
+              <span class="material-symbols-outlined menu-icon">{{ item.icon }}</span>
+              <span class="menu-text">{{ item.name }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</header> 

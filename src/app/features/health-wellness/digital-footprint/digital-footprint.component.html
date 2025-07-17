@@ -1,0 +1,40 @@
+<div class="digital-footprint-page-container">
+  <h2 class="digital-footprint-title">Digital Footprint</h2>
+  <div *ngIf="loading" class="digital-footprint-loading">Loading your digital footprint...</div>
+  <ng-container *ngIf="!loading">
+    <div class="digital-footprint-summary-card" *ngIf="summary">
+      <div class="summary-item">
+        <span class="summary-label">Total Logins:</span>
+        <span class="summary-value">{{ summary.totalLogins }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Wellness Activities:</span>
+        <span class="summary-value">{{ summary.wellnessActivities }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Last Active:</span>
+        <span class="summary-value">{{ summary.lastActive }}</span>
+      </div>
+    </div>
+    <div class="digital-footprint-activities">
+      <h3>Recent Activities</h3>
+      <table class="activities-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Activity</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let activity of activities">
+            <td>{{ activity.date }}</td>
+            <td>{{ activity.activity }}</td>
+            <td>{{ activity.details }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="activities.length === 0" class="no-activities">No recent activities found.</div>
+    </div>
+  </ng-container>
+</div> 

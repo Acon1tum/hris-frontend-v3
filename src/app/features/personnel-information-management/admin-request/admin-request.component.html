@@ -1,0 +1,960 @@
+<div class="admin-request-container">
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading data...</div>
+  </div>
+
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <i class="fas fa-clipboard-list"></i>
+          Admin Requests Management
+        </h1>
+        <p class="page-subtitle">Manage and track all organization requests efficiently</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="openDialog(false)">
+          <i class="fas fa-plus"></i>
+          New Request
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="section-card">
+    <div class="tabs-container">
+      <button 
+        class="tab-btn" 
+        [class.active]="currentTab === 'requests'"
+        (click)="setCurrentTab('requests')"
+      >
+        <i class="fas fa-list"></i>
+        Requests
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="currentTab === 'workflows'"
+        (click)="setCurrentTab('workflows')"
+      >
+        <i class="fas fa-project-diagram"></i>
+        Workflows
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="currentTab === 'analytics'"
+        (click)="setCurrentTab('analytics')"
+      >
+        <i class="fas fa-chart-bar"></i>
+        Analytics
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="currentTab === 'audit'"
+        (click)="setCurrentTab('audit')"
+      >
+        <i class="fas fa-shield-alt"></i>
+        Audit Trail
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="currentTab === 'compliance'"
+        (click)="setCurrentTab('compliance')"
+      >
+        <i class="fas fa-file-contract"></i>
+        Compliance
+      </button>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-icon total">
+          <i class="fas fa-list"></i>
+        </div>
+        <div class="stat-trend">+12%</div>
+      </div>
+      <div class="stat-value">{{statistics.total}}</div>
+      <div class="stat-label">Total Requests</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-icon pending">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-trend">+5%</div>
+      </div>
+      <div class="stat-value">{{statistics.pending}}</div>
+      <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-icon approved">
+          <i class="fas fa-check"></i>
+        </div>
+        <div class="stat-trend">+8%</div>
+      </div>
+      <div class="stat-value">{{statistics.approved}}</div>
+      <div class="stat-label">Approved</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <div class="stat-icon rejected">
+          <i class="fas fa-times"></i>
+        </div>
+        <div class="stat-trend negative">-3%</div>
+      </div>
+      <div class="stat-value">{{statistics.rejected}}</div>
+      <div class="stat-label">Rejected</div>
+    </div>
+  </div>
+
+  <!-- Requests Tab Content -->
+  <div *ngIf="currentTab === 'requests'">
+
+    <!-- Advanced Filters Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="fas fa-filter"></i>
+          Advanced Filters
+        </h3>
+        <button class="btn btn-text" (click)="clearAdvancedFilters()">
+          <i class="fas fa-times"></i>
+          Clear All
+        </button>
+      </div>
+      
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label class="filter-label">Request Type</label>
+          <select class="filter-select" [(ngModel)]="advancedFilter.type">
+            <option value="">All Types</option>
+            <option *ngFor="let type of requestTypes" [value]="type">{{type}}</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">Status</label>
+          <select class="filter-select" [(ngModel)]="advancedFilter.status">
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">Priority</label>
+          <select class="filter-select" [(ngModel)]="advancedFilter.priority">
+            <option value="">All Priorities</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">Date</label>
+          <input 
+            type="date" 
+            class="filter-input" 
+            [(ngModel)]="advancedFilter.date"
+          >
+        </div>
+        
+        <div class="filter-group">
+          <button class="btn btn-secondary" (click)="applyAdvancedFilters()">
+            <i class="fas fa-check"></i>
+            Apply Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div *ngIf="selectedRequests.length > 0" class="section-card">
+      <div class="bulk-actions">
+        <div class="bulk-info">
+          {{selectedRequests.length}} request(s) selected
+        </div>
+        <div class="bulk-buttons">
+          <button class="btn btn-success btn-sm" (click)="bulkApprove()">
+            <i class="fas fa-check"></i>
+            Approve All
+          </button>
+          <button class="btn btn-danger btn-sm" (click)="bulkReject()">
+            <i class="fas fa-times"></i>
+            Reject All
+          </button>
+          <button class="btn btn-outline btn-sm" (click)="deleteSelectedRequests()">
+            <i class="fas fa-trash"></i>
+            Delete All
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Requests Table Section -->
+    <div class="section-card">
+      <div class="table-header">
+        <h3 class="section-title">
+          <i class="fas fa-table"></i>
+          Requests List
+        </h3>
+        <div class="table-actions">
+          <span class="results-count">{{filteredRequests().length}} request(s) found</span>
+          <button class="btn btn-outline" (click)="exportRequests()">
+            <i class="fas fa-download"></i>
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="requests-table">
+          <thead>
+            <tr>
+              <th class="checkbox-column">
+                <div class="checkbox-wrapper">
+                  <input 
+                    type="checkbox" 
+                    [checked]="selectedRequests.length === filteredRequests().length && filteredRequests().length > 0"
+                    (change)="selectAllRequests()"
+                  >
+                </div>
+              </th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Created By</th>
+              <th>Assigned To</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let request of filteredRequests(); let i = index" 
+                class="table-row"
+                [class.selected]="selectedRequests.includes(request.id)">
+              <td class="checkbox-cell">
+                <div class="checkbox-wrapper">
+                  <input 
+                    type="checkbox" 
+                    [checked]="selectedRequests.includes(request.id)"
+                    (change)="toggleRequestSelection(request.id)"
+                  >
+                </div>
+              </td>
+              <td class="request-type">
+                <i class="fas fa-file-alt"></i>
+                {{request.type}}
+              </td>
+              <td>
+                <span class="status-badge" [ngClass]="request.status.toLowerCase()">
+                  {{request.status}}
+                </span>
+              </td>
+              <td>
+                <span class="priority-badge" [ngClass]="request.priority?.toLowerCase()">
+                  {{request.priority}}
+                </span>
+              </td>
+              <td class="created-by">{{request.createdBy}}</td>
+              <td class="assigned-to">{{request.assignedTo || '-'}}</td>
+              <td class="date">{{request.date | date:'MMM dd, yyyy'}}</td>
+              <td class="actions">
+                <button class="action-btn edit" (click)="openDialog(true, i)" title="Edit Request">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn delete" (click)="deleteRequest(i)" title="Delete Request">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <!-- Empty State -->
+        <div *ngIf="filteredRequests().length === 0" class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-inbox"></i>
+          </div>
+          <h4>No requests found</h4>
+          <p>Try adjusting your search criteria or create a new request.</p>
+          <button class="btn btn-primary" (click)="openDialog(false)">
+            <i class="fas fa-plus"></i>
+            Create New Request
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workflows Tab Content -->
+  <div *ngIf="currentTab === 'workflows'">
+    <!-- Workflow Management Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="fas fa-project-diagram"></i>
+          Workflow Management
+        </h3>
+        <div class="header-actions">
+          <button class="btn btn-primary" (click)="openWorkflowDialog(false)">
+            <i class="fas fa-plus"></i>
+            New Workflow
+          </button>
+        </div>
+      </div>
+
+      <!-- Workflow Search and Filter -->
+      <div class="search-filter-container">
+        <div class="search-box">
+          <i class="fas fa-search search-icon"></i>
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Search workflows by name, description, or request type..."
+            [(ngModel)]="workflowFilterText"
+          >
+        </div>
+        
+        <div class="filter-group">
+          <select class="filter-select" [(ngModel)]="workflowTypeFilter">
+            <option value="">All Request Types</option>
+            <option *ngFor="let type of requestTypes" [value]="type">{{type}}</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-text" (click)="clearWorkflowFilters()">
+          <i class="fas fa-times"></i>
+          Clear
+        </button>
+      </div>
+
+      <!-- Workflow Bulk Actions -->
+      <div *ngIf="selectedWorkflows.length > 0" class="bulk-actions">
+        <div class="bulk-info">
+          {{selectedWorkflows.length}} workflow(s) selected
+        </div>
+        <div class="bulk-buttons">
+          <button class="btn btn-success btn-sm" (click)="bulkActivateWorkflows()">
+            <i class="fas fa-play"></i>
+            Activate All
+          </button>
+          <button class="btn btn-warning btn-sm" (click)="bulkDeactivateWorkflows()">
+            <i class="fas fa-pause"></i>
+            Deactivate All
+          </button>
+          <button class="btn btn-danger btn-sm" (click)="deleteSelectedWorkflows()">
+            <i class="fas fa-trash"></i>
+            Delete All
+          </button>
+        </div>
+      </div>
+
+      <!-- Workflows Table -->
+      <div class="table-wrapper">
+        <table class="requests-table">
+          <thead>
+            <tr>
+              <th class="checkbox-column">
+                <div class="checkbox-wrapper">
+                  <input 
+                    type="checkbox" 
+                    [checked]="selectedWorkflows.length === filteredWorkflows().length && filteredWorkflows().length > 0"
+                    (change)="selectAllWorkflows()"
+                  >
+                </div>
+              </th>
+              <th>Name</th>
+              <th>Request Type</th>
+              <th>Status</th>
+              <th>Steps</th>
+              <th>Escalation Rules</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let workflow of filteredWorkflows(); let i = index" 
+                class="table-row"
+                [class.selected]="selectedWorkflows.includes(workflow.id)">
+              <td class="checkbox-cell">
+                <div class="checkbox-wrapper">
+                  <input 
+                    type="checkbox" 
+                    [checked]="selectedWorkflows.includes(workflow.id)"
+                    (change)="toggleWorkflowSelection(workflow.id)"
+                  >
+                </div>
+              </td>
+              <td class="workflow-name">
+                <i class="fas fa-cogs"></i>
+                {{workflow.name}}
+              </td>
+              <td>{{workflow.requestType}}</td>
+              <td>
+                <span class="status-badge" [ngClass]="workflow.isActive ? 'approved' : 'rejected'">
+                  {{workflow.isActive ? 'Active' : 'Inactive'}}
+                </span>
+              </td>
+              <td>{{workflow.steps.length}} steps</td>
+              <td>{{workflow.escalationRules.length}} rules</td>
+              <td class="date">{{workflow.createdAt | date:'MMM dd, yyyy'}}</td>
+              <td class="actions">
+                <button class="action-btn edit" (click)="openWorkflowDialog(true, i)" title="Edit Workflow">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn" 
+                        [class]="workflow.isActive ? 'delete' : 'edit'"
+                        (click)="toggleWorkflow(workflow.id)" 
+                        [title]="workflow.isActive ? 'Deactivate' : 'Activate'">
+                  <i [class]="workflow.isActive ? 'fas fa-pause' : 'fas fa-play'"></i>
+                </button>
+                <button class="action-btn delete" (click)="deleteWorkflow(i)" title="Delete Workflow">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <!-- Empty State -->
+        <div *ngIf="filteredWorkflows().length === 0" class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-project-diagram"></i>
+          </div>
+          <h4>No workflows found</h4>
+          <p>Create your first workflow to streamline the approval process.</p>
+          <button class="btn btn-primary" (click)="openWorkflowDialog(false)">
+            <i class="fas fa-plus"></i>
+            Create New Workflow
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytics Tab Content -->
+  <div *ngIf="currentTab === 'analytics'">
+    <!-- Analytics Dashboard -->
+    <div class="section-card">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="fas fa-chart-bar"></i>
+          Request Analytics Dashboard
+        </h3>
+        <div class="header-actions">
+          <select class="filter-select" [(ngModel)]="selectedAnalyticsPeriod">
+            <option *ngFor="let period of analyticsPeriods" [value]="period.value">
+              {{period.label}}
+            </option>
+          </select>
+          <button class="btn btn-primary" (click)="generateAnalytics()">
+            <i class="fas fa-sync"></i>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Key Metrics -->
+      <div class="analytics-metrics-grid">
+        <div class="metric-card">
+          <div class="metric-header">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Average Processing Time</span>
+          </div>
+          <div class="metric-value">{{analyticsData.averageProcessingTime}} days</div>
+          <div class="metric-trend positive">+2.3% vs last period</div>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-header">
+            <i class="fas fa-percentage"></i>
+            <span>SLA Compliance</span>
+          </div>
+          <div class="metric-value">{{analyticsData.complianceMetrics.slaCompliance | number:'1.1-1'}}%</div>
+          <div class="metric-trend positive">+1.5% vs last period</div>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-header">
+            <i class="fas fa-clock"></i>
+            <span>Average Response Time</span>
+          </div>
+          <div class="metric-value">{{analyticsData.complianceMetrics.averageResponseTime}} days</div>
+          <div class="metric-trend negative">-0.8% vs last period</div>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Escalation Rate</span>
+          </div>
+          <div class="metric-value">{{analyticsData.complianceMetrics.escalationRate}}%</div>
+          <div class="metric-trend positive">-2.1% vs last period</div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="analytics-charts-grid">
+        <div class="chart-card">
+          <h4>Requests by Type</h4>
+          <div class="chart-container">
+            <div *ngFor="let item of analyticsData.requestsByType" class="chart-item">
+              <div class="chart-label">{{item.type}}</div>
+              <div class="chart-bar">
+                <div class="chart-fill" [style.width.%]="item.percentage"></div>
+              </div>
+              <div class="chart-value">{{item.count}} ({{item.percentage | number:'1.1-1'}}%)</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="chart-card">
+          <h4>Requests by Status</h4>
+          <div class="chart-container">
+            <div *ngFor="let item of analyticsData.requestsByStatus" class="chart-item">
+              <div class="chart-label">{{item.status}}</div>
+              <div class="chart-bar">
+                <div class="chart-fill" [style.width.%]="item.percentage" [ngClass]="item.status.toLowerCase()"></div>
+              </div>
+              <div class="chart-value">{{item.count}} ({{item.percentage | number:'1.1-1'}}%)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Performers -->
+      <div class="analytics-performers-grid">
+        <div class="performer-card">
+          <h4>Top Requesters</h4>
+          <div class="performer-list">
+            <div *ngFor="let requester of analyticsData.topRequesters; let i = index" class="performer-item">
+              <div class="performer-rank">{{i + 1}}</div>
+              <div class="performer-name">{{requester.name}}</div>
+              <div class="performer-count">{{requester.count}} requests</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="performer-card">
+          <h4>Top Approvers</h4>
+          <div class="performer-list">
+            <div *ngFor="let approver of analyticsData.topApprovers; let i = index" class="performer-item">
+              <div class="performer-rank">{{i + 1}}</div>
+              <div class="performer-name">{{approver.name}}</div>
+              <div class="performer-count">{{approver.count}} approvals</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workflow Efficiency -->
+      <div class="workflow-efficiency-section">
+        <h4>Workflow Efficiency</h4>
+        <div class="efficiency-table">
+          <table class="requests-table">
+            <thead>
+              <tr>
+                <th>Workflow Name</th>
+                <th>Average Time</th>
+                <th>Success Rate</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let workflow of analyticsData.workflowEfficiency">
+                <td>{{workflow.workflowName}}</td>
+                <td>{{workflow.avgTime | number:'1.1-1'}} days</td>
+                <td>
+                  <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="workflow.successRate"></div>
+                  </div>
+                  <span>{{workflow.successRate | number:'1.1-1'}}%</span>
+                </td>
+                <td>
+                  <span class="status-badge" [ngClass]="workflow.successRate > 80 ? 'approved' : 'warning'">
+                    {{workflow.successRate > 80 ? 'Good' : 'Needs Attention'}}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audit Trail Tab Content -->
+  <div *ngIf="currentTab === 'audit'">
+    <!-- Audit Trail Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="fas fa-shield-alt"></i>
+          System Audit Trail
+        </h3>
+        <div class="header-actions">
+          <button class="btn btn-outline" (click)="exportAuditLogs()">
+            <i class="fas fa-download"></i>
+            Export Logs
+          </button>
+        </div>
+      </div>
+
+      <!-- Audit Filters -->
+      <div class="search-filter-container">
+        <div class="search-box">
+          <i class="fas fa-search search-icon"></i>
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Search audit logs..."
+          >
+        </div>
+        
+        <div class="filter-group">
+          <select class="filter-select" [(ngModel)]="selectedAuditFilters.action">
+            <option value="">All Actions</option>
+            <option *ngFor="let action of auditActions" [value]="action">{{action}}</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <select class="filter-select" [(ngModel)]="selectedAuditFilters.entityType">
+            <option value="">All Entities</option>
+            <option *ngFor="let entity of auditEntityTypes" [value]="entity">{{entity}}</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <input 
+            type="date" 
+            class="filter-input" 
+            [(ngModel)]="selectedAuditFilters.dateRange"
+            placeholder="Filter by date"
+          >
+        </div>
+        
+        <button class="btn btn-text" (click)="clearAuditFilters()">
+          <i class="fas fa-times"></i>
+          Clear
+        </button>
+      </div>
+
+      <!-- Audit Logs Table -->
+      <div class="table-wrapper">
+        <table class="requests-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Action</th>
+              <th>Entity Type</th>
+              <th>Entity Name</th>
+              <th>User</th>
+              <th>IP Address</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of filteredAuditLogs()" class="table-row">
+              <td class="date">{{log.timestamp | date:'MMM dd, yyyy HH:mm:ss'}}</td>
+              <td>
+                <span class="action-badge" [ngClass]="log.action.toLowerCase()">
+                  {{log.action}}
+                </span>
+              </td>
+              <td>{{log.entityType}}</td>
+              <td>{{log.entityName}}</td>
+              <td class="user-name">{{log.userName}}</td>
+              <td class="ip-address">{{log.ipAddress}}</td>
+              <td class="details">{{log.details}}</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <!-- Empty State -->
+        <div *ngIf="filteredAuditLogs().length === 0" class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h4>No audit logs found</h4>
+          <p>No audit logs match your current filters.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compliance Tab Content -->
+  <div *ngIf="currentTab === 'compliance'">
+    <!-- Compliance Reports Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="fas fa-file-contract"></i>
+          Compliance & Reports
+        </h3>
+        <div class="header-actions">
+          <button class="btn btn-primary" (click)="generateComplianceReport()">
+            <i class="fas fa-plus"></i>
+            Generate Report
+          </button>
+        </div>
+      </div>
+
+      <!-- Compliance Metrics -->
+      <div class="compliance-metrics-grid">
+        <div class="compliance-card">
+          <div class="compliance-header">
+            <i class="fas fa-check-circle"></i>
+            <span>SLA Compliance</span>
+          </div>
+          <div class="compliance-value">{{analyticsData.complianceMetrics.slaCompliance | number:'1.1-1'}}%</div>
+          <div class="compliance-status" [ngClass]="analyticsData.complianceMetrics.slaCompliance > 90 ? 'compliant' : 'non-compliant'">
+            {{analyticsData.complianceMetrics.slaCompliance > 90 ? 'Compliant' : 'Non-Compliant'}}
+          </div>
+        </div>
+        
+        <div class="compliance-card">
+          <div class="compliance-header">
+            <i class="fas fa-clock"></i>
+            <span>Response Time</span>
+          </div>
+          <div class="compliance-value">{{analyticsData.complianceMetrics.averageResponseTime}} days</div>
+          <div class="compliance-status" [ngClass]="analyticsData.complianceMetrics.averageResponseTime < 3 ? 'compliant' : 'non-compliant'">
+            {{analyticsData.complianceMetrics.averageResponseTime < 3 ? 'Within SLA' : 'Exceeds SLA'}}
+          </div>
+        </div>
+        
+        <div class="compliance-card">
+          <div class="compliance-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Escalation Rate</span>
+          </div>
+          <div class="compliance-value">{{analyticsData.complianceMetrics.escalationRate}}%</div>
+          <div class="compliance-status" [ngClass]="analyticsData.complianceMetrics.escalationRate < 20 ? 'compliant' : 'non-compliant'">
+            {{analyticsData.complianceMetrics.escalationRate < 20 ? 'Acceptable' : 'High'}}
+          </div>
+        </div>
+        
+        <div class="compliance-card">
+          <div class="compliance-header">
+            <i class="fas fa-thumbs-up"></i>
+            <span>Approval Rate</span>
+          </div>
+          <div class="compliance-value">{{analyticsData.complianceMetrics.approvalRate | number:'1.1-1'}}%</div>
+          <div class="compliance-status" [ngClass]="analyticsData.complianceMetrics.approvalRate > 70 ? 'compliant' : 'non-compliant'">
+            {{analyticsData.complianceMetrics.approvalRate > 70 ? 'Good' : 'Low'}}
+          </div>
+        </div>
+      </div>
+
+      <!-- Generated Reports -->
+      <div class="reports-section">
+        <h4>Generated Reports</h4>
+        <div class="reports-grid">
+          <div *ngFor="let report of complianceReports" class="report-card">
+            <div class="report-header">
+              <div class="report-icon">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div class="report-status" [ngClass]="report.status.toLowerCase()">
+                {{report.status}}
+              </div>
+            </div>
+            <div class="report-content">
+              <h5>{{report.reportType}}</h5>
+              <p class="report-period">{{report.period}}</p>
+              <p class="report-date">Generated: {{report.generatedAt | date:'MMM dd, yyyy HH:mm'}}</p>
+            </div>
+            <div class="report-actions">
+              <button class="btn btn-outline btn-sm">
+                <i class="fas fa-download"></i>
+                Download
+              </button>
+              <button class="btn btn-text btn-sm">
+                <i class="fas fa-eye"></i>
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Request Modal Dialog -->
+  <div *ngIf="showDialog" class="modal-overlay" (click)="closeDialog()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <i class="fas fa-edit"></i>
+          {{dialogTitle}}
+        </h2>
+        <button class="modal-close" (click)="closeDialog()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form (ngSubmit)="saveRequest()" #requestFormRef="ngForm" class="modal-form">
+        <div class="form-group">
+          <label class="form-label">Request Type *</label>
+          <select class="form-select" [(ngModel)]="requestForm.type" name="type" required>
+            <option value="">Select request type</option>
+            <option *ngFor="let type of requestTypes" [value]="type">{{type}}</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Status *</label>
+          <select class="form-select" [(ngModel)]="requestForm.status" name="status" required>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select class="form-select" [(ngModel)]="requestForm.priority" name="priority">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Created By *</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            [(ngModel)]="requestForm.createdBy" 
+            name="createdBy" 
+            placeholder="Enter creator name"
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Assigned To</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            [(ngModel)]="requestForm.assignedTo" 
+            name="assignedTo" 
+            placeholder="Enter assignee name"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea 
+            class="form-textarea" 
+            [(ngModel)]="requestForm.description" 
+            name="description" 
+            placeholder="Enter request description"
+          ></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Date *</label>
+          <input 
+            type="date" 
+            class="form-input" 
+            [(ngModel)]="requestForm.date" 
+            name="date" 
+            required
+          >
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeDialog()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="!requestFormRef.form.valid">
+            <i class="fas fa-save"></i>
+            Save Request
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Workflow Modal Dialog -->
+  <div *ngIf="showWorkflowDialog" class="modal-overlay" (click)="closeWorkflowDialog()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <i class="fas fa-project-diagram"></i>
+          {{workflowDialogTitle}}
+        </h2>
+        <button class="modal-close" (click)="closeWorkflowDialog()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form (ngSubmit)="saveWorkflow()" #workflowFormRef="ngForm" class="modal-form">
+        <div class="form-group">
+          <label class="form-label">Workflow Name *</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            [(ngModel)]="workflowForm.name" 
+            name="name" 
+            placeholder="Enter workflow name"
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Request Type *</label>
+          <select class="form-select" [(ngModel)]="workflowForm.requestType" name="requestType" required>
+            <option value="">Select request type</option>
+            <option *ngFor="let type of requestTypes" [value]="type">{{type}}</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea 
+            class="form-textarea" 
+            [(ngModel)]="workflowForm.description" 
+            name="description" 
+            placeholder="Enter workflow description"
+          ></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <div class="checkbox-wrapper">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="workflowForm.isActive" 
+              name="isActive"
+              id="workflowActive"
+            >
+            <label for="workflowActive">Active</label>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeWorkflowDialog()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="!workflowFormRef.form.valid">
+            <i class="fas fa-save"></i>
+            Save Workflow
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

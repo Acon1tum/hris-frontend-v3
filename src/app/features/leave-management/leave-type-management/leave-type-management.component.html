@@ -1,0 +1,320 @@
+<div class="leave-type-management-container">
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-description">
+        <h1 class="page-title">Leave Types</h1>
+        <p class="page-description">Configure and manage different types of leave policies, accrual rules, and eligibility requirements.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-container">
+    <div class="error-message">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ error }}</span>
+      <button class="btn-retry" (click)="retryLoad()">Retry</button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading leave types...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading && !error">
+    <div class="table-header">
+      <h3 class="table-title">Leave Types</h3>
+      <div class="header-controls">
+        <div class="search-container">
+          <div class="search-icon">
+            <svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+              <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+            </svg>
+          </div>
+          <input 
+            class="search-input" 
+            placeholder="Search leave types..." 
+            [value]="searchTerm"
+            (input)="onSearch($event)"
+          />
+        </div>
+        <button class="btn-add" (click)="onAddLeaveType()" [disabled]="isSubmitting">
+          <svg fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+            <path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path>
+          </svg>
+          <span class="btn-text">New Leave Type</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <div class="table-wrapper">
+        <table class="leave-types-table">
+          <thead>
+            <tr>
+              <th class="col-leave-type">Type</th>
+              <th class="col-description">Description</th>
+              <th class="col-max-days">Max Days</th>
+              <th class="col-requires-doc">Requires Document</th>
+              <th class="col-status">Status</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              *ngFor="let leaveType of paginatedLeaveTypes; trackBy: trackByLeaveTypeId"
+              class="table-row"
+            >
+              <td class="col-leave-type font-medium">{{ leaveType.leave_type_name }}</td>
+              <td class="col-description">{{ leaveType.description || '-' }}</td>
+              <td class="col-max-days">{{ leaveType.max_days || 'Unlimited' }}</td>
+              <td class="col-requires-doc">
+                <span class="badge" [ngClass]="leaveType.requires_document ? 'badge-warning' : 'badge-success'">
+                  {{ leaveType.requires_document ? 'Required' : 'Optional' }}
+                </span>
+              </td>
+              <td class="col-status">
+                <span class="badge" [ngClass]="leaveType.is_active ? 'badge-success' : 'badge-danger'">
+                  {{ leaveType.is_active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="col-actions">
+                <div class="action-buttons">
+                  <button 
+                    class="btn-icon view-btn"
+                    (click)="onEditLeaveType(leaveType)"
+                    [disabled]="isSubmitting"
+                    title="Edit"
+                  >
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button 
+                    class="btn-icon delete-btn"
+                    (click)="onDeleteLeaveType(leaveType)"
+                    [disabled]="isSubmitting"
+                    title="Delete"
+                  >
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- Empty State -->
+            <tr *ngIf="paginatedLeaveTypes.length === 0" class="empty-row">
+              <td colspan="6" class="empty-message">
+                <div class="empty-state">
+                  <span class="material-symbols-outlined">folder_open</span>
+                  <p>No leave types found</p>
+                  <p class="empty-subtitle">{{ searchTerm ? 'Try adjusting your search' : 'Create your first leave type to get started' }}</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="pagination-section">
+      <div class="pagination-info">
+        <span class="pagination-text">
+          Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }} to {{ (currentPage * itemsPerPage > displayTotal ? displayTotal : currentPage * itemsPerPage) }} of {{ displayTotal }} entries
+        </span>
+      </div>
+      
+      <div class="pagination-controls">
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === 1"
+          (click)="onPageChange(currentPage - 1)">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        
+        <span class="pagination-pages">
+          <button 
+            *ngFor="let page of getPaginationPages(); let i = index"
+            class="pagination-page"
+            [class.active]="currentPage === i + 1"
+            (click)="onPageChange(i + 1)">
+            {{ i + 1 }}
+          </button>
+        </span>
+        
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === totalPages"
+          (click)="onPageChange(currentPage + 1)">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Leave Type Modal -->
+  <div *ngIf="showAddModal" class="modal-backdrop">
+    <div class="modal">
+      <h2>Add Leave Type</h2>
+      <form (ngSubmit)="submitAddLeaveType()" novalidate>
+        <div class="form-group" [class.invalid]="addValidation.leave_type_name">
+          <label for="addTypeName">Leave Type Name *</label>
+          <input 
+            id="addTypeName" 
+            name="addTypeName" 
+            type="text" 
+            [(ngModel)]="addForm.leave_type_name" 
+            placeholder="e.g., Annual Leave, Sick Leave"
+            required 
+          />
+          <div class="error-message" *ngIf="addValidation.leave_type_name">{{ addValidation.leave_type_name }}</div>
+        </div>
+
+        <div class="form-group" [class.invalid]="addValidation.description">
+          <label for="addDescription">Description *</label>
+          <textarea 
+            id="addDescription" 
+            name="addDescription" 
+            [(ngModel)]="addForm.description" 
+            rows="3" 
+            placeholder="Describe when this leave type can be used"
+            required
+          ></textarea>
+          <div class="error-message" *ngIf="addValidation.description">{{ addValidation.description }}</div>
+        </div>
+
+        <div class="form-group" [class.invalid]="addValidation.max_days">
+          <label for="addMaxDays">Maximum Days</label>
+          <input 
+            id="addMaxDays" 
+            name="addMaxDays" 
+            type="number" 
+            [(ngModel)]="addForm.max_days" 
+            min="0"
+            placeholder="Leave blank for unlimited"
+          />
+          <div class="error-message" *ngIf="addValidation.max_days">{{ addValidation.max_days }}</div>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input 
+              id="addRequiresDocument" 
+              name="addRequiresDocument" 
+              type="checkbox" 
+              [(ngModel)]="addForm.requires_document"
+            />
+            <label for="addRequiresDocument">Requires supporting document</label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" (click)="showAddModal = false" [disabled]="isSubmitting">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+            <span *ngIf="isSubmitting" class="loading-spinner small"></span>
+            {{ isSubmitting ? 'Creating...' : 'Create Leave Type' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Leave Type Modal -->
+  <div *ngIf="showEditModal" class="modal-backdrop">
+    <div class="modal">
+      <h2>Edit Leave Type</h2>
+      <form (ngSubmit)="submitEditLeaveType()" novalidate>
+        <div class="form-group" [class.invalid]="editValidation.leave_type_name">
+          <label for="editTypeName">Leave Type Name *</label>
+          <input 
+            id="editTypeName" 
+            name="editTypeName" 
+            type="text" 
+            [(ngModel)]="editForm.leave_type_name" 
+            required 
+          />
+          <div class="error-message" *ngIf="editValidation.leave_type_name">{{ editValidation.leave_type_name }}</div>
+        </div>
+
+        <div class="form-group" [class.invalid]="editValidation.description">
+          <label for="editDescription">Description *</label>
+          <textarea 
+            id="editDescription" 
+            name="editDescription" 
+            [(ngModel)]="editForm.description" 
+            rows="3" 
+            required
+          ></textarea>
+          <div class="error-message" *ngIf="editValidation.description">{{ editValidation.description }}</div>
+        </div>
+
+        <div class="form-group" [class.invalid]="editValidation.max_days">
+          <label for="editMaxDays">Maximum Days</label>
+          <input 
+            id="editMaxDays" 
+            name="editMaxDays" 
+            type="number" 
+            [(ngModel)]="editForm.max_days" 
+            min="0"
+          />
+          <div class="error-message" *ngIf="editValidation.max_days">{{ editValidation.max_days }}</div>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input 
+              id="editRequiresDocument" 
+              name="editRequiresDocument" 
+              type="checkbox" 
+              [(ngModel)]="editForm.requires_document"
+            />
+            <label for="editRequiresDocument">Requires supporting document</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input 
+              id="editIsActive" 
+              name="editIsActive" 
+              type="checkbox" 
+              [(ngModel)]="editForm.is_active"
+            />
+            <label for="editIsActive">Active</label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" (click)="showEditModal = false" [disabled]="isSubmitting">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+            <span *ngIf="isSubmitting" class="loading-spinner small"></span>
+            {{ isSubmitting ? 'Updating...' : 'Update Leave Type' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="showDeleteModal" class="modal-backdrop">
+    <div class="modal">
+      <h2>Delete Leave Type</h2>
+      <p>Are you sure you want to delete <b>{{ leaveTypeToDelete?.leave_type_name }}</b>?</p>
+      <p class="warning-text">This action will permanently delete the leave type. It cannot be undone.</p>
+      <div class="form-actions">
+        <button type="button" (click)="cancelDeleteLeaveType()" [disabled]="isSubmitting">Cancel</button>
+        <button type="button" class="btn-danger" (click)="confirmDeleteLeaveType()" [disabled]="isSubmitting">
+          <span *ngIf="isSubmitting" class="loading-spinner small"></span>
+          {{ isSubmitting ? 'Deleting...' : 'Delete' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div *ngIf="toast.show" class="toast-notification" [ngClass]="'toast-' + (toast.type || 'info')">
+    <span class="toast-message">{{ toast.message }}</span>
+    <button class="toast-close" (click)="toast.show = false">×</button>
+  </div>
+</div> 

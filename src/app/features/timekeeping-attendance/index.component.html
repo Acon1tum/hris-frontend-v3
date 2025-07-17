@@ -1,0 +1,24 @@
+<div class="timekeeping-container">
+  <div class="page-header">
+    <h1>{{ title }}</h1>
+    <p>Comprehensive time tracking and attendance management system</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card" *ngFor="let feature of timekeepingFeatures">
+      <div class="feature-icon">{{ feature.icon }}</div>
+      <h3>{{ feature.name }}</h3>
+      <p>{{ feature.description }}</p>
+      <button class="btn btn-primary">Access</button>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="action-buttons">
+      <button class="btn btn-secondary">Clock In/Out</button>
+      <button class="btn btn-secondary">View Attendance</button>
+      <button class="btn btn-secondary">Generate Report</button>
+    </div>
+  </div>
+</div> 

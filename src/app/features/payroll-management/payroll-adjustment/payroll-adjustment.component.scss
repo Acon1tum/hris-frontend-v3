@@ -1,0 +1,296 @@
+:host {
+  --primary-color: #0c7ff2;
+  --primary-hover-color: #0a68c4;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
+  --bg-subtle: #f8fafc;
+  --bg-white: #ffffff;
+  --bg-blue-light: #eff6ff;
+  --text-blue: #1d4ed8;
+  --border-blue: #2563eb;
+  --checkbox-tick-svg: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(255,255,255)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z%27/%3e%3c/svg%3e');
+  --select-button-svg: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(96,117,138)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e');
+}
+
+.payroll-adjustment-container {
+  background-color: var(--bg-subtle);
+  min-height: 100vh;
+  font-family: "Inter", "Noto Sans", sans-serif;
+  padding: 1.5rem;
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.header-section {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  color: var(--text-primary);
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.25rem 0;
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.adjustment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section {
+  background-color: var(--bg-white);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.form-section-title {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 1.5rem 1rem 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  margin: 0 0 1rem 0;
+}
+
+.form-content {
+  padding: 0.75rem 1rem 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.75rem 1rem 1.5rem 1rem;
+}
+
+.radio-button-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-color);
+  padding: 0.625rem 1rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 100px;
+
+  &:hover {
+    border-color: var(--border-blue);
+    color: var(--text-blue);
+  }
+
+  &.selected {
+    border-color: var(--border-blue);
+    background-color: var(--bg-blue-light);
+    color: var(--text-blue);
+  }
+}
+
+.radio-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.form-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.form-input-field {
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 0.375rem;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-white);
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25;
+  transition: all 0.15s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(12, 127, 242, 0.2);
+  }
+
+  &::placeholder {
+    color: #94a3b8;
+  }
+
+  &.form-select {
+    background-image: var(--select-button-svg);
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+    appearance: none;
+  }
+
+  &.form-textarea {
+    height: 7rem;
+    padding: 0.75rem;
+    resize: vertical;
+    line-height: 1.5;
+  }
+}
+
+.checkbox-container {
+  padding: 0.125rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 0;
+  cursor: pointer;
+}
+
+.checkbox-input {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 2px solid var(--border-color);
+  background-color: transparent;
+  color: var(--primary-color);
+  transition: all 0.15s ease;
+  appearance: none;
+  flex-shrink: 0;
+
+  &:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    background-image: var(--checkbox-tick-svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 0.75rem;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(12, 127, 242, 0.2);
+  }
+}
+
+.checkbox-text {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.form-actions {
+  background-color: var(--bg-white);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  padding: 1.5rem 1rem;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border-color);
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 0.375rem;
+  height: 2.5rem;
+  padding: 0 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.025em;
+  transition: all 0.15s ease;
+  border: none;
+  min-width: 5.25rem;
+
+  &.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+
+    &:hover {
+      background-color: var(--primary-hover-color);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(12, 127, 242, 0.2), 0 0 0 4px rgba(12, 127, 242, 0.1);
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .payroll-adjustment-container {
+    padding: 1rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .radio-group {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .radio-button-label {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .form-section-title {
+    font-size: 1.125rem;
+    padding: 1rem 0.75rem 0.5rem 0.75rem;
+  }
+
+  .form-content {
+    padding: 0.5rem 0.75rem 1rem 0.75rem;
+    gap: 1rem;
+  }
+
+  .form-actions {
+    padding: 1rem 0.75rem;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+} 

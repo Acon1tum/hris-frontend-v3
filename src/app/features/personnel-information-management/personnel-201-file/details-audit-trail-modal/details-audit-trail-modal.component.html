@@ -1,0 +1,248 @@
+<div class="modal-overlay-custom"
+     [ngClass]="closing ? 'animate-slide-out-right' : 'animate-slide-in-right'" style="padding-top: 35px;">
+  <div class="my-profile-container wide-modal modal-elevated flex flex-col" style="max-width: 1100px; padding: 20px; width: 100%; min-height: 10vh; border-radius: 1rem; box-shadow: 0 8px 32px 0 rgba(31,38,135,0.12); background: #fff; padding-bottom: 0rem; max-height: 85vh; overflow-y: auto;">
+    <div class="header-section">
+      <div class="header-content">
+        <div class="title-description">
+          <h1 class="page-title">201 File Details</h1>
+          <p class="page-description">View the employee's personal and employment details.</p>
+        </div>
+      </div>
+    </div>
+    <div class="overflow-y-auto flex-1 px-6 pb-6">
+      <!-- Profile Picture Display -->
+      <section class="profile-picture-section flex flex-col items-center mb-8">
+        <div class="relative">
+          <img
+            *ngIf="file?.profilePictureUrl; else defaultAvatar"
+            [src]="file?.profilePictureUrl"
+            alt="Profile Picture"
+            class="w-28 h-28 rounded-full object-cover border-4 border-gray-200 shadow"
+          />
+          <ng-template #defaultAvatar>
+            <div class="w-28 h-28 rounded-full bg-gray-200 flex items-center justify-center text-5xl text-gray-400 border-4 border-gray-200 shadow">
+              <span>👤</span>
+            </div>
+          </ng-template>
+        </div>
+        <div class="mt-3 text-lg font-semibold">{{ file?.employeeName }}</div>
+        <div class="text-gray-500 padding-bottom: 10px;">{{ file?.email }}</div>
+      </section>
+      <!-- End Profile Picture Display -->
+      <div class="profile-card">
+        <div class="card-header">
+          <h2 class="section-title">General Information</h2>
+        </div>
+        <div class="card-content">
+          <div class="profile-grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+            <div class="profile-field">
+              <p class="field-label">First Name</p>
+              <div>{{ file?.firstName }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Middle Name</p>
+              <div>{{ file?.middleName }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Last Name</p>
+              <div>{{ file?.lastName }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Date of Birth</p>
+              <div>{{ file?.date_of_birth }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Gender</p>
+              <div>{{ file?.gender }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Civil Status</p>
+              <div>{{ file?.civil_status }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="profile-card">
+        <div class="card-header">
+          <h2 class="section-title">Contact Information</h2>
+        </div>
+        <div class="card-content">
+          <div class="profile-grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+            <div class="profile-field">
+              <p class="field-label">Email</p>
+              <div>{{ file?.email }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Contact Number</p>
+              <div>{{ file?.contact_number }}</div>
+            </div>
+            <div class="profile-field md:col-span-3">
+              <p class="field-label">Address</p>
+              <div>{{ file?.address }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="profile-card">
+        <div class="card-header">
+          <h2 class="section-title">Employment Details</h2>
+        </div>
+        <div class="card-content">
+          <div class="profile-grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+            <div class="profile-field">
+              <p class="field-label">Employment Type</p>
+              <div>{{ file?.employment_type }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Designation</p>
+              <div>{{ file?.designation }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Department</p>
+              <div>{{ file?.department }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Position</p>
+              <div>{{ file?.position }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Date Hired</p>
+              <div>{{ file?.date_hired }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Employment Status</p>
+              <div>{{ file?.user?.status }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Salary</p>
+              <div>{{ file?.salary | currency:'PHP':'symbol':'1.2-2' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="profile-card">
+        <div class="card-header">
+          <h2 class="section-title">Government IDs</h2>
+        </div>
+        <div class="card-content">
+          <div class="profile-grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+            <div class="profile-field">
+              <p class="field-label">GSIS</p>
+              <div>{{ file?.gsis_number || 'N/A' }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Pag-IBIG</p>
+              <div>{{ file?.pagibig_number || 'N/A' }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">PhilHealth</p>
+              <div>{{ file?.philhealth_number || 'N/A' }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">SSS</p>
+              <div>{{ file?.sss_number || 'N/A' }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">TIN</p>
+              <div>{{ file?.tin_number || 'N/A' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="profile-card">
+        <div class="card-header">
+          <h2 class="section-title">Additional Information</h2>
+        </div>
+        <div class="card-content">
+          <div class="profile-grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+            <div class="profile-field">
+              <p class="field-label">Created Date</p>
+              <div>{{ file?.dateCreated }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Last Modified</p>
+              <div>{{ file?.lastModified }}</div>
+            </div>
+            <div class="profile-field">
+              <p class="field-label">Created By</p>
+              <div>{{ file?.createdBy }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="profile-card">
+        <div class="card-header" style="display: flex; align-items: center; justify-content: space-between;">
+          <h2 class="section-title">Attachments</h2>
+          <button class="btn btn-primary btn-sm" (click)="downloadAllAttachments()" [disabled]="!employeeDocuments.length">
+            Download Attachment
+          </button>
+        </div>
+        <div class="card-content">
+          <div class="profile-grid">
+            <div class="profile-field md:col-span-3">
+              <p class="field-label">Uploaded Documents</p>
+              <div *ngIf="employeeDocuments.length > 0">
+                <div *ngFor="let doc of employeeDocuments" class="attachment-row">
+                  <div class="attachment-info">
+                    <div class="attachment-title">{{ doc.title }}</div>
+                    <div class="attachment-desc">{{ doc.description }}</div>
+                    <div class="attachment-meta">
+                      <span>{{ formatFileSize(doc.fileSize) }}</span>
+                      <span class="dot">•</span>
+                      <span>{{ doc.fileType }}</span>
+                    </div>
+                  </div>
+                  <div class="attachment-actions">
+                    <button class="icon-btn" (click)="downloadSingleAttachment(doc)" title="Download">
+                      <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <button class="icon-btn" (click)="viewSingleAttachment(doc)" title="View">
+                      <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <ng-template #noDocs>
+                <span class="text-gray-400">No documents uploaded</span>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sticky-footer flex justify-end gap-3 px-6 py-4">
+      <button type="button" class="close-btn-modern" (click)="onClose()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Image Modal Overlay -->
+<div *ngIf="showImageModal" class="image-modal-overlay" (click)="closeImageModal()">
+  <div class="image-modal-content" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="closeImageModal()">&times;</button>
+    <ng-container *ngIf="selectedImageDoc">
+      <div class="zoom-controls" style="text-align:center; margin-bottom:0.5rem; z-index: 1001;">
+        <button class="zoom-btn" (click)="zoomOut()" title="Zoom Out">−</button>
+        <button class="zoom-btn" (click)="resetZoom()" title="Reset Zoom">⟳</button>
+        <button class="zoom-btn" (click)="zoomIn()" title="Zoom In">+</button>
+      </div>
+      <img [src]="getDocumentSrc(selectedImageDoc)" [alt]="selectedImageDoc.title"
+           [style.transform]="'scale(' + zoomLevel + ') translate(' + panX/zoomLevel + 'px, ' + panY/zoomLevel + 'px)'"
+           style="max-width: 90vw; max-height: 80vh; display: block; margin: 0 auto; transition: transform 0.2s; cursor: grab;"
+           (mousedown)="onImageMouseDown($event)"
+           (mousemove)="onImageMouseMove($event)"
+           (mouseup)="onImageMouseUp()"
+           (mouseleave)="onImageMouseLeave()"
+           (touchstart)="onImageTouchStart($event)"
+           (touchmove)="onImageTouchMove($event)"
+           (touchend)="onImageTouchEnd()"
+      >
+      <div style="text-align:center; margin-top:0.5rem;">{{ selectedImageDoc.title }}</div>
+    </ng-container>
+  </div>
+</div> 

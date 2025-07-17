@@ -1,0 +1,2310 @@
+// Import Font Awesome for icons
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+
+// Variables
+$primary-color: #3b82f6;
+$primary-dark: #2563eb;
+$secondary-color: #64748b;
+$success-color: #10b981;
+$warning-color: #f59e0b;
+$danger-color: #ef4444;
+$light-bg: #f8fafc;
+$white: #ffffff;
+$gray-50: #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin card-shadow {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+@mixin card-shadow-hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+@mixin transition {
+  transition: all 0.2s ease-in-out;
+}
+
+// Animations
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Base styles
+.admin-request-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 2rem 1rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  animation: fadeIn 0.5s ease-out;
+}
+
+// Loading State
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid $gray-200;
+    border-top: 4px solid $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  .loading-text {
+    margin-top: 1rem;
+    color: $gray-600;
+    font-weight: 500;
+  }
+}
+
+// Header Section
+.page-header {
+  margin-bottom: 2rem;
+  animation: fadeIn 0.6s ease-out;
+  
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+  
+  .title-section {
+    flex: 1;
+    
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: $gray-800;
+      margin: 0 0 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      
+      i {
+        color: $primary-color;
+        font-size: 2rem;
+      }
+      
+      @media (max-width: 768px) {
+        font-size: 2rem;
+        
+        i {
+          font-size: 1.5rem;
+        }
+      }
+    }
+    
+    .page-subtitle {
+      font-size: 1.1rem;
+      color: $gray-600;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+  
+  .header-actions {
+    @media (max-width: 768px) {
+      margin-top: 1rem;
+    }
+  }
+}
+
+// Statistics Cards
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  
+  .stat-card {
+    background: $white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    @include card-shadow;
+    @include transition;
+    animation: fadeIn 0.7s ease-out;
+    
+    &:hover {
+      @include card-shadow-hover;
+      transform: translateY(-2px);
+    }
+    
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      
+      .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        @include flex-center;
+        font-size: 1.5rem;
+        color: $white;
+        
+        &.total { background: $primary-color; }
+        &.pending { background: $warning-color; }
+        &.approved { background: $success-color; }
+        &.rejected { background: $danger-color; }
+      }
+      
+      .stat-trend {
+        font-size: 0.875rem;
+        color: $success-color;
+        font-weight: 500;
+        
+        &.negative {
+          color: $danger-color;
+        }
+      }
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: $gray-800;
+      margin: 0 0 0.25rem 0;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: $gray-600;
+      margin: 0;
+    }
+  }
+}
+
+// Section Cards
+.section-card {
+  background: $white;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  @include card-shadow;
+  @include transition;
+  animation: fadeIn 0.8s ease-out;
+  
+  &:hover {
+    @include card-shadow-hover;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+}
+
+// Section Headers
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: $gray-800;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  i {
+    color: $primary-color;
+  }
+}
+
+// Search and Filter Section
+.search-filter-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+  
+  @media (max-width: 768px) {
+    max-width: none;
+  }
+  
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $gray-400;
+    z-index: 1;
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 2px solid $gray-200;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: $gray-50;
+    @include transition;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      background: $white;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    &::placeholder {
+      color: $gray-400;
+    }
+  }
+}
+
+.quick-filters {
+  display: flex;
+  gap: 0.5rem;
+  
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid $gray-200;
+    background: $white;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $gray-600;
+    cursor: pointer;
+    @include transition;
+    
+    &:hover {
+      border-color: $primary-color;
+      color: $primary-color;
+      background: rgba(59, 130, 246, 0.05);
+    }
+    
+    &.active {
+      background: $primary-color;
+      border-color: $primary-color;
+      color: $white;
+    }
+  }
+}
+
+// Advanced Filters
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  align-items: end;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $gray-700;
+}
+
+.filter-select,
+.filter-input {
+  padding: 0.75rem;
+  border: 2px solid $gray-200;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: $white;
+  @include transition;
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+}
+
+// Bulk Actions
+.bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: $gray-50;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  animation: fadeIn 0.3s ease-out;
+  
+  .bulk-info {
+    font-size: 0.875rem;
+    color: $gray-600;
+    font-weight: 500;
+  }
+  
+  .bulk-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+// Table Section
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  
+  .results-count {
+    font-size: 0.875rem;
+    color: $gray-600;
+    font-weight: 500;
+  }
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid $gray-200;
+}
+
+.requests-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+  
+  th {
+    background: $gray-50;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: $gray-700;
+    border-bottom: 2px solid $gray-200;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    
+    &.checkbox-column {
+      width: 40px;
+      text-align: center;
+    }
+  }
+  
+  td {
+    padding: 1rem;
+    border-bottom: 1px solid $gray-100;
+    vertical-align: middle;
+    
+    &.checkbox-cell {
+      text-align: center;
+    }
+  }
+  
+  .table-row {
+    @include transition;
+    
+    &:hover {
+      background: rgba(59, 130, 246, 0.02);
+    }
+    
+    &.selected {
+      background: rgba(59, 130, 246, 0.05);
+    }
+  }
+  
+  .request-type {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    color: $gray-800;
+    
+    i {
+      color: $primary-color;
+      font-size: 0.875rem;
+    }
+  }
+  
+  .created-by {
+    color: $gray-600;
+    font-weight: 500;
+  }
+  
+  .date {
+    color: $gray-500;
+    font-size: 0.875rem;
+  }
+  
+  .priority-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    
+    &.high {
+      background: rgba(239, 68, 68, 0.1);
+      color: $danger-color;
+    }
+    
+    &.medium {
+      background: rgba(245, 158, 11, 0.1);
+      color: $warning-color;
+    }
+    
+    &.low {
+      background: rgba(16, 185, 129, 0.1);
+      color: $success-color;
+    }
+  }
+  
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+    
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      @include flex-center;
+      @include transition;
+      
+      &.edit {
+        background: rgba(59, 130, 246, 0.1);
+        color: $primary-color;
+        
+        &:hover {
+          background: $primary-color;
+          color: $white;
+        }
+      }
+      
+      &.delete {
+        background: rgba(239, 68, 68, 0.1);
+        color: $danger-color;
+        
+        &:hover {
+          background: $danger-color;
+          color: $white;
+        }
+      }
+      
+      i {
+        font-size: 0.875rem;
+      }
+    }
+  }
+}
+
+// Checkbox styling
+.checkbox-wrapper {
+  position: relative;
+  display: inline-block;
+  
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: $primary-color;
+  }
+}
+
+// Status Badges
+.status-badge {
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  
+  &.pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: $warning-color;
+  }
+  
+  &.approved {
+    background: rgba(16, 185, 129, 0.1);
+    color: $success-color;
+  }
+  
+  &.rejected {
+    background: rgba(239, 68, 68, 0.1);
+    color: $danger-color;
+  }
+}
+
+// Empty State
+.empty-state {
+  padding: 4rem 2rem;
+  text-align: center;
+  
+  .empty-icon {
+    font-size: 4rem;
+    color: $gray-300;
+    margin-bottom: 1rem;
+    animation: pulse 2s infinite;
+  }
+  
+  h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $gray-700;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  p {
+    color: $gray-500;
+    margin: 0 0 2rem 0;
+  }
+}
+
+// Workflows Section
+.workflows-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.workflow-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 2px solid $gray-200;
+  border-radius: 12px;
+  background: $gray-50;
+  @include transition;
+  
+  &:hover {
+    border-color: $primary-color;
+    background: rgba(59, 130, 246, 0.02);
+  }
+  
+  .workflow-icon {
+    width: 48px;
+    height: 48px;
+    background: $primary-color;
+    border-radius: 12px;
+    @include flex-center;
+    color: $white;
+    font-size: 1.25rem;
+  }
+  
+  .workflow-content {
+    flex: 1;
+    
+    .workflow-name {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: $gray-800;
+      margin: 0 0 0.25rem 0;
+    }
+    
+    .workflow-description {
+      font-size: 0.875rem;
+      color: $gray-600;
+      margin: 0 0 0.5rem 0;
+    }
+    
+    .workflow-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      
+      .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        
+        &.active {
+          background: $success-color;
+        }
+        
+        &.inactive {
+          background: $gray-400;
+        }
+      }
+    }
+  }
+  
+  .workflow-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+// Analytics Section
+.analytics-section {
+  background: linear-gradient(135deg, $gray-50 0%, $white 100%);
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.analytics-card {
+  background: $white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid $gray-200;
+  @include card-shadow;
+  
+  .analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    
+    h4 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: $gray-800;
+      margin: 0;
+    }
+    
+    i {
+      color: $primary-color;
+      font-size: 1.25rem;
+    }
+  }
+  
+  .analytics-placeholder {
+    height: 200px;
+    background: $gray-50;
+    border: 2px dashed $gray-300;
+    border-radius: 8px;
+    @include flex-center;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    i {
+      font-size: 2rem;
+      color: $gray-400;
+    }
+    
+    p {
+      color: $gray-500;
+      font-size: 0.875rem;
+      margin: 0;
+    }
+  }
+}
+
+// Modal Styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+  
+  .modal-content {
+    background: $white;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    @include card-shadow-hover;
+    animation: modalSlideIn 0.3s ease-out;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem 0 2rem;
+  margin-bottom: 1.5rem;
+  
+  .modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $gray-800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    i {
+      color: $primary-color;
+    }
+  }
+  
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: $gray-100;
+    border-radius: 8px;
+    cursor: pointer;
+    @include flex-center;
+    color: $gray-600;
+    @include transition;
+    
+    &:hover {
+      background: $gray-200;
+      color: $gray-800;
+    }
+  }
+}
+
+.modal-form {
+  padding: 0 2rem 2rem 2rem;
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+    
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: $gray-700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid $gray-200;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: $white;
+      @include transition;
+      
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      
+      &::placeholder {
+        color: $gray-400;
+      }
+    }
+    
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+  }
+  
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    
+    @media (max-width: 480px) {
+      flex-direction: column;
+    }
+  }
+}
+
+// Button Styles
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  @include transition;
+  text-decoration: none;
+  
+  &.btn-primary {
+    background: $primary-color;
+    color: $white;
+    
+    &:hover {
+      background: $primary-dark;
+      transform: translateY(-1px);
+    }
+    
+    &:disabled {
+      background: $gray-400;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+  
+  &.btn-secondary {
+    background: $gray-100;
+    color: $gray-700;
+    border: 2px solid $gray-200;
+    
+    &:hover {
+      background: $gray-200;
+      border-color: $gray-300;
+    }
+  }
+  
+  &.btn-outline {
+    background: transparent;
+    color: $primary-color;
+    border: 2px solid $primary-color;
+    
+    &:hover {
+      background: $primary-color;
+      color: $white;
+    }
+  }
+  
+  &.btn-text {
+    background: transparent;
+    color: $gray-600;
+    padding: 0.5rem 1rem;
+    
+    &:hover {
+      background: $gray-100;
+      color: $gray-800;
+    }
+  }
+  
+  &.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+  
+  &.btn-success {
+    background: $success-color;
+    color: $white;
+    
+    &:hover {
+      background: darken($success-color, 10%);
+    }
+  }
+  
+  &.btn-danger {
+    background: $danger-color;
+    color: $white;
+    
+    &:hover {
+      background: darken($danger-color, 10%);
+    }
+  }
+  
+  i {
+    font-size: 0.875rem;
+  }
+}
+
+// Toast Notifications
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  z-index: 10000;
+  animation: slideIn 0.3s ease-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  
+  &.toast-success {
+    background: $success-color;
+  }
+  
+  &.toast-error {
+    background: $danger-color;
+  }
+  
+  &.toast-warning {
+    background: $warning-color;
+  }
+  
+  &.toast-info {
+    background: $primary-color;
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .admin-request-container {
+    padding: 1.5rem 0.5rem;
+  }
+  
+  .section-card {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-request-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .page-header .header-content {
+    gap: 1rem;
+  }
+  
+  .section-card {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .filters-grid {
+    gap: 1rem;
+  }
+  
+  .workflows-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    margin: 0 1rem;
+  }
+  
+  .modal-header,
+  .modal-form {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  
+  .bulk-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 1.75rem;
+  }
+  
+  .section-title {
+    font-size: 1.25rem;
+  }
+  
+  .quick-filters {
+    flex-wrap: wrap;
+  }
+  
+  .table-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Workflow Details Styles
+.workflow-details {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: $gray-50;
+  border-radius: 12px;
+  border: 1px solid $gray-200;
+  
+  .workflow-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid $gray-200;
+    
+    h4 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: $gray-800;
+      margin: 0;
+    }
+    
+    .workflow-detail-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+}
+
+.workflow-steps,
+.workflow-escalations {
+  margin-bottom: 2rem;
+  
+  h5 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $gray-700;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    &::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: $primary-color;
+      border-radius: 2px;
+    }
+  }
+}
+
+.steps-list,
+.escalations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.step-item,
+.escalation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: $white;
+  border-radius: 8px;
+  border: 1px solid $gray-200;
+  @include transition;
+  
+  &:hover {
+    border-color: $primary-color;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+  }
+}
+
+.step-info,
+.escalation-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.step-order {
+  width: 32px;
+  height: 32px;
+  background: $primary-color;
+  color: $white;
+  border-radius: 50%;
+  @include flex-center;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.step-content {
+  flex: 1;
+  
+  .step-name {
+    font-weight: 600;
+    color: $gray-800;
+    margin-bottom: 0.25rem;
+  }
+  
+  .step-role {
+    font-size: 0.875rem;
+    color: $gray-600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .step-details {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    
+    .step-required {
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-weight: 500;
+      
+      &.required {
+        background: rgba(239, 68, 68, 0.1);
+        color: $danger-color;
+      }
+      
+      &.optional {
+        background: rgba(245, 158, 11, 0.1);
+        color: $warning-color;
+      }
+    }
+    
+    .step-days {
+      color: $gray-500;
+    }
+  }
+}
+
+.escalation-info {
+  flex: 1;
+  
+  .escalation-name {
+    font-weight: 600;
+    color: $gray-800;
+    margin-bottom: 0.25rem;
+  }
+  
+  .escalation-condition {
+    font-size: 0.875rem;
+    color: $gray-600;
+    margin-bottom: 0.25rem;
+  }
+  
+  .escalation-action {
+    font-size: 0.875rem;
+    color: $primary-color;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+  
+  .escalation-details {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: $gray-500;
+  }
+}
+
+.step-actions,
+.escalation-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+// Workflow name styling in table
+.workflow-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: $gray-800;
+  
+  i {
+    color: $primary-color;
+    font-size: 0.875rem;
+  }
+}
+
+// Assigned to styling
+.assigned-to {
+  color: $gray-600;
+  font-weight: 500;
+}
+
+// Additional button styles
+.btn-warning {
+  background: $warning-color;
+  color: $white;
+  
+  &:hover {
+    background: darken($warning-color, 10%);
+  }
+}
+
+// Enhanced checkbox styling
+.checkbox-wrapper {
+  position: relative;
+  display: inline-block;
+  
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: $primary-color;
+    border: 2px solid $gray-300;
+    border-radius: 4px;
+    @include transition;
+    
+    &:checked {
+      background-color: $primary-color;
+      border-color: $primary-color;
+    }
+    
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  }
+  
+  label {
+    margin-left: 0.5rem;
+    font-size: 0.875rem;
+    color: $gray-700;
+    cursor: pointer;
+  }
+}
+
+// Enhanced table row selection
+.table-row.selected {
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 4px solid $primary-color;
+}
+
+// Responsive adjustments for workflow details
+@media (max-width: 768px) {
+  .workflow-details {
+    padding: 1rem;
+    
+    .workflow-detail-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  }
+  
+  .step-item,
+  .escalation-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .step-info,
+  .escalation-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .step-actions,
+  .escalation-actions {
+    justify-content: flex-end;
+  }
+  
+  .step-details,
+  .escalation-details {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
+// Animation for workflow details
+.workflow-details {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.step-item,
+.escalation-item {
+  animation: fadeIn 0.3s ease-out;
+}
+
+// Enhanced empty state for workflows
+.empty-state {
+  .empty-icon {
+    &.fa-project-diagram {
+      color: $primary-color;
+      opacity: 0.5;
+    }
+  }
+}
+
+// Loading state enhancements
+.loading-overlay {
+  .loading-spinner {
+    border-width: 3px;
+  }
+  
+  .loading-text {
+    font-size: 1rem;
+  }
+}
+
+// Enhanced modal styling for workflow forms
+.modal-form {
+  .form-group {
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+      }
+      
+      label {
+        margin: 0;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Enhanced table styling for workflow management
+.requests-table {
+  .workflow-name {
+    font-weight: 600;
+  }
+  
+  td {
+    &.checkbox-cell {
+      width: 40px;
+      text-align: center;
+    }
+  }
+}
+
+// Enhanced bulk actions styling
+.bulk-actions {
+  background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+  color: $white;
+  border-radius: 12px;
+  
+  .bulk-info {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+  }
+  
+  .bulk-buttons {
+    .btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: $white;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      
+      &.btn-success {
+        background: $success-color;
+        border-color: $success-color;
+        
+        &:hover {
+          background: darken($success-color, 10%);
+        }
+      }
+      
+      &.btn-danger {
+        background: $danger-color;
+        border-color: $danger-color;
+        
+        &:hover {
+          background: darken($danger-color, 10%);
+        }
+      }
+      
+      &.btn-warning {
+        background: $warning-color;
+        border-color: $warning-color;
+        
+        &:hover {
+          background: darken($warning-color, 10%);
+        }
+      }
+    }
+  }
+}
+
+// Enhanced search and filter styling
+.search-filter-container {
+  .filter-group {
+    min-width: 200px;
+  }
+}
+
+// Enhanced statistics cards
+.stats-grid {
+  .stat-card {
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, $primary-color, $success-color);
+    }
+    
+    .stat-trend {
+      position: relative;
+      
+      &.negative::before {
+        content: '↓';
+        margin-right: 0.25rem;
+      }
+      
+      &:not(.negative)::before {
+        content: '↑';
+        margin-right: 0.25rem;
+      }
+    }
+  }
+}
+
+// Enhanced action buttons
+.action-btn {
+  &.edit {
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+  
+  &.delete {
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+
+// Enhanced form styling
+.form-textarea {
+  font-family: inherit;
+  line-height: 1.5;
+  
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+}
+
+// Enhanced modal animations
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-content {
+  animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Enhanced toast notifications
+.toast-notification {
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// Enhanced responsive design
+@media (max-width: 480px) {
+  .workflow-details {
+    .workflow-detail-header {
+      h4 {
+        font-size: 1.125rem;
+      }
+    }
+  }
+  
+  .step-item,
+  .escalation-item {
+    padding: 0.75rem;
+  }
+  
+  .step-order {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+  
+  .bulk-actions {
+    padding: 0.75rem;
+    
+    .bulk-buttons {
+      flex-wrap: wrap;
+    }
+  }
+}
+
+// Tabs Navigation
+.tabs-container {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid $gray-200;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+
+  .tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border: none;
+    background: transparent;
+    color: $gray-600;
+    font-weight: 500;
+    cursor: pointer;
+    @include transition;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+
+    i {
+      font-size: 1rem;
+    }
+
+    &:hover {
+      color: $primary-color;
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    &.active {
+      color: $primary-color;
+      border-bottom-color: $primary-color;
+      background: rgba(59, 130, 246, 0.05);
+    }
+  }
+}
+
+// Analytics Dashboard Styles
+.analytics-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: $white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid $gray-200;
+  @include card-shadow;
+  @include transition;
+
+  &:hover {
+    @include card-shadow-hover;
+  }
+
+  .metric-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    i {
+      color: $primary-color;
+      font-size: 1.25rem;
+    }
+
+    span {
+      font-weight: 600;
+      color: $gray-700;
+    }
+  }
+
+  .metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $gray-800;
+    margin-bottom: 0.5rem;
+  }
+
+  .metric-trend {
+    font-size: 0.875rem;
+    font-weight: 500;
+
+    &.positive {
+      color: $success-color;
+
+      &::before {
+        content: '↑';
+        margin-right: 0.25rem;
+      }
+    }
+
+    &.negative {
+      color: $danger-color;
+
+      &::before {
+        content: '↓';
+        margin-right: 0.25rem;
+      }
+    }
+  }
+}
+
+.analytics-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.chart-card {
+  background: $white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid $gray-200;
+  @include card-shadow;
+
+  h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $gray-800;
+    margin: 0 0 1.5rem 0;
+  }
+}
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chart-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .chart-label {
+    min-width: 120px;
+    font-weight: 500;
+    color: $gray-700;
+  }
+
+  .chart-bar {
+    flex: 1;
+    height: 8px;
+    background: $gray-200;
+    border-radius: 4px;
+    overflow: hidden;
+
+    .chart-fill {
+      height: 100%;
+      background: $primary-color;
+      border-radius: 4px;
+      @include transition;
+
+      &.pending {
+        background: $warning-color;
+      }
+
+      &.approved {
+        background: $success-color;
+      }
+
+      &.rejected {
+        background: $danger-color;
+      }
+    }
+  }
+
+  .chart-value {
+    min-width: 80px;
+    font-size: 0.875rem;
+    color: $gray-600;
+    text-align: right;
+  }
+}
+
+.analytics-performers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.performer-card {
+  background: $white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid $gray-200;
+  @include card-shadow;
+
+  h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $gray-800;
+    margin: 0 0 1.5rem 0;
+  }
+}
+
+.performer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.performer-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: $gray-50;
+  border-radius: 8px;
+  @include transition;
+
+  &:hover {
+    background: $gray-100;
+  }
+
+  .performer-rank {
+    width: 32px;
+    height: 32px;
+    background: $primary-color;
+    color: $white;
+    border-radius: 50%;
+    @include flex-center;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .performer-name {
+    flex: 1;
+    font-weight: 500;
+    color: $gray-800;
+  }
+
+  .performer-count {
+    font-size: 0.875rem;
+    color: $gray-600;
+    font-weight: 500;
+  }
+}
+
+.workflow-efficiency-section {
+  background: $white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid $gray-200;
+  @include card-shadow;
+
+  h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $gray-800;
+    margin: 0 0 1.5rem 0;
+  }
+}
+
+.progress-bar {
+  width: 100px;
+  height: 8px;
+  background: $gray-200;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 0.5rem;
+
+  .progress-fill {
+    height: 100%;
+    background: $success-color;
+    border-radius: 4px;
+    @include transition;
+  }
+}
+
+// Audit Trail Styles
+.action-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  &.create {
+    background: rgba(16, 185, 129, 0.1);
+    color: $success-color;
+  }
+
+  &.update {
+    background: rgba(59, 130, 246, 0.1);
+    color: $primary-color;
+  }
+
+  &.delete {
+    background: rgba(239, 68, 68, 0.1);
+    color: $danger-color;
+  }
+
+  &.approve {
+    background: rgba(16, 185, 129, 0.1);
+    color: $success-color;
+  }
+
+  &.reject {
+    background: rgba(239, 68, 68, 0.1);
+    color: $danger-color;
+  }
+
+  &.login {
+    background: rgba(59, 130, 246, 0.1);
+    color: $primary-color;
+  }
+
+  &.logout {
+    background: rgba(107, 114, 128, 0.1);
+    color: $gray-600;
+  }
+
+  &.export {
+    background: rgba(245, 158, 11, 0.1);
+    color: $warning-color;
+  }
+
+  &.import {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+  }
+}
+
+.user-name {
+  font-weight: 500;
+  color: $gray-800;
+}
+
+.ip-address {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: $gray-600;
+}
+
+.details {
+  max-width: 200px;
+  font-size: 0.875rem;
+  color: $gray-600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Compliance Styles
+.compliance-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.compliance-card {
+  background: $white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid $gray-200;
+  @include card-shadow;
+  @include transition;
+
+  &:hover {
+    @include card-shadow-hover;
+  }
+
+  .compliance-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    i {
+      color: $primary-color;
+      font-size: 1.25rem;
+    }
+
+    span {
+      font-weight: 600;
+      color: $gray-700;
+    }
+  }
+
+  .compliance-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $gray-800;
+    margin-bottom: 0.5rem;
+  }
+
+  .compliance-status {
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+
+    &.compliant {
+      background: rgba(16, 185, 129, 0.1);
+      color: $success-color;
+    }
+
+    &.non-compliant {
+      background: rgba(239, 68, 68, 0.1);
+      color: $danger-color;
+    }
+  }
+}
+
+.reports-section {
+  h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $gray-800;
+    margin: 0 0 1.5rem 0;
+  }
+}
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.report-card {
+  background: $white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid $gray-200;
+  @include card-shadow;
+  @include transition;
+
+  &:hover {
+    @include card-shadow-hover;
+  }
+
+  .report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .report-icon {
+      width: 40px;
+      height: 40px;
+      background: $primary-color;
+      border-radius: 8px;
+      @include flex-center;
+      color: $white;
+      font-size: 1.125rem;
+    }
+
+    .report-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      border-radius: 8px;
+      text-transform: uppercase;
+
+      &.generated {
+        background: rgba(16, 185, 129, 0.1);
+        color: $success-color;
+      }
+
+      &.processing {
+        background: rgba(245, 158, 11, 0.1);
+        color: $warning-color;
+      }
+
+      &.failed {
+        background: rgba(239, 68, 68, 0.1);
+        color: $danger-color;
+      }
+    }
+  }
+
+  .report-content {
+    margin-bottom: 1rem;
+
+    h5 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: $gray-800;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .report-period {
+      font-size: 0.875rem;
+      color: $gray-600;
+      margin: 0 0 0.25rem 0;
+    }
+
+    .report-date {
+      font-size: 0.75rem;
+      color: $gray-500;
+      margin: 0;
+    }
+  }
+
+  .report-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+// Enhanced responsive design for new components
+@media (max-width: 768px) {
+  .tabs-container {
+    gap: 0.25rem;
+
+    .tab-btn {
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+
+      i {
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .analytics-metrics-grid,
+  .compliance-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-performers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reports-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    .chart-label {
+      min-width: auto;
+    }
+
+    .chart-bar {
+      width: 100%;
+    }
+
+    .chart-value {
+      min-width: auto;
+      text-align: left;
+    }
+  }
+
+  .performer-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    text-align: center;
+
+    .performer-rank {
+      align-self: center;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .tabs-container {
+    .tab-btn {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+
+      i {
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .metric-card,
+  .compliance-card {
+    padding: 1rem;
+
+    .metric-value,
+    .compliance-value {
+      font-size: 1.5rem;
+    }
+  }
+
+  .chart-card,
+  .performer-card,
+  .report-card {
+    padding: 1rem;
+  }
+
+  .report-card {
+    .report-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .report-actions {
+      flex-direction: column;
+    }
+  }
+}
+
+// Animation enhancements for new components
+.analytics-metrics-grid,
+.compliance-metrics-grid {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.chart-card,
+.performer-card,
+.report-card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.chart-item,
+.performer-item {
+  animation: fadeIn 0.3s ease-out;
+}
+
+// Enhanced table styling for audit logs
+.requests-table {
+  .action-badge {
+    display: inline-block;
+  }
+
+  .user-name {
+    font-weight: 500;
+  }
+
+  .ip-address {
+    font-family: 'Courier New', monospace;
+  }
+
+  .details {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// Enhanced empty states
+.empty-state {
+  .empty-icon {
+    &.fa-shield-alt {
+      color: $primary-color;
+      opacity: 0.5;
+    }
+
+    &.fa-chart-bar {
+      color: $primary-color;
+      opacity: 0.5;
+    }
+
+    &.fa-file-contract {
+      color: $primary-color;
+      opacity: 0.5;
+    }
+  }
+}
+
+.section-header .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

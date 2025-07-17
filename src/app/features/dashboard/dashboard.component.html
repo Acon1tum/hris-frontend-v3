@@ -1,0 +1,54 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>{{ title }}</h1>
+    <p>Welcome back! Here's what's happening in your HRIS system.</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of dashboardStats">
+      <div class="stat-icon">{{ stat.icon }}</div>
+      <div class="stat-content">
+        <h3 class="stat-value">{{ stat.value }}</h3>
+        <p class="stat-label">{{ stat.label }}</p>
+        <span class="stat-change" [class]="'trend-' + stat.trend">
+          {{ stat.change }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <div class="content-grid">
+      <div class="quick-actions-card">
+        <h2>Quick Actions</h2>
+        <div class="actions-grid">
+          <button 
+            class="action-btn" 
+            *ngFor="let action of quickActions"
+            (click)="onQuickAction(action.action)"
+          >
+            <span class="action-icon">{{ action.icon }}</span>
+            <span class="action-name">{{ action.name }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="recent-activities-card">
+        <h2>Recent Activities</h2>
+        <div class="activities-list">
+          <div class="activity-item" *ngFor="let activity of recentActivities">
+            <div class="activity-icon" [class]="'type-' + activity.type">
+              {{ activity.type === 'user' ? '👤' : 
+                 activity.type === 'approval' ? '✅' : 
+                 activity.type === 'system' ? '⚙️' : '📝' }}
+            </div>
+            <div class="activity-content">
+              <p class="activity-action">{{ activity.action }}</p>
+              <p class="activity-meta">{{ activity.user }} • {{ activity.time }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

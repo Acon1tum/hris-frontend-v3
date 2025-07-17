@@ -1,0 +1,116 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-header-content">
+    <div class="page-header-text">
+      <h1 class="page-title">{{ title }}</h1>
+      <p class="page-description">Manage your daily attendance and track your working hours</p>
+    </div>
+  </div>
+</div>
+
+<!-- Welcome Section -->
+<div class="welcome-section">
+  <div class="welcome-content">
+    <h2 class="welcome-title">Welcome back, {{ currentUser }}!</h2>
+    <p class="welcome-subtitle">Ready to start your day?</p>
+  </div>
+</div>
+
+<!-- Clock In/Out Section -->
+<div class="clock-section">
+  <div class="clock-content">
+    <button class="clock-button" (click)="onClockInOut()">
+      <svg class="clock-icon" fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+        <path *ngIf="clockButtonIcon === 'timer'" d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A8.962 8.962 0 0 0 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9a8.994 8.994 0 0 0 7.03-14.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"></path>
+        <path *ngIf="clockButtonIcon === 'access_time_filled'" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path>
+      </svg>
+      <span class="clock-text">{{ clockButtonText }}</span>
+    </button>
+    <p class="last-clock-info">Last clock in: {{ lastClockIn }}</p>
+  </div>
+</div>
+
+<!-- Alternative Methods Section -->
+<div class="methods-section">
+  <div class="methods-content">
+    <p class="methods-title">Or use alternative methods:</p>
+    <div class="methods-grid">
+      <button 
+        *ngFor="let method of clockMethods" 
+        class="method-button"
+        (click)="onAlternativeMethod(method)">
+        <svg class="method-icon" fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+          <path *ngIf="method.icon === 'qr_code_scanner'" d="M9.5 6.5v3h-3v-3h3M11 5H5v6h6V5zm-1.5 9.5v3h-3v-3h3M11 13H5v6h6v-6zm6.5-6.5v3h-3v-3h3M19 5h-6v6h6V5zm-6.5 9.5v3h-3v-3h3M15 13H9v6h6v-6zm1-7h1v1h-1zm0 2h1v1h-1zm2 0h1v1h-1zm-2 2h1v1h-1zm2 0h1v1h-1z"></path>
+          <path *ngIf="method.icon === 'barcode_reader'" d="M2 6h1.5v12H2zm2.5 0h1v12h-1zm2 0H8v12H6.5zm2.5 0h1v12h-1zm2 0h1.5v12H11zm2.5 0H15v12h-1.5zm2.5 0h1v12h-1zm2 0h1.5v12H18zm2.5 0H22v12h-1.5z"></path>
+          <path *ngIf="method.icon === 'camera_alt'" d="M12 15.2l3.47-3.47c.78-.78.78-2.05 0-2.83-.78-.78-2.05-.78-2.83 0L12 9.54l-.64-.64c-.78-.78-2.05-.78-2.83 0-.78.78-.78 2.05 0 2.83L12 15.2zM9 2l1.83 2H15l1.83-2H21c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h6zm3 15c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0-1.8c-1.77 0-3.2-1.43-3.2-3.2 0-1.77 1.43-3.2 3.2-3.2 1.77 0 3.2 1.43 3.2 3.2 0 1.77-1.43 3.2-3.2 3.2z"></path>
+        </svg>
+        <span class="method-text">{{ method.name }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions Section -->
+<div class="actions-section">
+  <div class="actions-content">
+    <h3 class="actions-title">Quick Actions</h3>
+    <div class="actions-grid">
+      <button class="action-button" (click)="onViewSchedule()">
+        <svg class="action-icon" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"></path>
+        </svg>
+        <span class="action-text">View Schedule</span>
+      </button>
+      <button class="action-button" (click)="onSubmitMissingLog()">
+        <svg class="action-icon" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"></path>
+        </svg>
+        <span class="action-text">Submit Missing Log</span>
+      </button>
+      <button class="action-button" (click)="onViewDTR()">
+        <svg class="action-icon" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"></path>
+        </svg>
+        <span class="action-text">View DTR</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Attendance Log Section -->
+<div class="log-section">
+  <div class="log-content">
+    <div class="log-header">
+      <h3 class="log-title">Attendance Log</h3>
+      <button class="view-all-button" (click)="onViewAllLogs()">View All</button>
+    </div>
+    
+    <div class="log-table-container">
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time In/Out</th>
+            <th>Location</th>
+            <th>Type</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of attendanceLogs; trackBy: trackByLogId" class="log-row">
+            <td class="log-date">{{ log.date }}</td>
+            <td class="log-time">{{ log.timeInOut }}</td>
+            <td class="log-location">{{ log.location }}</td>
+            <td class="log-type">{{ log.type }}</td>
+            <td class="log-status">
+              <div class="status-container">
+                <div class="status-indicator" [ngClass]="getStatusBadgeClass(log.status)"></div>
+                <span class="status-text" [ngClass]="getStatusBadgeClass(log.status)">{{ log.statusText }}</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div> 

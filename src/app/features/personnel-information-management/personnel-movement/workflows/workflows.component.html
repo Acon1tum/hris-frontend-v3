@@ -1,0 +1,167 @@
+<div class="workflows-container">
+  <header class="mb-8">
+    <div class="flex justify-between items-start">
+      <div class="flex flex-col gap-1">
+        <h2 class="text-[var(--neutral-900)] text-2xl md:text-3xl font-bold leading-tight">Personnel Movement Workflows</h2>
+        <p class="text-[var(--neutral-700)] text-sm font-normal leading-normal">Manage workflows for personnel movements, including approvals and conditions.</p>
+      </div>
+      <div class="flex gap-3">
+        <button 
+          class="create-workflow-btn"
+          (click)="onCreateNewWorkflow()"
+          *ngIf="!isEditing"
+        >
+          <span class="material-symbols-outlined text-base">add_circle_outline</span>
+          <span class="truncate">Create New Workflow</span>
+        </button>
+        <button 
+          class="nav-back-btn"
+          (click)="onNavigateToPersonnelMovement()"
+          title="Back to Personnel Movement"
+        >
+          <span class="material-symbols-outlined">arrow_back</span>
+          <span>Back to Personnel</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Existing Workflows Section -->
+  <div class="bg-white shadow-lg rounded-xl border border-[var(--neutral-200)] mb-8" *ngIf="!isEditing">
+    <div class="px-6 py-4 border-b border-[var(--neutral-200)]">
+      <h3 class="text-[var(--neutral-900)] text-lg font-semibold leading-tight">Existing Workflows</h3>
+    </div>
+    <div class="p-6 @container">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-[var(--neutral-200)]">
+              <th class="table-15de9eae-13b3-479b-bd5d-fb6bdbf61aab-column-120 px-4 py-3 text-left text-[var(--neutral-700)] text-xs font-medium uppercase tracking-wider">
+                Workflow Name
+              </th>
+              <th class="table-15de9eae-13b3-479b-bd5d-fb6bdbf61aab-column-240 px-4 py-3 text-left text-[var(--neutral-700)] text-xs font-medium uppercase tracking-wider">
+                Description
+              </th>
+              <th class="table-15de9eae-13b3-479b-bd5d-fb6bdbf61aab-column-360 px-4 py-3 text-left text-[var(--neutral-700)] text-xs font-medium uppercase tracking-wider">
+                Status
+              </th>
+              <th class="table-15de9eae-13b3-479b-bd5d-fb6bdbf61aab-column-480 px-4 py-3 text-left text-[var(--neutral-700)] text-xs font-medium uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--neutral-200)]">
+            <tr *ngFor="let workflow of workflows">
+              <td class="table-15de9eae-13b3-479b-bd5d-fb6bdbf61aab-column-120 px-4 py-4 whitespace-nowrap text-[var(--neutral-900)] text-sm font-medium">
+                {{ workflow.name }}
+              </td>
+              <td class="table-15de9eae-13b3-479b-bd5d-fb6bdbf61aab-column-240 px-4 py-4 text-[var(--neutral-700)] text-sm">
+                {{ workflow.description }}
+              </td>
+              <td class="table-15de9eae-13b3-479b-bd5d-fb6bdbf61aab-column-360 px-4 py-4">
+                <span class="status-badge" [ngClass]="getStatusClass(workflow.status)">{{ workflow.status }}</span>
+              </td>
+              <td class="table-15de9eae-13b3-479b-bd5d-fb6bdbf61aab-column-480 px-4 py-4 whitespace-nowrap">
+                <div class="flex items-center gap-3">
+                  <button class="table-action-button flex items-center gap-1" (click)="onEditWorkflow(workflow)">
+                    <span class="material-symbols-outlined text-lg">edit</span>
+                    Edit
+                  </button>
+                  <button class="table-action-button text-red-600 hover:text-red-800 flex items-center gap-1" (click)="onDeleteWorkflow(workflow)">
+                    <span class="material-symbols-outlined text-lg">delete</span>
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workflow Editor Section -->
+  <div class="bg-white shadow-lg rounded-xl border border-[var(--neutral-200)]" *ngIf="isEditing">
+    <div class="px-6 py-4 border-b border-[var(--neutral-200)]">
+      <h3 class="text-[var(--neutral-900)] text-lg font-semibold leading-tight">
+        {{ selectedWorkflow ? 'Edit Workflow' : 'Create New Workflow' }}
+      </h3>
+    </div>
+    <form class="p-6 space-y-6" (ngSubmit)="onSaveWorkflow()">
+      <div>
+        <label class="block text-sm font-medium text-[var(--neutral-900)] pb-1.5">Workflow Name</label>
+        <input 
+          class="form-input"
+          [(ngModel)]="workflowForm.name"
+          name="workflowName"
+          placeholder="e.g., New Hire Onboarding"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-[var(--neutral-900)] pb-1.5">Description</label>
+        <textarea 
+          class="form-textarea"
+          [(ngModel)]="workflowForm.description"
+          name="workflowDescription"
+          placeholder="Describe the purpose of this workflow"
+        ></textarea>
+      </div>
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <h4 class="text-[var(--neutral-900)] text-base font-semibold leading-tight">Approval Steps</h4>
+          <button 
+            class="add-step-btn"
+            type="button"
+            (click)="onAddApprovalStep()"
+          >
+            <span class="material-symbols-outlined text-base">add</span>
+            <span class="truncate">Add Step</span>
+          </button>
+        </div>
+        <div class="overflow-x-auto border border-[var(--neutral-200)] rounded-lg" *ngIf="workflowForm.approvalSteps.length > 0">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-[var(--neutral-200)] bg-gray-50">
+                <th class="px-4 py-3 text-left text-[var(--neutral-700)] text-xs font-medium uppercase tracking-wider">Step</th>
+                <th class="px-4 py-3 text-left text-[var(--neutral-700)] text-xs font-medium uppercase tracking-wider">Approver(s)</th>
+                <th class="px-4 py-3 text-left text-[var(--neutral-700)] text-xs font-medium uppercase tracking-wider">Conditions</th>
+                <th class="px-4 py-3 text-left text-[var(--neutral-700)] text-xs font-medium uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--neutral-200)]">
+              <tr *ngFor="let step of workflowForm.approvalSteps">
+                <td class="px-4 py-4 whitespace-nowrap text-[var(--neutral-900)] text-sm font-medium">Step {{ step.stepNumber }}</td>
+                <td class="px-4 py-4 text-[var(--neutral-700)] text-sm">{{ step.approvers }}</td>
+                <td class="px-4 py-4 text-[var(--neutral-700)] text-sm">{{ step.conditions }}</td>
+                <td class="px-4 py-4 whitespace-nowrap">
+                  <div class="flex items-center gap-3">
+                    <button class="table-action-button flex items-center gap-1" type="button" (click)="onEditApprovalStep(step)">
+                      <span class="material-symbols-outlined text-lg">edit</span>
+                      Edit
+                    </button>
+                    <button class="table-action-button text-red-600 hover:text-red-800 flex items-center gap-1" type="button" (click)="onDeleteApprovalStep(step)">
+                      <span class="material-symbols-outlined text-lg">delete</span>
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="text-center py-8 text-gray-500" *ngIf="workflowForm.approvalSteps.length === 0">
+          <span class="material-symbols-outlined text-4xl mb-2">workflow</span>
+          <p>No approval steps added yet. Click "Add Step" to create the first approval step.</p>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 pt-4">
+        <button class="cancel-btn" type="button" (click)="onCancel()">
+          <span class="truncate">Cancel</span>
+        </button>
+        <button class="save-btn" type="submit">
+          <span class="truncate">{{ selectedWorkflow ? 'Update Workflow' : 'Save Workflow' }}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

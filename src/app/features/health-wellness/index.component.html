@@ -1,0 +1,95 @@
+<div class="health-wellness-container">
+  <div class="activity-type-buttons">
+    <button class="activity-btn" [class.active]="selectedActivity === 'dashboard'" (click)="selectActivity('dashboard')">Dashboard</button>
+    <button class="activity-btn" [class.active]="selectedActivity === 'voice'" (click)="selectActivity('voice')">Voice</button>
+    <button class="activity-btn" [class.active]="selectedActivity === 'face'" (click)="selectActivity('face')">Face Scan</button>
+    <button class="activity-btn" [class.active]="selectedActivity === 'digital'" (click)="selectActivity('digital')">Digital Footprint</button>
+  </div>
+
+  <div [@routeAnimation]="selectedActivity" class="route-anim-container">
+    <div [ngClass]="{'fade-in': fadeInFlag}">
+      <div *ngIf="selectedActivity === 'dashboard'">
+        <div class="page-header">
+          <div class="title">{{ title }}</div>
+          <p>Access health programs, wellness activities, and support resources</p>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="dashboard-left">
+            <div class="overview-card card">
+              <h3>Overview Chart</h3>
+              <canvas baseChart
+                [data]="barChartData"
+                [options]="barChartOptions"
+                [type]="'bar'">
+              </canvas>
+            </div>
+            <div class="stat-cards-row">
+              <div class="stat-card card">
+                <div class="stat-label">Total Requests</div>
+                <div class="stat-value">{{ totalRequests }}</div>
+              </div>
+              <div class="stat-card card">
+                <div class="stat-label">Average Score</div>
+                <div class="stat-value">95</div>
+              </div>
+              <div class="stat-card card">
+                <div class="stat-label">Good Score</div>
+                <div class="stat-value">5</div>
+              </div>
+              <div class="stat-card card">
+                <div class="stat-label">Bad Score</div>
+                <div class="stat-value">0</div>
+              </div>
+            </div>
+          </div>
+          <div class="dashboard-right">
+            <div class="overview-donut card">
+              <h3>Overview Pie</h3>
+              <div class="donut-chart-modern">
+                <canvas baseChart
+                  [data]="doughnutChartData"
+                  [options]="doughnutChartOptions"
+                  [type]="'doughnut'"
+                  style="max-width: 200px; max-height: 200px;">
+                </canvas>
+                <div class="donut-center-modern">
+                  <span class="donut-value">{{ totalScans }}</span>
+                  <span class="donut-label">Total Scans</span>
+                </div>
+              </div>
+            </div>
+            <div class="requests-card card">
+              <h3>Overview Requests</h3>
+              <canvas baseChart
+                [data]="lineChartData"
+                [options]="lineChartOptions"
+                [type]="'line'"
+                style="max-width: 100%; height: 300px;">
+              </canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <h2>Quick Actions</h2>
+          <div class="action-buttons">
+            <button class="btn btn-secondary quick-action-btn" (click)="goToJoinProgram()">Join Program</button>
+            <button class="btn btn-secondary quick-action-btn" (click)="goToWellnessEvents()">Wellness Events</button>
+            <button class="btn btn-secondary">Contact Support</button>
+          </div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="selectedActivity === 'voice'">
+        <ng-container *ngComponentOutlet="VoiceComponent"></ng-container>
+      </ng-container>
+      <ng-container *ngIf="selectedActivity === 'face'">
+        <ng-container *ngComponentOutlet="FaceScanComponent"></ng-container>
+      </ng-container>
+      <ng-container *ngIf="selectedActivity === 'digital'">
+        <ng-container *ngComponentOutlet="DigitalFootprintComponent"></ng-container>
+      </ng-container>
+    </div>
+  </div>
+</div> 

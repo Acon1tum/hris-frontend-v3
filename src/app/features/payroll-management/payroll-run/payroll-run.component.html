@@ -1,0 +1,222 @@
+<div class="payroll-run-container">
+  <!-- Main Content -->
+  <div class="layout-content-container">
+    
+    <!-- Page Header -->
+    <header class="page-header">
+      <h1 class="page-title">{{ title }}</h1>
+    </header>
+
+    <!-- Form -->
+    <form class="payroll-form" (ngSubmit)="onFormSubmit($event)">
+      
+      <!-- Configuration Section -->
+      <div class="form-section-grid">
+        <div class="section-info">
+          <h2 class="section-title">Configuration</h2>
+          <p class="section-description">Set the period and filter employees for this payroll run.</p>
+        </div>
+        
+        <div class="section-content">
+          <!-- Payroll Period -->
+          <section class="content-section">
+            <h3 class="content-title">Payroll Period</h3>
+            <div class="date-grid">
+              <div class="form-field">
+                <label class="form-label" for="cutoff-start-date">Cutoff Start Date</label>
+                <div class="input-wrapper">
+                  <input 
+                    class="form-input" 
+                    id="cutoff-start-date" 
+                    placeholder="Select Date" 
+                    type="date"
+                    [(ngModel)]="cutoffStartDate"
+                    name="cutoffStartDate"
+                  />
+                </div>
+              </div>
+              
+              <div class="form-field">
+                <label class="form-label" for="cutoff-end-date">Cutoff End Date</label>
+                <div class="input-wrapper">
+                  <input 
+                    class="form-input" 
+                    id="cutoff-end-date" 
+                    placeholder="Select Date" 
+                    type="date"
+                    [(ngModel)]="cutoffEndDate"
+                    name="cutoffEndDate"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <hr class="section-divider" />
+
+          <!-- Employee Filter -->
+          <section class="content-section">
+            <h3 class="content-title">Employee Filter</h3>
+            <div class="radio-group">
+              <div 
+                *ngFor="let option of employeeFilterOptions" 
+                class="radio-option"
+              >
+                <input 
+                  class="form-radio" 
+                  [id]="'filter-' + option.id" 
+                  name="employee-filter" 
+                  type="radio"
+                  [value]="option.id"
+                  [(ngModel)]="employeeFilter"
+                  (change)="onEmployeeFilterChange(option.id)"
+                />
+                <label 
+                  class="radio-label" 
+                  [for]="'filter-' + option.id"
+                >
+                  {{ option.label }}
+                </label>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- Payroll Details Section -->
+      <div class="form-section-grid">
+        <div class="section-info">
+          <h2 class="section-title">Payroll Details</h2>
+          <p class="section-description">Review auto-calculated amounts and add any one-time payments.</p>
+        </div>
+        
+        <div class="section-content">
+          <!-- Payroll Summary -->
+          <section class="content-section">
+            <h3 class="content-title">Payroll Summary</h3>
+            <dl class="summary-list">
+              <div 
+                *ngFor="let item of payrollSummary; trackBy: trackBySummaryItem" 
+                class="summary-item"
+                [class.summary-total]="item.isTotal"
+              >
+                <dt class="summary-label" [class.total-label]="item.isTotal">{{ item.label }}</dt>
+                <dd class="summary-amount" [class.total-amount]="item.isTotal">{{ formatCurrency(item.amount) }}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <hr class="section-divider" />
+
+          <!-- One-Time Pays -->
+          <section class="content-section">
+            <h3 class="content-title">One-Time Pays</h3>
+            <div class="onetime-grid">
+              <div class="form-field onetime-description">
+                <label class="form-label" for="one-time-pay-desc">Description</label>
+                <div class="input-wrapper">
+                  <input 
+                    class="form-input" 
+                    id="one-time-pay-desc" 
+                    placeholder="e.g., Performance Bonus" 
+                    type="text"
+                    [(ngModel)]="oneTimePayDescription"
+                    name="oneTimePayDescription"
+                  />
+                </div>
+              </div>
+              
+              <div class="form-field onetime-amount">
+                <label class="form-label" for="one-time-pay-amount">Amount</label>
+                <div class="input-wrapper input-currency">
+                  <div class="currency-prefix">
+                    <span class="currency-symbol">$</span>
+                  </div>
+                  <input 
+                    class="form-input input-with-prefix" 
+                    id="one-time-pay-amount" 
+                    placeholder="0.00" 
+                    type="text"
+                    [(ngModel)]="oneTimePayAmount"
+                    name="oneTimePayAmount"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- Payroll Options Section -->
+      <div class="form-section-grid">
+        <div class="section-info">
+          <h2 class="section-title">Payroll Options</h2>
+          <p class="section-description">Specify if this is a first or final pay for any employees.</p>
+        </div>
+        
+        <div class="section-content">
+          <fieldset class="options-fieldset">
+            <legend class="sr-only">Payroll Options</legend>
+            <div class="checkbox-group">
+              
+              <div class="checkbox-option">
+                <div class="checkbox-wrapper">
+                  <input 
+                    aria-describedby="first-pay-description" 
+                    class="form-checkbox" 
+                    id="first-pay" 
+                    type="checkbox"
+                    [(ngModel)]="firstPay"
+                    name="firstPay"
+                  />
+                </div>
+                <div class="checkbox-content">
+                  <label class="checkbox-label" for="first-pay">First Pay</label>
+                  <p class="checkbox-description" id="first-pay-description">
+                    Mark this payroll run for employees receiving their first payment.
+                  </p>
+                </div>
+              </div>
+
+              <div class="checkbox-option">
+                <div class="checkbox-wrapper">
+                  <input 
+                    aria-describedby="final-pay-description" 
+                    class="form-checkbox" 
+                    id="final-pay" 
+                    type="checkbox"
+                    [(ngModel)]="finalPay"
+                    name="finalPay"
+                  />
+                </div>
+                <div class="checkbox-content">
+                  <label class="checkbox-label" for="final-pay">Final Pay</label>
+                  <p class="checkbox-description" id="final-pay-description">
+                    Mark this payroll run for employees receiving their final payment.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button 
+          class="btn btn-secondary" 
+          type="button"
+          (click)="onPreview()"
+        >
+          Preview
+        </button>
+        <button 
+          class="btn btn-primary" 
+          type="submit"
+        >
+          <span>Finalize Payroll Run</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div> 

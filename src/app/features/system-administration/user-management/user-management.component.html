@@ -1,0 +1,67 @@
+<div class="user-management-container">
+  <div class="header-section">
+    <div class="title-actions">
+      <h1 class="page-title">Users</h1>
+      <button class="btn-new-user" (click)="onNewUser()">
+        <svg fill="none" height="18px" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="18px" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h14"></path>
+          <path d="M12 5v14"></path>
+        </svg>
+        <span>New User</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="search-section">
+    <label class="search-container">
+      <div class="search-icon">
+        <svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+          <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+        </svg>
+      </div>
+      <input 
+        class="search-input" 
+        placeholder="Search users by name or email" 
+        [value]="searchTerm"
+        (input)="onSearch($event)"
+      />
+    </label>
+  </div>
+
+  <div class="table-container">
+    <div class="table-wrapper">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Role</th>
+            <th scope="col">Status</th>
+            <th scope="col">Last Login</th>
+            <th scope="col" class="actions-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of filteredUsers; trackBy: trackByUserId">
+            <td class="user-name">{{ user.name }}</td>
+            <td class="user-role">{{ user.role }}</td>
+            <td class="user-status">
+              <span 
+                class="status-badge" 
+                [ngClass]="{
+                  'status-active': user.status === 'Active',
+                  'status-inactive': user.status === 'Inactive'
+                }"
+              >
+                {{ user.status }}
+              </span>
+            </td>
+            <td class="user-last-login">{{ user.lastLogin }}</td>
+            <td class="user-actions">
+              <a class="view-link" (click)="onViewUser(user)" href="javascript:void(0)">View</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div> 

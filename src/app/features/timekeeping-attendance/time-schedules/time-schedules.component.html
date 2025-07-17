@@ -1,0 +1,109 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-header-content">
+    <div class="page-header-text">
+      <h1 class="page-title">{{ title }}</h1>
+      <p class="page-description">Manage work schedules and shift assignments for your organization</p>
+    </div>
+    <button class="btn-primary" (click)="onNewSchedule()">
+      <svg class="btn-icon" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+        <path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path>
+      </svg>
+      New Schedule
+    </button>
+  </div>
+</div>
+
+<!-- Tabs Navigation -->
+<div class="content-section">
+  <div class="tabs-container">
+    <nav class="tabs-nav">
+      <button 
+        *ngFor="let tab of tabs"
+        class="tab-link"
+        [ngClass]="{ 'tab-active': tab.active }"
+        (click)="setActiveTab(tab.id)">
+        {{ tab.name }}
+        <span class="tab-count">{{ tab.count }}</span>
+      </button>
+    </nav>
+  </div>
+</div>
+
+<!-- Search Section -->
+<div class="content-section">
+  <div class="search-container">
+    <svg class="search-icon" fill="currentColor" height="20" viewBox="0 0 256 256" width="20" xmlns="http://www.w3.org/2000/svg">
+      <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+    </svg>
+    <input 
+      type="search" 
+      class="search-input" 
+      placeholder="Search schedules by name, type, or assigned entity..."
+      [(ngModel)]="searchTerm"
+      (input)="onSearch()">
+  </div>
+</div>
+
+<!-- Schedules Table -->
+<div class="content-section">
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Schedule Name</th>
+          <th>Type</th>
+          <th>Assigned To</th>
+          <th>Working Hours</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let schedule of filteredSchedules; trackBy: trackByScheduleId" class="table-row">
+          <td class="schedule-name">{{ schedule.name }}</td>
+          <td>
+            <span class="schedule-badge" [ngClass]="getScheduleTypeBadgeClass(schedule.type)">
+              {{ getScheduleTypeText(schedule.type) }}
+            </span>
+          </td>
+          <td class="assigned-data">{{ schedule.assignedTo }}</td>
+          <td class="hours-data">{{ schedule.workingHours || 'Not specified' }}</td>
+          <td class="date-data">{{ schedule.startDate }}</td>
+          <td class="date-data">{{ schedule.endDate }}</td>
+          <td class="actions-cell">
+            <div class="action-buttons">
+              <button class="btn-action" (click)="onViewSchedule(schedule)" title="View Details">
+                <svg class="action-icon" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"></path>
+                </svg>
+              </button>
+              <button class="btn-action" (click)="onEditSchedule(schedule)" title="Edit Schedule">
+                <svg class="action-icon" fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M227.31,73.37,182.63,28.69a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.69,147.31,64l24-24L216,84.69Z"></path>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredSchedules.length === 0" class="empty-state">
+      <div class="empty-state-content">
+        <svg class="empty-state-icon" fill="currentColor" height="48" viewBox="0 0 256 256" width="48" xmlns="http://www.w3.org/2000/svg">
+          <path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"></path>
+        </svg>
+        <h3 class="empty-state-title">No Schedules Found</h3>
+        <p class="empty-state-description">
+          No schedules match your current search criteria. Try adjusting your search or create a new schedule.
+        </p>
+        <button class="btn-secondary" (click)="onNewSchedule()">
+          Create New Schedule
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 

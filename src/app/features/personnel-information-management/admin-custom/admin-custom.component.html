@@ -1,0 +1,497 @@
+<div class="admin-custom-container">
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-description">
+        <h1 class="page-title">{{ title }}</h1>
+        <p class="page-description">Super Admin tools for system monitoring, alert management, and custom reporting</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tabs-section">
+    <nav class="tabs-nav">
+      <a 
+        class="tab-link"
+        [ngClass]="{ 'tab-active': activeTab === 'alerts' }"
+        (click)="setActiveTab('alerts')"
+        href="javascript:void(0)"
+      >
+        <p class="tab-text">
+          Real-time Alerts
+          <span class="alert-badge" *ngIf="getUnreadAlertsCount() > 0">{{ getUnreadAlertsCount() }}</span>
+        </p>
+      </a>
+      <a 
+        class="tab-link"
+        [ngClass]="{ 'tab-active': activeTab === 'rules' }"
+        (click)="setActiveTab('rules')"
+        href="javascript:void(0)"
+      >
+        <p class="tab-text">Alert Rules</p>
+      </a>
+      <a 
+        class="tab-link"
+        [ngClass]="{ 'tab-active': activeTab === 'reports' }"
+        (click)="setActiveTab('reports')"
+        href="javascript:void(0)"
+      >
+        <p class="tab-text">Custom Reports</p>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Alerts Tab -->
+  <div class="content-card" *ngIf="activeTab === 'alerts'">
+    <div class="card-header">
+      <h2 class="section-title">Real-time System Alerts</h2>
+      <p class="section-description">Monitor critical system issues, security breaches, and data inconsistencies</p>
+    </div>
+    <div class="card-content">
+      <div class="alerts-grid" *ngIf="alerts.length > 0">
+        <div 
+          class="alert-item" 
+          *ngFor="let alert of alerts"
+          [ngClass]="{ 
+            'alert-unread': !alert.isRead,
+            'alert-critical': alert.type === 'critical',
+            'alert-warning': alert.type === 'warning',
+            'alert-info': alert.type === 'info'
+          }"
+        >
+          <div class="alert-header">
+            <div class="alert-icon" [ngClass]="'alert-' + alert.type">
+              {{ getAlertIcon(alert.type) }}
+            </div>
+            <div class="alert-info">
+              <h3 class="alert-title">{{ alert.title }}</h3>
+              <span class="alert-category">{{ alert.category }}</span>
+              <span class="alert-time">{{ alert.timestamp | date:'short' }}</span>
+            </div>
+            <div class="alert-actions">
+              <button 
+                class="btn-icon" 
+                *ngIf="!alert.isRead"
+                (click)="markAlertAsRead(alert.id)"
+                title="Mark as read"
+              >
+                <svg fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
+                </svg>
+              </button>
+              <button 
+                class="btn-icon btn-delete" 
+                (click)="deleteAlert(alert.id)"
+                title="Delete alert"
+              >
+                <svg fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32Z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="alert-message">
+            <p>{{ alert.message }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="alerts.length === 0">
+        <div class="empty-icon">🎉</div>
+        <h3 class="empty-title">No Alerts</h3>
+        <p class="empty-description">All systems are running smoothly!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules Tab -->
+  <div class="content-card" *ngIf="activeTab === 'rules'">
+    <div class="card-header">
+      <h2 class="section-title">Alert Rules & Notification Preferences</h2>
+      <div class="header-controls">
+        <button class="btn-add" (click)="onFabClick()">
+          <svg fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+            <path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path>
+          </svg>
+          <span>Create New Rule</span>
+        </button>
+      </div>
+    </div>
+    <div class="card-content">
+      <div class="rules-grid" *ngIf="alertRules.length > 0">
+        <div class="rule-item" *ngFor="let rule of alertRules">
+          <div class="rule-header">
+            <div class="rule-icon">⚙️</div>
+            <div class="rule-info">
+              <h3 class="rule-title">{{ rule.name }}</h3>
+              <p class="rule-description">{{ rule.description }}</p>
+            </div>
+            <div class="rule-status">
+              <span 
+                class="status-badge" 
+                [ngClass]="{ 'status-active': rule.isActive, 'status-inactive': !rule.isActive }"
+              >
+                {{ rule.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+          </div>
+          <div class="rule-details">
+            <div class="detail-row">
+              <span class="detail-label">Condition:</span>
+              <span class="detail-value">{{ rule.condition }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Severity:</span>
+              <span class="severity-badge" [ngClass]="'severity-' + rule.severity">
+                {{ rule.severity }}
+              </span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Notifications:</span>
+              <span class="detail-value">{{ rule.notifications.join(', ') }}</span>
+            </div>
+          </div>
+          <div class="rule-actions">
+            <button 
+              class="btn-secondary" 
+              (click)="toggleRuleStatus(rule.id)"
+            >
+              {{ rule.isActive ? 'Deactivate' : 'Activate' }}
+            </button>
+            <button 
+              class="btn-secondary" 
+              (click)="editRule(rule)"
+            >
+              Edit
+            </button>
+            <button 
+              class="btn-danger" 
+              (click)="deleteRule(rule.id)"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="alertRules.length === 0">
+        <div class="empty-icon">⚙️</div>
+        <h3 class="empty-title">No Rules</h3>
+        <p class="empty-description">Start by creating your first alert rule!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports Tab -->
+  <div class="content-card" *ngIf="activeTab === 'reports'">
+    <div class="card-header">
+      <h2 class="section-title">Custom Graphical Reports</h2>
+      <div class="header-controls">
+        <button class="btn-add" (click)="onFabClick()">
+          <svg fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+            <path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path>
+          </svg>
+          <span>Create New Report</span>
+        </button>
+      </div>
+    </div>
+    <div class="card-content">
+      <div class="reports-grid" *ngIf="reports.length > 0">
+        <div class="report-item" *ngFor="let report of reports">
+          <div class="report-header">
+            <div class="report-icon">📊</div>
+            <div class="report-info">
+              <h3 class="report-title">{{ report.name }}</h3>
+              <p class="report-description">{{ report.description }}</p>
+            </div>
+            <div class="report-badges">
+              <span class="type-badge">{{ report.type }}</span>
+              <span class="custom-badge" *ngIf="report.isCustom">Custom</span>
+            </div>
+          </div>
+          <div class="report-details">
+            <div class="detail-row">
+              <span class="detail-label">Metrics:</span>
+              <span class="detail-value">{{ report.metrics.join(', ') }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Last Generated:</span>
+              <span class="detail-value">{{ report.lastGenerated | date:'short' }}</span>
+            </div>
+          </div>
+          <div class="report-actions">
+            <button 
+              class="btn-primary" 
+              (click)="viewReport(report)"
+            >
+              View Report
+            </button>
+            <button 
+              class="btn-secondary" 
+              (click)="editReport(report)"
+              *ngIf="report.isCustom"
+            >
+              Edit
+            </button>
+            <button 
+              class="btn-danger" 
+              (click)="deleteReport(report.id)"
+              *ngIf="report.isCustom"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="reports.length === 0">
+        <div class="empty-icon">📊</div>
+        <h3 class="empty-title">No Reports</h3>
+        <p class="empty-description">Start by creating your first report!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Overlays -->
+<!-- Rule Form Modal -->
+<div class="modal-overlay" *ngIf="showNewRuleForm">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>{{ editingRule ? 'Edit Alert Rule' : 'Create New Alert Rule' }}</h3>
+      <button class="btn-icon" (click)="cancelEditRule()">
+        <svg fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+          <path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32Z"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-content">
+      <form (ngSubmit)="editingRule ? updateRule() : createNewRule()">
+        <div class="form-group">
+          <label>Rule Name</label>
+          <input 
+            type="text" 
+            [(ngModel)]="ruleName" 
+            name="name"
+            placeholder="Enter rule name"
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label>Description</label>
+          <textarea 
+            [(ngModel)]="ruleDescription" 
+            name="description"
+            placeholder="Describe what this rule monitors"
+            required
+          ></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Condition</label>
+          <input 
+            type="text" 
+            [(ngModel)]="ruleCondition" 
+            name="condition"
+            placeholder="e.g., failed_logins > 5 within 10 minutes"
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label>Severity Level</label>
+          <select [(ngModel)]="ruleSeverity" name="severity">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Notifications</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [checked]="(editingRule ? editingRule.notifications : newRule.notifications).includes('email')"
+                (change)="toggleNotification('email')"
+              > 
+              Email
+            </label>
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [checked]="(editingRule ? editingRule.notifications : newRule.notifications).includes('sms')"
+                (change)="toggleNotification('sms')"
+              > 
+              SMS
+            </label>
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [checked]="(editingRule ? editingRule.notifications : newRule.notifications).includes('dashboard')"
+                (change)="toggleNotification('dashboard')"
+              > 
+              Dashboard
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="cancelEditRule()">Cancel</button>
+          <button type="submit" class="btn-primary">
+            {{ editingRule ? 'Update Rule' : 'Create Rule' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Report Form Modal -->
+<div class="modal-overlay" *ngIf="showNewReportForm">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>{{ editingReport ? 'Edit Report' : 'Create New Report' }}</h3>
+      <button class="btn-icon" (click)="cancelEditReport()">
+        <svg fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+          <path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32Z"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-content">
+      <form (ngSubmit)="editingReport ? updateReport() : createNewReport()">
+        <div class="form-group">
+          <label>Report Name</label>
+          <input 
+            type="text" 
+            [(ngModel)]="reportName" 
+            name="name"
+            placeholder="Enter report name"
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label>Description</label>
+          <textarea 
+            [(ngModel)]="reportDescription" 
+            name="description"
+            placeholder="Describe what this report shows"
+            required
+          ></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Report Type</label>
+          <select [(ngModel)]="reportType" name="type">
+            <option value="chart">Chart</option>
+            <option value="table">Table</option>
+            <option value="dashboard">Dashboard</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Metrics to Include</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [checked]="(editingReport ? editingReport.metrics : newReport.metrics).includes('employee_count')"
+                (change)="toggleMetric('employee_count')"
+              > 
+              Employee Count
+            </label>
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [checked]="(editingReport ? editingReport.metrics : newReport.metrics).includes('department_distribution')"
+                (change)="toggleMetric('department_distribution')"
+              > 
+              Department Distribution
+            </label>
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [checked]="(editingReport ? editingReport.metrics : newReport.metrics).includes('performance_metrics')"
+                (change)="toggleMetric('performance_metrics')"
+              > 
+              Performance Metrics
+            </label>
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [checked]="(editingReport ? editingReport.metrics : newReport.metrics).includes('security_metrics')"
+                (change)="toggleMetric('security_metrics')"
+              > 
+              Security Metrics
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="cancelEditReport()">Cancel</button>
+          <button type="submit" class="btn-primary">
+            {{ editingReport ? 'Update Report' : 'Create Report' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Report View Modal -->
+<div class="modal-overlay" *ngIf="showReportModal">
+  <div class="modal-card large">
+    <div class="modal-header">
+      <h3>{{ selectedReport?.name }}</h3>
+      <button class="btn-icon" (click)="closeReportModal()">
+        <svg fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg">
+          <path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32Z"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-content" *ngIf="selectedReport">
+      <div class="report-summary">
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="summary-label">Description:</span>
+            <span class="summary-value">{{ selectedReport.description }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Type:</span>
+            <span class="type-badge">{{ selectedReport.type }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Metrics:</span>
+            <span class="summary-value">{{ selectedReport.metrics.join(', ') }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Last Generated:</span>
+            <span class="summary-value">{{ selectedReport.lastGenerated | date:'short' }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="report-preview">
+        <h4>Report Preview</h4>
+        <div class="preview-placeholder">
+          <div class="preview-icon">📊</div>
+          <p>Report visualization will be displayed here</p>
+          <small>This is a preview of the {{ selectedReport.type }} report</small>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn-primary" (click)="generateReport(selectedReport.id)">
+          Generate Report
+        </button>
+        <button class="btn-secondary" (click)="exportReport(selectedReport.id)">
+          Export
+        </button>
+        <button class="btn-secondary" (click)="closeReportModal()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 

@@ -1,0 +1,211 @@
+<div class="leave-type-container">
+  <!-- Dashboard Metrics Cards -->
+  <div class="dashboard-metrics">
+    <div class="metric-card total-leaves">
+      <div class="metric-label">Total Leaves</div>
+      <div class="metric-value">{{ totalLeaves }}</div>
+    </div>
+    <div class="metric-card pending-leaves">
+      <div class="metric-label">Pending</div>
+      <div class="metric-value">{{ pendingLeaves }}</div>
+    </div>
+    <div class="metric-card approved-leaves">
+      <div class="metric-label">Approved</div>
+      <div class="metric-value">{{ approvedLeaves }}</div>
+    </div>
+    <div class="metric-card most-used-type">
+      <div class="metric-label">Most Used Type</div>
+      <div class="metric-value">{{ mostUsedType }}</div>
+    </div>
+  </div>
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Apply for Leave</h1>
+      <p class="subtitle">Apply for a leave, view your leave history, and manage your leave requests.</p>
+    </div>
+    <button class="btn btn-primary add-button" (click)="onApplyLeave()">
+      <span class="material-symbols-outlined">add</span>
+      <span>Apply for Leave</span>
+    </button>
+  </div>
+
+  <div class="table-container">
+    <div class="table-wrapper">
+      <table class="leave-types-table">
+        <thead>
+          <tr>
+            <th class="col-leave-type">Leave Type</th>
+            <th class="col-description">Reason</th>
+            <th class="col-accrual">Start Date</th>
+            <th class="col-usage">End Date</th>
+            <th class="col-expiration">Total Days</th>
+            <th class="col-documents">Document</th>
+            <th class="col-eligibility">Status</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let leave of leaveApplications" class="table-row">
+            <td class="col-leave-type font-medium">{{ leave.leave_type.leave_type_name }}</td>
+            <td class="col-description">{{ leave.reason }}</td>
+            <td class="col-accrual">{{ leave.start_date | date:'yyyy-MM-dd' }}</td>
+            <td class="col-usage">{{ leave.end_date | date:'yyyy-MM-dd' }}</td>
+            <td class="col-expiration">{{ leave.total_days }}</td>
+            <td class="col-documents">{{ leave.supporting_document }}</td>
+            <td class="col-eligibility">{{ leave.status }}</td>
+            <td class="col-actions">
+              <div class="action-buttons">
+                <button class="btn-icon view-btn" (click)="onViewLeave(leave)" title="View">
+                  <span class="material-symbols-outlined">visibility</span>
+                </button>
+                <button class="btn-icon delete-btn" (click)="onCancelLeave(leave)" title="Cancel" [disabled]="leave.status !== 'Pending'">
+                  <span class="material-symbols-outlined">cancel</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal for leave application form -->
+  <div *ngIf="showApplyForm" class="modal-backdrop">
+    <div class="modal">
+      <h2>Apply for Leave</h2>
+      <form [formGroup]="leaveForm" (ngSubmit)="submitForm()" enctype="multipart/form-data" novalidate>
+        <div class="form-row">
+          <div class="form-col">
+            <div class="form-group" [class.invalid]="formSubmitted && validationErrors.includes('Leave type is required.')">
+              <label for="leaveType">Leave Type</label>
+              <select id="leaveType" formControlName="leave_type_id" required>
+                <option value="" disabled selected>Select leave type</option>
+                <option *ngFor="let type of leaveTypes" [value]="type.id">{{ type.leave_type_name }}</option>
+              </select>
+              <div class="error-message" *ngIf="formSubmitted && validationErrors.includes('Leave type is required.')">Leave type is required.</div>
+            </div>
+            <div class="form-group" [class.invalid]="formSubmitted && validationErrors.includes('Start date is required.')">
+              <label for="startDate">Start Date</label>
+              <input id="startDate" formControlName="start_date" type="date" required (change)="calculateTotalDays()" />
+              <div class="error-message" *ngIf="formSubmitted && validationErrors.includes('Start date is required.')">Start date is required.</div>
+            </div>
+            <div class="form-group" [class.invalid]="formSubmitted && validationErrors.includes('End date is required.')">
+              <label for="endDate">End Date</label>
+              <input id="endDate" formControlName="end_date" type="date" required (change)="calculateTotalDays()" />
+              <div class="error-message" *ngIf="formSubmitted && validationErrors.includes('End date is required.')">End date is required.</div>
+            </div>
+            <div class="form-group">
+              <label>Total Days</label>
+              <input type="number" [value]="leaveForm.value.total_days" readonly />
+            </div>
+          </div>
+          <div class="form-col">
+            <div class="form-group" [class.invalid]="formSubmitted && validationErrors.includes('Reason is required.')">
+              <label for="reason">Reason</label>
+              <textarea id="reason" formControlName="reason" rows="3" required></textarea>
+              <div class="error-message" *ngIf="formSubmitted && validationErrors.includes('Reason is required.')">Reason is required.</div>
+            </div>
+            <div class="form-group">
+              <label for="document">Supporting Document <span style="color:#888;font-weight:400;">(optional)</span></label>
+              <input id="document" name="document" type="file" (change)="onFileChange($event)" />
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" (click)="showApplyForm = false">Cancel</button>
+          <button type="submit">Submit Application</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Loading/Progress Modal -->
+  <div *ngIf="isSubmitting" class="modal-backdrop">
+    <div class="progress-modal">
+      <div class="progress-spinner"></div>
+      <div class="progress-message">Submitting your application...</div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div *ngIf="showSuccessModal" class="modal-backdrop">
+    <div class="success-modal">
+      <span class="material-symbols-outlined success-icon">check_circle</span>
+      <div class="success-message">Submitted successfully!</div>
+    </div>
+  </div>
+
+  <!-- Modal for viewing leave details -->
+  <div *ngIf="showViewModal" class="modal-backdrop">
+    <div class="details-modal improved-details-modal">
+      <h2>Leave Details</h2>
+      <table class="details-table improved-details-table">
+        <tr><th>Leave Type</th><td>{{ selectedApplication?.leave_type?.leave_type_name }}</td></tr>
+        <tr><th>Reason</th><td>{{ selectedApplication?.reason }}</td></tr>
+        <tr><th>Start Date</th><td>{{ selectedApplication?.start_date | date:'yyyy-MM-dd' }}</td></tr>
+        <tr><th>End Date</th><td>{{ selectedApplication?.end_date | date:'yyyy-MM-dd' }}</td></tr>
+        <tr><th>Total Days</th><td>{{ selectedApplication?.total_days }}</td></tr>
+        <tr><th>Status</th><td><span class="status-badge" [ngClass]="selectedApplication?.status?.toLowerCase()">{{ selectedApplication?.status }}</span></td></tr>
+        <tr>
+          <th>Document</th>
+          <td>
+            <ng-container *ngIf="selectedApplication?.supporting_document; else noDoc">
+              <span class="file-type-icon">
+                <ng-container [ngSwitch]="getFileType(selectedApplication?.supporting_document)">
+                  <span *ngSwitchCase="'image'" class="material-symbols-outlined">image</span>
+                  <span *ngSwitchCase="'pdf'" class="material-symbols-outlined">picture_as_pdf</span>
+                  <span *ngSwitchCase="'doc'" class="material-symbols-outlined">description</span>
+                  <span *ngSwitchDefault class="material-symbols-outlined">attach_file</span>
+                </ng-container>
+              </span>
+              {{ selectedApplication?.supporting_document }}
+            </ng-container>
+            <ng-template #noDoc>
+              <span class="no-document">No document submitted</span>
+            </ng-template>
+          </td>
+        </tr>
+      </table>
+      <!-- File preview section -->
+      <div *ngIf="selectedApplication?.supporting_document; else noPreview" class="file-preview improved-file-preview" style="margin-bottom:1.2rem;">
+        <ng-container [ngSwitch]="getFileType(selectedApplication?.supporting_document)">
+          <!-- Image preview -->
+          <img *ngSwitchCase="'image'" [src]="getFileUrl(selectedApplication?.supporting_document)" alt="Image Preview" class="file-preview-img" />
+          <!-- PDF preview -->
+          <iframe *ngSwitchCase="'pdf'" [src]="getFileUrl(selectedApplication?.supporting_document)" class="file-preview-pdf" title="PDF Preview"></iframe>
+          <!-- Doc/Other preview -->
+          <div *ngSwitchDefault class="file-preview-link">
+            <a [href]="getFileUrl(selectedApplication?.supporting_document)" target="_blank" rel="noopener" class="file-link">View/Download File</a>
+          </div>
+        </ng-container>
+      </div>
+      <ng-template #noPreview>
+        <div class="no-preview-message">
+          <span class="material-symbols-outlined no-doc-icon">draft</span>
+          <span>No supporting document was submitted for this leave application.</span>
+        </div>
+      </ng-template>
+      <div class="form-actions">
+        <button type="button" (click)="showViewModal = false">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification (2D Alert) -->
+  <div *ngIf="toast?.show" class="toast-notification" [ngClass]="'toast-' + (toast?.type || 'info')">
+    <span class="toast-icon">
+      <ng-container [ngSwitch]="toast?.type">
+        <span *ngSwitchCase="'success'" class="material-symbols-outlined">check_circle</span>
+        <span *ngSwitchCase="'info'" class="material-symbols-outlined">info</span>
+        <span *ngSwitchCase="'warning'" class="material-symbols-outlined">warning</span>
+        <span *ngSwitchCase="'error'" class="material-symbols-outlined">cancel</span>
+        <span *ngSwitchDefault class="material-symbols-outlined">info</span>
+      </ng-container>
+    </span>
+    <div class="toast-content">
+      <div class="toast-title">{{ toast?.title }}</div>
+      <div class="toast-message">{{ toast?.message }}</div>
+    </div>
+    <button class="toast-close" (click)="closeToast()" aria-label="Close">&times;</button>
+  </div>
+</div>

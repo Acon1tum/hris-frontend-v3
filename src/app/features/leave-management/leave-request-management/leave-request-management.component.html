@@ -1,0 +1,400 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-header-content">
+    <div class="page-header-text">
+      <h1 class="page-title">Leave Request Management</h1>
+      <p class="page-description">Review and manage leave applications from employees. Filter by status, department, or date range to find specific requests.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div *ngIf="isLoading" class="loading-container">
+  <div class="loading-spinner"></div>
+  <p class="loading-text">Loading leave requests...</p>
+</div>
+
+<!-- Error State -->
+<div *ngIf="error && !isLoading" class="error-container">
+  <div class="error-message">
+    <span class="material-symbols-outlined">error</span>
+    {{ error }}
+  </div>
+  <button class="btn-retry" (click)="retryLoad()">Try Again</button>
+</div>
+
+<!-- Main Content -->
+<div *ngIf="!isLoading && !error" class="content-card">
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <h3 class="filters-title">Filters</h3>
+    <div class="filters-grid">
+      <!-- Status Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Status</label>
+        <select 
+          class="filter-select"
+          [(ngModel)]="filters.status"
+          (change)="onApplyFilters()">
+          <option *ngFor="let status of statusOptions || []" [value]="status.value">{{ status.label }}</option>
+        </select>
+      </div>
+
+      <!-- Department Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Department</label>
+        <select 
+          class="filter-select"
+          [(ngModel)]="filters.department_id"
+          (change)="onApplyFilters()">
+          <option value="">All Departments</option>
+          <option *ngFor="let dept of departments || []" [value]="dept.id">{{ dept.department_name }}</option>
+        </select>
+      </div>
+
+      <!-- Employee Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Employee</label>
+        <select 
+          class="filter-select"
+          [(ngModel)]="filters.personnel_id"
+          (change)="onApplyFilters()">
+          <option value="">All Employees</option>
+          <option *ngFor="let person of personnel || []" [value]="person.id">
+            {{ person.first_name }} {{ person.last_name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Date Range Filter -->
+      <div class="filter-group date-range">
+        <div class="date-input-group">
+          <label class="filter-label">Start Date</label>
+          <input 
+            type="date" 
+            class="filter-input"
+            [(ngModel)]="filters.start_date"
+            (change)="onApplyFilters()">
+        </div>
+        <div class="date-input-group">
+          <label class="filter-label">End Date</label>
+          <input 
+            type="date" 
+            class="filter-input"
+            [(ngModel)]="filters.end_date"
+            (change)="onApplyFilters()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Actions -->
+    <div class="filter-actions">
+      <button class="btn-primary" (click)="onApplyFilters()">
+        <span class="material-symbols-outlined">filter_alt</span>
+        Apply Filters
+      </button>
+      <button class="btn-secondary" (click)="onClearFilters()">
+        <span class="material-symbols-outlined">clear</span>
+        Clear Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-section">
+    <div class="table-header">
+      <h3 class="table-title">Leave Applications</h3>
+      <div class="table-info">
+        <span class="table-count">{{ totalItems }} total requests</span>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="requests-table">
+        <thead>
+          <tr>
+            <th class="table-header-cell">Employee</th>
+            <th class="table-header-cell">Leave Type</th>
+            <th class="table-header-cell">Period</th>
+            <th class="table-header-cell">Days</th>
+            <th class="table-header-cell">Status</th>
+            <th class="table-header-cell">Request Date</th>
+            <th class="table-header-cell">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let application of leaveApplications || []; trackBy: trackByApplicationId" class="table-row">
+            <!-- Employee Column -->
+            <td class="table-cell">
+              <div class="employee-info">
+                <p class="employee-name">{{ getEmployeeName(application) }}</p>
+                <p class="employee-department">{{ getDepartmentName(application) }}</p>
+              </div>
+            </td>
+
+            <!-- Leave Type Column -->
+            <td class="table-cell">
+              <div class="leave-type-info">
+                <p class="leave-type-name">{{ application.leave_type.leave_type_name }}</p>
+                <p class="leave-type-description" *ngIf="application.leave_type.description">
+                  {{ application.leave_type.description }}
+                </p>
+              </div>
+            </td>
+
+            <!-- Period Column -->
+            <td class="table-cell">
+              <div class="period-info">
+                <p class="period-dates">
+                  {{ formatDate(application.start_date) }} - {{ formatDate(application.end_date) }}
+                </p>
+              </div>
+            </td>
+
+            <!-- Days Column -->
+            <td class="table-cell">
+              <span class="days-count">{{ application.total_days }}</span>
+            </td>
+
+            <!-- Status Column -->
+            <td class="table-cell">
+              <span class="status-badge" [ngClass]="getStatusBadgeClass(application.status)">
+                {{ application.status }}
+              </span>
+            </td>
+
+            <!-- Request Date Column -->
+            <td class="table-cell">
+              <span class="request-date">{{ formatDate(application.request_date) }}</span>
+            </td>
+
+            <!-- Actions Column -->
+            <td class="table-cell">
+              <div class="action-buttons">
+                <!-- View/Details Button -->
+                <button 
+                  class="action-btn view-btn"
+                  (click)="openApprovalModal(application, 'approve')"
+                  title="View Details">
+                  <span class="material-symbols-outlined">visibility</span>
+                </button>
+
+                <!-- Approve Button (only for pending requests) -->
+                <button 
+                  *ngIf="application.status === 'Pending'"
+                  class="action-btn approve-btn"
+                  (click)="openApprovalModal(application, 'approve')"
+                  title="Approve Request">
+                  <span class="material-symbols-outlined">check_circle</span>
+                </button>
+
+                <!-- Reject Button (only for pending requests) -->
+                <button 
+                  *ngIf="application.status === 'Pending'"
+                  class="action-btn reject-btn"
+                  (click)="openApprovalModal(application, 'reject')"
+                  title="Reject Request">
+                  <span class="material-symbols-outlined">cancel</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="leaveApplications.length === 0" class="empty-state">
+      <div class="empty-state-content">
+        <span class="material-symbols-outlined">folder_open</span>
+        <h3 class="empty-state-title">No Leave Applications Found</h3>
+        <p class="empty-state-description">
+          No leave applications match your current filter criteria. Try adjusting your filters or check back later.
+        </p>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="pagination-section">
+      <div class="pagination-info">
+        <span class="pagination-text">
+          Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }} to {{ (currentPage * itemsPerPage > totalItems ? totalItems : currentPage * itemsPerPage) }} of {{ totalItems }} entries
+        </span>
+      </div>
+      
+      <div class="pagination-controls">
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === 1"
+          (click)="onPageChange(currentPage - 1)">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        
+        <span class="pagination-pages">
+          <button 
+            *ngFor="let page of getPaginationPages(); let i = index"
+            class="pagination-page"
+            [class.active]="currentPage === i + 1"
+            (click)="onPageChange(i + 1)">
+            {{ i + 1 }}
+          </button>
+        </span>
+        
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === totalPages"
+          (click)="onPageChange(currentPage + 1)">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Approval Modal -->
+<div *ngIf="showApprovalModal" class="modal-backdrop">
+  <div class="approval-modal">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        <span class="material-symbols-outlined">
+          {{ approvalType === 'approve' ? 'check_circle' : 'cancel' }}
+        </span>
+        {{ approvalType === 'approve' ? 'Approve' : 'Reject' }} Leave Request
+      </h2>
+      <button class="modal-close" (click)="closeApprovalModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="modal-content" *ngIf="selectedApplication">
+      <!-- Application Details -->
+      <div class="application-details">
+        <div class="detail-section">
+          <h3 class="detail-title">Request Details</h3>
+          <div class="detail-grid">
+                         <div class="detail-item">
+               <span class="detail-label">Employee:</span>
+               <span class="detail-value">{{ selectedApplication ? getEmployeeName(selectedApplication) : '' }}</span>
+             </div>
+             <div class="detail-item">
+               <span class="detail-label">Department:</span>
+               <span class="detail-value">{{ selectedApplication ? getDepartmentName(selectedApplication) : '' }}</span>
+             </div>
+             <div class="detail-item">
+               <span class="detail-label">Leave Type:</span>
+               <span class="detail-value">{{ selectedApplication.leave_type.leave_type_name || '' }}</span>
+             </div>
+             <div class="detail-item">
+               <span class="detail-label">Period:</span>
+               <span class="detail-value">
+                 {{ formatDate(selectedApplication.start_date) + ' - ' + formatDate(selectedApplication.end_date) }}
+               </span>
+             </div>
+             <div class="detail-item">
+               <span class="detail-label">Total Days:</span>
+               <span class="detail-value">{{ selectedApplication.total_days }}</span>
+             </div>
+             <div class="detail-item">
+               <span class="detail-label">Request Date:</span>
+               <span class="detail-value">{{ formatDate(selectedApplication.request_date) }}</span>
+             </div>
+          </div>
+        </div>
+
+                 <!-- Reason Section -->
+         <div class="detail-section" *ngIf="selectedApplication.reason">
+           <h3 class="detail-title">Reason</h3>
+           <p class="reason-text">{{ selectedApplication.reason }}</p>
+         </div>
+
+                 <!-- Supporting Document Section -->
+         <div class="detail-section" *ngIf="selectedApplication.supporting_document">
+           <h3 class="detail-title">Supporting Document</h3>
+           <div class="document-preview">
+             <div class="document-info">
+               <span class="material-symbols-outlined">
+                 {{ selectedApplication.supporting_document && isImageFile(selectedApplication.supporting_document) ? 'image' : 'description' }}
+               </span>
+               <span class="document-name">{{ selectedApplication.supporting_document || '' }}</span>
+             </div>
+            
+                         <!-- Image Preview -->
+             <div *ngIf="selectedApplication.supporting_document && isImageFile(selectedApplication.supporting_document)" class="image-preview">
+               <img 
+                 [src]="getSupportingDocumentUrl(selectedApplication.supporting_document!)" 
+                 [alt]="selectedApplication.supporting_document || ''"
+                 class="preview-image"
+                 (error)="onImageError($event)">
+             </div>
+             
+             <!-- PDF Preview -->
+             <div *ngIf="selectedApplication.supporting_document && isPdfFile(selectedApplication.supporting_document)" class="pdf-preview">
+               <iframe 
+                 [src]="getSupportingDocumentUrl(selectedApplication.supporting_document!)"
+                 class="preview-pdf"
+                 frameborder="0">
+               </iframe>
+             </div>
+             
+             <!-- Download Link -->
+             <div class="document-actions">
+               <a 
+                 [href]="selectedApplication.supporting_document ? getSupportingDocumentUrl(selectedApplication.supporting_document!) : ''"
+                 target="_blank"
+                 class="btn-download">
+                 <span class="material-symbols-outlined">download</span>
+                 Download Document
+               </a>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Approval Form -->
+      <form [formGroup]="approvalForm" (ngSubmit)="onSubmitApproval()">
+        <div class="form-section">
+          <h3 class="form-title">
+            {{ approvalType === 'approve' ? 'Approval' : 'Rejection' }} Comments
+          </h3>
+          <div class="form-group">
+            <label class="form-label">Comments (Optional)</label>
+            <textarea 
+              class="form-textarea"
+              formControlName="comments"
+              placeholder="Add any comments or feedback..."
+              rows="4"></textarea>
+            <div class="form-help">
+              Maximum 500 characters
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button 
+            type="button" 
+            class="btn-secondary" 
+            (click)="closeApprovalModal()"
+            [disabled]="isSubmitting">
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn-danger" 
+            [class.btn-primary]="approvalType === 'approve'"
+            [disabled]="isSubmitting">
+            <span *ngIf="isSubmitting" class="loading-spinner small"></span>
+            {{ isSubmitting ? 'Processing...' : (approvalType === 'approve' ? 'Approve Request' : 'Reject Request') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div *ngIf="toast.show" class="toast-notification" [ngClass]="'toast-' + toast.type">
+  <span class="toast-message">{{ toast.message }}</span>
+  <button class="toast-close" (click)="toast.show = false">
+    <span class="material-symbols-outlined">close</span>
+  </button>
+</div> 

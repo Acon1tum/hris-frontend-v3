@@ -1,0 +1,539 @@
+<!-- RBAC Management Section -->
+<div id="rbac" class="rbac-management-section">
+  <!-- Sensitive Reports -->
+  <div class="section-header">
+    <h2>Sensitive Reports</h2>
+    <div class="header-actions">
+      <button class="btn-primary" (click)="createSensitiveReport()">
+        <i class="fas fa-plus"></i>
+        Create Report
+      </button>
+    </div>
+  </div>
+
+  <div class="sensitive-reports-grid">
+    <div class="sensitive-report-card" *ngFor="let report of sensitiveReports">
+      <div class="report-header">
+        <div class="report-info">
+          <div class="sensitivity-indicator">
+            <i [class]="getSensitivityIcon(report.sensitivityLevel)" [style.color]="getSensitivityColor(report.sensitivityLevel)"></i>
+            <span class="sensitivity-level">{{ report.sensitivityLevel }}</span>
+          </div>
+          <h3>{{ report.name }}</h3>
+          <span class="report-category">
+            <i [class]="getCategoryIcon(report.category)"></i>
+            {{ report.category }}
+          </span>
+        </div>
+        <div class="security-badges">
+          <span class="badge" *ngIf="report.encryptionRequired" title="Encryption Required">
+            <i class="fas fa-lock"></i>
+          </span>
+          <span class="badge" *ngIf="report.watermarkEnabled" title="Watermark Enabled">
+            <i class="fas fa-stamp"></i>
+          </span>
+          <span class="badge" *ngIf="report.accessLogging" title="Access Logging">
+            <i class="fas fa-clipboard-list"></i>
+          </span>
+        </div>
+      </div>
+      <p class="description">{{ report.description }}</p>
+      <div class="report-details">
+        <div class="detail-item">
+          <span class="label">Data Fields:</span>
+          <span class="value">{{ report.dataFields.length }} sensitive fields</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">Retention:</span>
+          <span class="value">{{ report.retentionPolicy }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">Last Modified:</span>
+          <span class="value">{{ getTimeAgo(report.lastModified) }}</span>
+        </div>
+      </div>
+      <div class="report-actions">
+        <button class="btn-icon" (click)="editSensitiveReport(report)" title="Edit Report">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-icon" (click)="deleteSensitiveReport(report.id)" title="Delete Report">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Role Access Control -->
+  <div class="section-header">
+    <h2>Role Access Control</h2>
+    <div class="header-actions">
+      <button class="btn-primary" (click)="createRoleAccess()">
+        <i class="fas fa-plus"></i>
+        Assign Access
+      </button>
+    </div>
+  </div>
+  <div class="role-access-grid">
+    <div class="role-access-card" *ngFor="let role of roleAccess">
+      <div class="role-header">
+        <div class="role-info">
+          <h3>{{ role.roleName }}</h3>
+          <p>{{ role.roleDescription }}</p>
+        </div>
+        <div class="status-badge" [class]="role.status">
+          {{ role.status }}
+        </div>
+      </div>
+      <div class="permissions-section">
+        <h4>Permissions:</h4>
+        <div class="permissions-list">
+          <span class="permission" *ngFor="let perm of getPermissionsText(role.permissions).split(', ')">
+            {{ perm }}
+          </span>
+        </div>
+      </div>
+      <div class="restrictions-section">
+        <h4>Restrictions:</h4>
+        <p class="restrictions-text">{{ getRestrictionsText(role.restrictions) }}</p>
+      </div>
+      <div class="role-meta">
+        <div class="meta-item">
+          <span class="label">Assigned Reports:</span>
+          <span class="value">{{ role.assignedReports.length }} reports</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">Assigned By:</span>
+          <span class="value">{{ role.assignedBy }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">Assigned:</span>
+          <span class="value">{{ getTimeAgo(role.assignedAt) }}</span>
+        </div>
+        <div class="meta-item" *ngIf="role.expiresAt">
+          <span class="label">Expires:</span>
+          <span class="value">{{ getTimeAgo(role.expiresAt) }}</span>
+        </div>
+      </div>
+      <div class="role-actions">
+        <button class="btn-icon" (click)="editRoleAccess(role)" title="Edit Access">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-icon" (click)="revokeRoleAccess(role)" title="Revoke Access">
+          <i class="fas fa-ban"></i>
+        </button>
+        <button class="btn-icon" (click)="deleteRoleAccess(role.id)" title="Delete Role">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Access Requests -->
+  <div class="section-header">
+    <h2>Access Requests</h2>
+    <p>Review and manage access requests for sensitive reports</p>
+  </div>
+  <div class="access-requests-table">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Requester</th>
+            <th>Report</th>
+            <th>Permissions</th>
+            <th>Reason</th>
+            <th>Urgency</th>
+            <th>Status</th>
+            <th>Requested</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let request of accessRequests">
+            <td>
+              <div class="requester-info">
+                <span class="requester-name">{{ request.requester }}</span>
+                <span class="requester-role">{{ request.requesterRole }}</span>
+                <span class="requester-dept">{{ request.requesterDepartment }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="report-name">{{ request.reportName }}</span>
+            </td>
+            <td>
+              <div class="permissions-badges">
+                <span class="permission-badge" *ngFor="let perm of request.requestedPermissions">
+                  {{ perm }}
+                </span>
+              </div>
+            </td>
+            <td>
+              <span class="reason">{{ request.reason }}</span>
+            </td>
+            <td>
+              <span class="urgency-badge" [ngClass]="request.urgency">
+                {{ request.urgency }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="request.status">
+                {{ request.status }}
+              </span>
+            </td>
+            <td>
+              <span class="requested-date">{{ getTimeAgo(request.requestedAt) }}</span>
+            </td>
+            <td>
+              <div class="request-actions">
+                <button class="btn-icon" (click)="viewAccessRequest(request)" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn-icon" (click)="editAccessRequest(request)" title="Edit Request">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon" (click)="deleteAccessRequest(request.id)" title="Delete Request">
+                  <i class="fas fa-trash"></i>
+                </button>
+                <button class="btn-icon" *ngIf="request.status === 'pending'" (click)="approveAccessRequest(request)" title="Approve Request">
+                  <i class="fas fa-check"></i>
+                </button>
+                <button class="btn-icon" *ngIf="request.status === 'pending'" (click)="denyAccessRequest(request)" title="Deny Request">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Sensitive Report Modal -->
+<div class="modal" *ngIf="showCreateReportModal || showEditReportModal">
+  <div class="modal-content" role="dialog" aria-modal="true" [attr.aria-labelledby]="showCreateReportModal ? 'createReportTitle' : 'editReportTitle'">
+    <button class="close-btn" (click)="showCreateReportModal ? closeCreateReportModal() : closeEditReportModal()" aria-label="Close">&times;</button>
+    
+    <h3 class="modal-title" [id]="showCreateReportModal ? 'createReportTitle' : 'editReportTitle'">
+      {{ showCreateReportModal ? 'Create' : 'Edit' }} Sensitive Report
+    </h3>
+    
+    <form [formGroup]="reportForm" (ngSubmit)="saveReport()" class="modal-form">
+      <div class="form-group">
+        <label class="form-label">Report Name</label>
+        <input type="text" formControlName="name" placeholder="Enter report name" />
+        <span class="error" *ngIf="reportForm.get('name')?.touched && reportForm.get('name')?.invalid">Report name is required.</span>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea formControlName="description" placeholder="Enter report description" rows="3"></textarea>
+        <span class="error" *ngIf="reportForm.get('description')?.touched && reportForm.get('description')?.invalid">Description is required.</span>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Report Type</label>
+        <select formControlName="reportType">
+          <option value="">Select Type</option>
+          <option value="employee">Employee</option>
+          <option value="payroll">Payroll</option>
+          <option value="attendance">Attendance</option>
+          <option value="performance">Performance</option>
+          <option value="custom">Custom</option>
+        </select>
+        <span class="error" *ngIf="reportForm.get('reportType')?.touched && reportForm.get('reportType')?.invalid">Report type is required.</span>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Sensitivity Level</label>
+        <select formControlName="sensitivityLevel">
+          <option value="">Select Level</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          <option value="critical">Critical</option>
+        </select>
+        <span class="error" *ngIf="reportForm.get('sensitivityLevel')?.touched && reportForm.get('sensitivityLevel')?.invalid">Sensitivity level is required.</span>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select formControlName="category">
+          <option value="">Select Category</option>
+          <option value="payroll">Payroll</option>
+          <option value="performance">Performance</option>
+          <option value="personal">Personal</option>
+          <option value="financial">Financial</option>
+          <option value="compliance">Compliance</option>
+          <option value="audit">Audit</option>
+        </select>
+        <span class="error" *ngIf="reportForm.get('category')?.touched && reportForm.get('category')?.invalid">Category is required.</span>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Data Fields (comma separated)</label>
+        <input type="text" formControlName="dataFields" placeholder="e.g. salary, ssn, address" />
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Retention Policy</label>
+        <input type="text" formControlName="retentionPolicy" placeholder="e.g. 7 years" />
+        <span class="error" *ngIf="reportForm.get('retentionPolicy')?.touched && reportForm.get('retentionPolicy')?.invalid">Retention policy is required.</span>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Security Settings</label>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="encryptionRequired" />
+            <span>Encryption Required</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="watermarkEnabled" />
+            <span>Watermark Enabled</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="accessLogging" />
+            <span>Access Logging</span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn-primary" type="submit" [disabled]="reportForm.invalid">
+          {{ showCreateReportModal ? 'Create' : 'Save' }} Report
+        </button>
+        <button class="btn-secondary" type="button" (click)="showCreateReportModal ? closeCreateReportModal() : closeEditReportModal()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Report Modal -->
+<div class="modal" *ngIf="showDeleteReportModal">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="deleteReportTitle">
+    <button class="close-btn" (click)="closeDeleteReportModal()" aria-label="Close">&times;</button>
+    
+    <h3 class="modal-title" id="deleteReportTitle">Delete Sensitive Report</h3>
+    
+    <div class="modal-body">
+      <p>Are you sure you want to delete the report <strong>"{{ selectedReport?.name }}"</strong>?</p>
+      <p class="warning-text">This action cannot be undone and will permanently remove the report.</p>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="btn-danger" (click)="confirmDeleteReport()">Yes, Delete</button>
+      <button class="btn-secondary" (click)="closeDeleteReportModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Assign Role Modal -->
+<div class="modal" *ngIf="showAssignRoleModal">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="assignRoleTitle">
+    <button class="close-btn" (click)="closeAssignRoleModal()" aria-label="Close">&times;</button>
+    
+    <h3 class="modal-title" id="assignRoleTitle">Assign Access to Role</h3>
+    
+    <form [formGroup]="assignRoleForm" (ngSubmit)="confirmAssignRoleAccess()" class="modal-form">
+      <div class="form-group">
+        <label class="form-label">Role Name</label>
+        <input type="text" formControlName="roleName" placeholder="Enter role name" />
+        <span class="error" *ngIf="assignRoleForm.get('roleName')?.touched && assignRoleForm.get('roleName')?.invalid">Role name is required.</span>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input type="text" formControlName="roleDescription" placeholder="Enter role description" />
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Permissions (comma separated)</label>
+        <input type="text" formControlName="permissions" placeholder="e.g. view, generate, export" />
+        <span class="error" *ngIf="assignRoleForm.get('permissions')?.touched && assignRoleForm.get('permissions')?.invalid">At least one permission is required.</span>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Restrictions</label>
+        <input type="text" formControlName="restrictions" placeholder="e.g. Time: Business hours only | IP: 192.168.1.0/24 | Masking: ssn, salary" />
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn-primary" type="submit" [disabled]="assignRoleForm.invalid">Assign</button>
+        <button class="btn-secondary" type="button" (click)="closeAssignRoleModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Revoke Role Modal -->
+<div class="modal" *ngIf="showRevokeRoleModal">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="revokeRoleTitle">
+    <button class="close-btn" (click)="closeRevokeRoleModal()" aria-label="Close">&times;</button>
+    
+    <h3 class="modal-title" id="revokeRoleTitle">Revoke Access</h3>
+    
+    <div class="modal-body">
+      <p>Are you sure you want to revoke access for <strong>{{ selectedRole?.roleName }}</strong>?</p>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="btn-primary" (click)="confirmRevokeRoleAccess()">Yes, Revoke</button>
+      <button class="btn-secondary" (click)="closeRevokeRoleModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Role Modal -->
+<div class="modal" *ngIf="showEditRoleModal">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="editRoleTitle">
+    <button class="close-btn" (click)="closeEditRoleModal()" aria-label="Close">&times;</button>
+    <h3 class="modal-title" id="editRoleTitle">Edit Role Access</h3>
+    <form [formGroup]="editRoleForm" (ngSubmit)="saveRoleAccess()" class="modal-form">
+      <div class="form-group">
+        <label class="form-label">Role Name</label>
+        <input type="text" formControlName="roleName" placeholder="Enter role name" />
+        <span class="error" *ngIf="editRoleForm.get('roleName')?.touched && editRoleForm.get('roleName')?.invalid">Role name is required.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input type="text" formControlName="roleDescription" placeholder="Enter role description" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Permissions (comma separated)</label>
+        <input type="text" formControlName="permissions" placeholder="e.g. view, generate, export" />
+        <span class="error" *ngIf="editRoleForm.get('permissions')?.touched && editRoleForm.get('permissions')?.invalid">At least one permission is required.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Restrictions</label>
+        <input type="text" formControlName="restrictions" placeholder="e.g. Time: Business hours only | IP: 192.168.1.0/24 | Masking: ssn, salary" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" type="submit" [disabled]="editRoleForm.invalid">Save</button>
+        <button class="btn-secondary" type="button" (click)="closeEditRoleModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Role Modal -->
+<div class="modal" *ngIf="showDeleteRoleModal">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="deleteRoleTitle">
+    <button class="close-btn" (click)="closeDeleteRoleModal()" aria-label="Close">&times;</button>
+    <h3 class="modal-title" id="deleteRoleTitle">Delete Role Access</h3>
+    <div class="modal-body">
+      <p>Are you sure you want to delete the role <strong>{{ selectedRoleEdit?.roleName }}</strong>?</p>
+      <p class="warning-text">This action cannot be undone and will permanently remove the role access.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" (click)="confirmDeleteRoleAccess()">Yes, Delete</button>
+      <button class="btn-secondary" (click)="closeDeleteRoleModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Access Request Modal -->
+<div class="modal" *ngIf="showViewRequestModal">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="viewRequestTitle">
+    <button class="close-btn" (click)="closeViewRequestModal()" aria-label="Close">&times;</button>
+    <h3 class="modal-title" id="viewRequestTitle">Access Request Details</h3>
+    <div class="modal-form" style="grid-template-columns: 1fr;">
+      <div class="form-group"><span class="form-label">Requester:</span> {{ selectedRequestEdit?.requester }}</div>
+      <div class="form-group"><span class="form-label">Role:</span> {{ selectedRequestEdit?.requesterRole }}</div>
+      <div class="form-group"><span class="form-label">Department:</span> {{ selectedRequestEdit?.requesterDepartment }}</div>
+      <div class="form-group"><span class="form-label">Report Name:</span> {{ selectedRequestEdit?.reportName }}</div>
+      <div class="form-group"><span class="form-label">Requested Permissions:</span> {{ selectedRequestEdit?.requestedPermissions?.join(', ') }}</div>
+      <div class="form-group"><span class="form-label">Reason:</span> {{ selectedRequestEdit?.reason }}</div>
+      <div class="form-group"><span class="form-label">Urgency:</span> {{ selectedRequestEdit?.urgency }}</div>
+      <div class="form-group"><span class="form-label">Status:</span> {{ selectedRequestEdit?.status }}</div>
+      <div class="form-group"><span class="form-label">Requested At:</span> {{ selectedRequestEdit ? getTimeAgo(selectedRequestEdit.requestedAt) : '' }}</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeViewRequestModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Access Request Modal -->
+<div class="modal" *ngIf="showEditRequestModal">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="editRequestTitle">
+    <button class="close-btn" (click)="closeEditRequestModal()" aria-label="Close">&times;</button>
+    <h3 class="modal-title" id="editRequestTitle">Edit Access Request</h3>
+    <form [formGroup]="editRequestForm" (ngSubmit)="saveAccessRequest()" class="modal-form">
+      <div class="form-group">
+        <label class="form-label">Requester</label>
+        <input type="text" formControlName="requester" placeholder="Enter requester name" />
+        <span class="error" *ngIf="editRequestForm.get('requester')?.touched && editRequestForm.get('requester')?.invalid">Requester is required.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Role</label>
+        <input type="text" formControlName="requesterRole" placeholder="Enter role" />
+        <span class="error" *ngIf="editRequestForm.get('requesterRole')?.touched && editRequestForm.get('requesterRole')?.invalid">Role is required.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Department</label>
+        <input type="text" formControlName="requesterDepartment" placeholder="Enter department" />
+        <span class="error" *ngIf="editRequestForm.get('requesterDepartment')?.touched && editRequestForm.get('requesterDepartment')?.invalid">Department is required.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Report Name</label>
+        <input type="text" formControlName="reportName" placeholder="Enter report name" />
+        <span class="error" *ngIf="editRequestForm.get('reportName')?.touched && editRequestForm.get('reportName')?.invalid">Report name is required.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Requested Permissions (comma separated)</label>
+        <input type="text" formControlName="requestedPermissions" placeholder="e.g. view, export" />
+        <span class="error" *ngIf="editRequestForm.get('requestedPermissions')?.touched && editRequestForm.get('requestedPermissions')?.invalid">Permissions are required.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reason</label>
+        <input type="text" formControlName="reason" placeholder="Enter reason" />
+        <span class="error" *ngIf="editRequestForm.get('reason')?.touched && editRequestForm.get('reason')?.invalid">Reason is required.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Urgency</label>
+        <select formControlName="urgency">
+          <option value="">Select urgency</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          <option value="urgent">Urgent</option>
+        </select>
+        <span class="error" *ngIf="editRequestForm.get('urgency')?.touched && editRequestForm.get('urgency')?.invalid">Urgency is required.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select formControlName="status">
+          <option value="">Select status</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="denied">Denied</option>
+          <option value="expired">Expired</option>
+        </select>
+        <span class="error" *ngIf="editRequestForm.get('status')?.touched && editRequestForm.get('status')?.invalid">Status is required.</span>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" type="submit" [disabled]="editRequestForm.invalid">Save</button>
+        <button class="btn-secondary" type="button" (click)="closeEditRequestModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Access Request Modal -->
+<div class="modal" *ngIf="showDeleteRequestModal">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="deleteRequestTitle">
+    <button class="close-btn" (click)="closeDeleteRequestModal()" aria-label="Close">&times;</button>
+    <h3 class="modal-title" id="deleteRequestTitle">Delete Access Request</h3>
+    <div class="modal-body">
+      <p>Are you sure you want to delete the access request for <strong>{{ selectedRequestEdit?.requester }}</strong>?</p>
+      <p class="warning-text">This action cannot be undone and will permanently remove the access request.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" (click)="confirmDeleteRequest()">Yes, Delete</button>
+      <button class="btn-secondary" (click)="closeDeleteRequestModal()">Cancel</button>
+    </div>
+  </div>
+</div>

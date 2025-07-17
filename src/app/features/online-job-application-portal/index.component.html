@@ -1,0 +1,72 @@
+<app-header *ngIf="publicMode" [publicMode]="publicMode" class="job-portal-header"></app-header>
+<div *ngIf="publicMode" style="height: 0px;"></div>
+<div class="jobstreet-portal-bg">
+  <!-- Search Bar Section -->
+  <section class="search-section">
+    <form class="search-form" (submit)="$event.preventDefault()">
+      <div class="search-fields">
+        <div class="search-group">
+          <label>What</label>
+          <input type="text" placeholder="Enter keywords" />
+        </div>
+        <div class="search-group">
+          <label>Any classification</label>
+          <select>
+            <option>All</option>
+            <option>IT/Software</option>
+            <option>Customer Service</option>
+            <option>Sales</option>
+            <option>Healthcare</option>
+          </select>
+        </div>
+        <div class="search-group">
+          <label>Where</label>
+          <input type="text" placeholder="Enter suburb, city, or region" />
+        </div>
+        <button class="seek-btn" type="submit">SEEK</button>
+      </div>
+      <div class="filter-chips">
+        <button type="button" class="chip">All work types</button>
+        <button type="button" class="chip">All remote options</button>
+        <button type="button" class="chip">Paying P0</button>
+        <button type="button" class="chip">to P150K</button>
+        <button type="button" class="chip">Listed any time</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Main Content: Job List & Details -->
+  <section class="main-content">
+    <div class="job-list-panel">
+      <div class="job-list-tabs">
+        <button class="tab active">All jobs</button>
+        <button class="tab">New to you</button>
+      </div>
+      <div class="job-cards">
+        <div class="job-card" *ngFor="let job of jobs">
+          <div class="job-card-header">
+            <div class="job-title">{{ job.title }}</div>
+            <img *ngIf="job.logo" [src]="job.logo" class="job-logo" alt="logo" />
+          </div>
+          <div class="job-company">{{ job.company }}</div>
+          <div class="job-location">{{ job.location }}</div>
+          <div class="job-salary">{{ job.salary }}</div>
+          <ul class="job-tags">
+            <li *ngFor="let tag of job.tags">{{ tag }}</li>
+          </ul>
+          <div class="job-meta">
+            <span class="job-date">{{ job.date }}</span>
+            <span class="bookmark material-symbols-outlined">bookmark</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="job-details-panel">
+      <div class="job-details-placeholder">
+        <div class="placeholder-img"></div>
+        <h3>Select a job</h3>
+        <p>Display details here</p>
+      </div>
+    </div>
+  </section>
+</div> 

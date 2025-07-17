@@ -1,0 +1,629 @@
+<!-- Page Title -->
+<div class="page-title">
+  <h1><i class="fas fa-chart-bar"></i> Report Generation</h1>
+  <p>Generate, manage, and export comprehensive reports across all HR modules</p>
+</div>
+
+<!-- Navigation Container -->
+<div class="navigation-container">
+  <button class="nav-btn" (click)="toggleView('templates')">
+    <i class="fas fa-file-alt"></i> Templates
+  </button>
+  <button class="nav-btn" (click)="toggleView('audit-trail')">
+    <i class="fas fa-history"></i> Audit Trail
+  </button>
+  <button class="nav-btn" (click)="toggleView('scheduled-reports')">
+    <i class="fas fa-clock"></i> Scheduled Report
+  </button>
+  <button class="nav-btn" (click)="toggleView('sensitive-reports')">
+    <i class="fas fa-shield-alt"></i> Sensitive Reports
+  </button>
+</div>
+
+<!-- Main Dashboard View -->
+<div *ngIf="currentView === 'main'" class="main-view">
+  <!-- Dashboard Section -->
+  <div id="dashboard" class="dashboard-section">
+    <!-- Key Metrics -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="metric-content">
+          <h3>Total Reports Generated</h3>
+          <div class="metric-value">
+            <span class="number" [ngClass]="getMetricNumberClass(keyMetrics[0].value)">
+              {{ keyMetrics[0].value }}
+            </span>
+            <span class="trend" [ngClass]="keyMetrics[0].trend > 0 ? 'positive' : keyMetrics[0].trend < 0 ? 'negative' : ''">
+              <i [class]="getTrendIcon(keyMetrics[0].trend)"></i>
+              {{ keyMetrics[0].trend }}%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="metric-content">
+          <h3>Active Scheduled Reports</h3>
+          <div class="metric-value">
+            <span class="number" [ngClass]="getMetricNumberClass(keyMetrics[1].value)">
+              {{ keyMetrics[1].value }}
+            </span>
+            <span class="trend" [ngClass]="keyMetrics[1].trend > 0 ? 'positive' : keyMetrics[1].trend < 0 ? 'negative' : ''">
+              <i [class]="getTrendIcon(keyMetrics[1].trend)"></i>
+              {{ keyMetrics[1].trend }}%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <div class="metric-content">
+          <h3>Templates Available</h3>
+          <div class="metric-value">
+            <span class="number" [ngClass]="getMetricNumberClass(keyMetrics[2].value)">
+              {{ keyMetrics[2].value }}
+            </span>
+            <span class="trend" [ngClass]="keyMetrics[2].trend > 0 ? 'positive' : keyMetrics[2].trend < 0 ? 'negative' : ''">
+              <i [class]="getTrendIcon(keyMetrics[2].trend)"></i>
+              {{ keyMetrics[2].trend }}%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">
+          <i class="fas fa-download"></i>
+        </div>
+        <div class="metric-content">
+          <h3>Export Success Rate</h3>
+          <div class="metric-value">
+            <span class="number" [ngClass]="getMetricNumberClass(keyMetrics[3].value)">
+              {{ keyMetrics[3].value }}%
+            </span>
+            <span class="trend" [ngClass]="keyMetrics[3].trend > 0 ? 'positive' : keyMetrics[3].trend < 0 ? 'negative' : ''">
+              <i [class]="getTrendIcon(keyMetrics[3].trend)"></i>
+              {{ keyMetrics[3].trend }}%
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module Activities -->
+    <div class="dashboard-row">
+      <div class="dashboard-card module-activities">
+        <div class="card-header">
+          <h2><i class="fas fa-chart-line"></i> Report Type Activity</h2>
+          <span class="card-subtitle">Recent activity across different report types</span>
+        </div>
+        <div class="activity-list">
+          <div class="activity-item" *ngFor="let activity of moduleActivities">
+            <div class="activity-header">
+              <span class="module-name">
+                <i [class]="activity.icon"></i> {{ activity.module }}
+              </span>
+              <span class="status-badge" [ngClass]="activity.status">
+                <i class="fas fa-circle"></i> {{ activity.status }}
+              </span>
+            </div>
+            <div class="activity-details">
+              <span class="active-users">
+                <i class="fas fa-file-alt"></i>
+                {{ activity.activeUsers }} reports generated
+              </span>
+              <span class="last-activity">
+                <i class="fas fa-history"></i>
+                Last activity: {{ formatDate(activity.lastActivity) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Department Overview -->
+      <div class="dashboard-card department-overview">
+        <div class="card-header">
+          <h2><i class="fas fa-building"></i> Department Report Usage</h2>
+          <span class="card-subtitle">Report generation activity by department</span>
+        </div>
+        <div class="department-list">
+          <div class="department-item" *ngFor="let dept of departmentMetrics">
+            <div class="department-header">
+              <span class="department-name">
+                <i [class]="dept.icon"></i> {{ dept.name }}
+              </span>
+              <span class="completion-rate">{{ dept.completionRate }}%</span>
+            </div>
+            <div class="department-stats">
+              <span class="stat">
+                <i class="fas fa-users"></i>
+                {{ dept.employeeCount }} employees
+              </span>
+              <span class="stat">
+                <i class="fas fa-file-alt"></i>
+                {{ dept.activeRequests }} reports generated
+              </span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="dept.completionRate"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report Type Distribution -->
+      <div class="dashboard-card role-distribution">
+        <div class="card-header">
+          <h2><i class="fas fa-chart-pie"></i> Report Type Distribution</h2>
+          <span class="card-subtitle">Distribution of generated reports by type</span>
+        </div>
+        <div class="role-list">
+          <div class="role-item" *ngFor="let role of roleDistribution">
+            <div class="role-header">
+              <span class="role-name">
+                <i [class]="role.icon"></i> {{ role.role }}
+              </span>
+              <span class="role-count">{{ role.count }}</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="role.percentage"></div>
+            </div>
+            <span class="percentage">{{ role.percentage }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Generation Section -->
+  <div class="report-generation-section">
+    <!-- Success Notification -->
+    <div *ngIf="showSuccessMessage" class="success-notification">
+      <i class="fas fa-check-circle"></i>
+      <span>{{ successMessage }}</span>
+      <button class="close-btn" (click)="showSuccessMessage = false">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Report Ready Notification -->
+    <div *ngIf="showReportReadyNotification" class="report-ready-notification">
+      <i class="fas fa-chart-bar"></i>
+      <span>{{ reportReadyMessage }}</span>
+      <button class="close-btn" (click)="showReportReadyNotification = false">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="section-header">
+      <h2><i class="fas fa-filter"></i> Generate Reports</h2>
+      <p>Apply filters and date range to generate custom reports</p>
+    </div>
+    
+    <div class="filters-container">
+      <form class="filters-form" (ngSubmit)="onApplyFilters()" #filtersForm="ngForm" autocomplete="off">
+        <div class="filters-grid">
+          <div class="form-group">
+            <label for="reportType">Report Type</label>
+            <select id="reportType" name="reportType" [(ngModel)]="filters.reportType" (change)="onApplyFilters()">
+              <option *ngFor="let type of reportTypes" [value]="type.value">{{ type.label }}</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="dateStart">Start Date</label>
+            <input
+              type="date"
+              id="dateStart"
+              name="dateStart"
+              [(ngModel)]="filters.dateStart"
+              required
+              aria-required="true"
+            />
+          </div>
+          
+          <div class="form-group">
+            <label for="dateEnd">End Date</label>
+            <input
+              type="date"
+              id="dateEnd"
+              name="dateEnd"
+              [(ngModel)]="filters.dateEnd"
+              required
+              aria-required="true"
+            />
+          </div>
+          
+          <div class="form-group">
+            <label for="department">Department</label>
+            <select id="department" name="department" [(ngModel)]="filters.department">
+              <option value="">-- Select Department --</option>
+              <option value="HR">Human Resources</option>
+              <option value="IT">IT Department</option>
+              <option value="Finance">Finance</option>
+              <option value="Operations">Operations</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="filters.incomplete" name="incomplete" />
+            <span class="checkmark"></span>
+            Simulate Incomplete Data
+          </label>
+        </div>
+        
+        <div *ngIf="filterErrors && filterErrors.length" class="error-messages">
+          <div *ngFor="let err of filterErrors" class="error-message">{{ err }}</div>
+        </div>
+        
+        <div class="filters-actions">
+          <button class="btn-secondary" type="button" (click)="onResetFilters()">
+            <i class="fas fa-undo"></i> Reset
+          </button>
+          <button class="btn-secondary" type="button" (click)="openLoadFilterModal()" [disabled]="savedFilters.length === 0">
+            <i class="fas fa-folder-open"></i> Load Filter
+          </button>
+          <button class="btn-secondary" type="button" (click)="openSaveFilterModal()" [disabled]="!filters.dateStart || !filters.dateEnd">
+            <i class="fas fa-save"></i> Save Filter
+          </button>
+          <button class="btn-primary" type="submit" [disabled]="!filters.dateStart || !filters.dateEnd">
+            <i class="fas fa-search"></i> Generate Report
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Export/Print Buttons -->
+    <div *ngIf="filters.dateStart && filters.dateEnd && !filterErrors.length && filteredResults.length > 0" class="export-section">
+      <div class="export-header">
+        <h3><i class="fas fa-download"></i> Export Options</h3>
+        <p>Choose your preferred export format</p>
+      </div>
+      <div class="export-actions">
+        <button class="export-btn" (click)="exportCSV()" [disabled]="loadingExport">
+          <i class="fas fa-file-csv"></i> CSV
+        </button>
+        <button class="export-btn" (click)="exportExcel()" [disabled]="loadingExport">
+          <i class="fas fa-file-excel"></i> Excel
+        </button>
+        <button class="export-btn" (click)="exportPDF()" [disabled]="loadingExport">
+          <i class="fas fa-file-pdf"></i> PDF
+        </button>
+        <button class="export-btn" (click)="printTable()" [disabled]="loadingExport">
+          <i class="fas fa-print"></i> Print
+        </button>
+      </div>
+      <div *ngIf="loadingExport" class="loading-overlay">
+        <div class="loading-content">
+          <i class="fas fa-spinner fa-spin"></i> Exporting...
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtered Results Table -->
+    <div *ngIf="filters.dateStart && filters.dateEnd && !filterErrors.length" class="results-section">
+      <!-- Loading State -->
+      <div *ngIf="loadingReport" class="report-loading-overlay">
+        <div class="loading-content">
+          <i class="fas fa-spinner fa-spin"></i>
+          <h3>Generating Report...</h3>
+          <p>Please wait while we process your data</p>
+        </div>
+      </div>
+
+      <div *ngIf="!loadingReport && filteredResults.length > 0; else noResultsBlock">
+        <div class="table-header">
+          <h3><i class="fas fa-table"></i> Report Results</h3>
+          <span class="result-count">{{ filteredResults.length }} records found</span>
+        </div>
+        <div class="table-container">
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Date</th>
+                <!-- Employee specific columns -->
+                <th *ngIf="filters.reportType === 'employee'">Position</th>
+                <th *ngIf="filters.reportType === 'employee'">Status</th>
+                <th *ngIf="filters.reportType === 'employee'">Salary</th>
+                <!-- Payroll specific columns -->
+                <th *ngIf="filters.reportType === 'payroll'">Basic Pay</th>
+                <th *ngIf="filters.reportType === 'payroll'">Allowances</th>
+                <th *ngIf="filters.reportType === 'payroll'">Deductions</th>
+                <th *ngIf="filters.reportType === 'payroll'">Net Pay</th>
+                <!-- Attendance specific columns -->
+                <th *ngIf="filters.reportType === 'attendance'">Time In</th>
+                <th *ngIf="filters.reportType === 'attendance'">Time Out</th>
+                <th *ngIf="filters.reportType === 'attendance'">Hours Worked</th>
+                <th *ngIf="filters.reportType === 'attendance'">Status</th>
+                <!-- Leave specific columns -->
+                <th *ngIf="filters.reportType === 'leave'">Leave Type</th>
+                <th *ngIf="filters.reportType === 'leave'">Start Date</th>
+                <th *ngIf="filters.reportType === 'leave'">End Date</th>
+                <th *ngIf="filters.reportType === 'leave'">Days</th>
+                <th *ngIf="filters.reportType === 'leave'">Status</th>
+                <!-- Performance specific columns -->
+                <th *ngIf="filters.reportType === 'performance'">Rating</th>
+                <th *ngIf="filters.reportType === 'performance'">Goals</th>
+                <th *ngIf="filters.reportType === 'performance'">Achievements</th>
+                <th *ngIf="filters.reportType === 'performance'">Status</th>
+                <!-- Custom specific columns -->
+                <th *ngIf="filters.reportType === 'custom'">Category</th>
+                <th *ngIf="filters.reportType === 'custom'">Subcategory</th>
+                <th *ngIf="filters.reportType === 'custom'">Metric</th>
+                <!-- Common value column -->
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let result of filteredResults">
+                <td>{{ result.id }}</td>
+                <td>{{ result.name }}</td>
+                <td>{{ result.department }}</td>
+                <td>{{ result.date }}</td>
+                <!-- Employee specific data -->
+                <td *ngIf="filters.reportType === 'employee'">{{ result.position }}</td>
+                <td *ngIf="filters.reportType === 'employee'">
+                  <span class="status-badge" [ngClass]="result.status">{{ result.status }}</span>
+                </td>
+                <td *ngIf="filters.reportType === 'employee'">{{ result.salary }}</td>
+                <!-- Payroll specific data -->
+                <td *ngIf="filters.reportType === 'payroll'">{{ result.basicPay }}</td>
+                <td *ngIf="filters.reportType === 'payroll'">{{ result.allowances }}</td>
+                <td *ngIf="filters.reportType === 'payroll'">{{ result.deductions }}</td>
+                <td *ngIf="filters.reportType === 'payroll'">{{ result.netPay }}</td>
+                <!-- Attendance specific data -->
+                <td *ngIf="filters.reportType === 'attendance'">{{ result.timeIn }}</td>
+                <td *ngIf="filters.reportType === 'attendance'">{{ result.timeOut }}</td>
+                <td *ngIf="filters.reportType === 'attendance'">{{ result.hoursWorked }}</td>
+                <td *ngIf="filters.reportType === 'attendance'">
+                  <span class="status-badge" [ngClass]="result.status">{{ result.status }}</span>
+                </td>
+                <!-- Leave specific data -->
+                <td *ngIf="filters.reportType === 'leave'">{{ result.leaveType }}</td>
+                <td *ngIf="filters.reportType === 'leave'">{{ result.startDate }}</td>
+                <td *ngIf="filters.reportType === 'leave'">{{ result.endDate }}</td>
+                <td *ngIf="filters.reportType === 'leave'">{{ result.days }}</td>
+                <td *ngIf="filters.reportType === 'leave'">
+                  <span class="status-badge" [ngClass]="result.status">{{ result.status }}</span>
+                </td>
+                <!-- Performance specific data -->
+                <td *ngIf="filters.reportType === 'performance'">{{ result.rating }}</td>
+                <td *ngIf="filters.reportType === 'performance'">{{ result.goals }}</td>
+                <td *ngIf="filters.reportType === 'performance'">{{ result.achievements }}</td>
+                <td *ngIf="filters.reportType === 'performance'">
+                  <span class="status-badge" [ngClass]="result.status">{{ result.status }}</span>
+                </td>
+                <!-- Custom specific data -->
+                <td *ngIf="filters.reportType === 'custom'">{{ result.category }}</td>
+                <td *ngIf="filters.reportType === 'custom'">{{ result.subcategory }}</td>
+                <td *ngIf="filters.reportType === 'custom'">{{ result.metric }}</td>
+                <!-- Common value data -->
+                <td class="value-cell">{{ result.value }}</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="summary-row">
+                <td colspan="4"><strong>Total Value:</strong></td>
+                <!-- Dynamic colspan based on report type -->
+                <td *ngIf="filters.reportType === 'employee'" colspan="3"></td>
+                <td *ngIf="filters.reportType === 'payroll'" colspan="3"></td>
+                <td *ngIf="filters.reportType === 'attendance'" colspan="3"></td>
+                <td *ngIf="filters.reportType === 'leave'" colspan="4"></td>
+                <td *ngIf="filters.reportType === 'performance'" colspan="3"></td>
+                <td *ngIf="filters.reportType === 'custom'" colspan="2"></td>
+                <td class="total-value"><strong>{{ totalValue }}</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- No Results Block -->
+      <ng-template #noResultsBlock>
+        <div class="no-results">
+          <i class="fas fa-search"></i>
+          <h3>No Results Found</h3>
+          <p>Try adjusting your filters or date range to find matching records.</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<!-- Template Management View -->
+<div *ngIf="currentView === 'templates'" class="template-view">
+  <div class="view-header">
+    <button class="back-btn" (click)="toggleView('main')">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </button>
+  </div>
+  <app-template-management></app-template-management>
+</div>
+
+<!-- Audit Trail View -->
+<div *ngIf="currentView === 'audit-trail'" class="audit-trail-view">
+  <div class="view-header">
+    <button class="back-btn" (click)="toggleView('main')">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </button>
+  </div>
+  <app-audit-trail></app-audit-trail>
+</div>
+
+<!-- Scheduled Reports View -->
+<div *ngIf="currentView === 'scheduled-reports'" class="scheduled-reports-view">
+  <div class="view-header">
+    <button class="back-btn" (click)="toggleView('main')">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </button>
+  </div>
+  <app-scheduled-reports></app-scheduled-reports>
+</div>
+
+<!-- Sensitive Reports View -->
+<div *ngIf="currentView === 'sensitive-reports'" class="sensitive-reports-view">
+  <div class="view-header">
+    <button class="back-btn" (click)="toggleView('main')">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </button>
+  </div>
+  <app-sensitive-reports></app-sensitive-reports>
+</div>
+
+<!-- Save Filter Modal -->
+<div class="modal" *ngIf="showSaveFilterModal">
+  <div class="modal-overlay" (click)="closeSaveFilterModal()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2><i class="fas fa-save"></i> Save Filter Preset</h2>
+      <button class="btn-icon" (click)="closeSaveFilterModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="filterName">Filter Name *</label>
+        <input 
+          type="text" 
+          id="filterName" 
+          [(ngModel)]="newFilterName" 
+          placeholder="Enter a name for this filter"
+          class="form-control"
+        />
+      </div>
+      <div class="form-group">
+        <label for="filterDescription">Description</label>
+        <textarea 
+          id="filterDescription" 
+          [(ngModel)]="newFilterDescription" 
+          placeholder="Optional description"
+          class="form-control"
+          rows="3"
+        ></textarea>
+      </div>
+      <div class="current-filter-preview">
+        <h4>Current Filter Settings:</h4>
+        <div class="filter-preview-grid">
+          <div class="preview-item">
+            <span class="label">Report Type:</span>
+            <span class="value">{{ filters.reportType.charAt(0).toUpperCase() + filters.reportType.slice(1) }}</span>
+          </div>
+          <div class="preview-item">
+            <span class="label">Date Range:</span>
+            <span class="value">{{ filters.dateStart }} to {{ filters.dateEnd }}</span>
+          </div>
+          <div class="preview-item">
+            <span class="label">Department:</span>
+            <span class="value">{{ filters.department || 'All' }}</span>
+          </div>
+          <div class="preview-item">
+            <span class="label">Incomplete Data:</span>
+            <span class="value">{{ filters.incomplete ? 'Yes' : 'No' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeSaveFilterModal()">
+        <i class="fas fa-times"></i> Cancel
+      </button>
+      <button class="btn-primary" (click)="saveCurrentFilter()" [disabled]="!newFilterName.trim()">
+        <i class="fas fa-save"></i> Save Filter
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Load Filter Modal -->
+<div class="modal" *ngIf="showLoadFilterModal">
+  <div class="modal-overlay" (click)="closeLoadFilterModal()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2><i class="fas fa-folder-open"></i> Load Saved Filters</h2>
+      <button class="btn-icon" (click)="closeLoadFilterModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="savedFilters.length === 0" class="empty-state">
+        <i class="fas fa-folder-open empty-icon"></i>
+        <h3>No Saved Filters</h3>
+        <p>You haven't saved any filter presets yet. Create a filter and save it to use this feature.</p>
+      </div>
+      
+      <div *ngIf="savedFilters.length > 0" class="saved-filters-list">
+        <div *ngFor="let filter of savedFilters" class="saved-filter-item" (click)="loadSavedFilter(filter)">
+          <div class="filter-header">
+            <div class="filter-icon">
+              <i [class]="getFilterIcon(filter.reportType)" [style.color]="getFilterColor(filter.reportType)"></i>
+            </div>
+            <div class="filter-info">
+              <h4 class="filter-name">
+                {{ filter.name }}
+                <span *ngIf="filter.isDefault" class="default-badge">Default</span>
+              </h4>
+              <p class="filter-description">{{ filter.description }}</p>
+              <div class="filter-meta">
+                <span class="meta-item">
+                  <i class="fas fa-calendar"></i>
+                  {{ filter.dateStart }} to {{ filter.dateEnd }}
+                </span>
+                <span class="meta-item" *ngIf="filter.department">
+                  <i class="fas fa-building"></i>
+                  {{ filter.department }}
+                </span>
+                <span class="meta-item">
+                  <i class="fas fa-chart-bar"></i>
+                  {{ filter.reportType.charAt(0).toUpperCase() + filter.reportType.slice(1) }}
+                </span>
+              </div>
+            </div>
+            <div class="filter-actions">
+              <button class="btn-icon" (click)="setDefaultFilter(filter.id); $event.stopPropagation()" 
+                      [title]="filter.isDefault ? 'Default filter' : 'Set as default'">
+                <i class="fas fa-star" [class.active]="filter.isDefault"></i>
+              </button>
+              <button class="btn-icon" (click)="deleteSavedFilter(filter.id); $event.stopPropagation()" title="Delete filter">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <div class="filter-stats">
+            <span class="stat">
+              <i class="fas fa-clock"></i>
+              Last used: {{ filter.lastUsed ? formatFilterDate(filter.lastUsed) : 'Never' }}
+            </span>
+            <span class="stat">
+              <i class="fas fa-play"></i>
+              Used {{ filter.useCount }} times
+            </span>
+            <span class="stat">
+              <i class="fas fa-calendar-plus"></i>
+              Created {{ formatFilterDate(filter.createdAt) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeLoadFilterModal()">
+        <i class="fas fa-times"></i> Close
+      </button>
+    </div>
+  </div>
+</div>

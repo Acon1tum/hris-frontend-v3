@@ -1,0 +1,67 @@
+<div class="wellness-events-container fade-in">
+  <button class="back-btn" (click)="goBack()">
+    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M15 8a.75.75 0 0 1-.75.75H3.56l4.22 4.22a.75.75 0 1 1-1.06 1.06l-5.5-5.5a.75.75 0 0 1 0-1.06l5.5-5.5a.75.75 0 1 1 1.06 1.06L3.56 7.25H14.25A.75.75 0 0 1 15 8z"/>
+    </svg>
+    Back to Health & Wellness
+  </button>
+  <div class="wellness-events-header">
+    <h1>Upcoming Wellness Events</h1>
+    <p>Explore a variety of wellness events designed to support your health and wellbeing. From fitness workshops to mindfulness sessions, find activities that fit your interests and schedule.</p>
+  </div>
+  <div class="calendar-row">
+    <div class="calendar-card">
+      <div class="calendar-header">
+        <button class="calendar-nav-btn" (click)="prevMonth()">
+          &lt;
+        </button>
+        <span class="calendar-title">{{ weekMonthYear }}</span>
+        <button class="calendar-nav-btn" (click)="nextMonth()">
+          &gt;
+        </button>
+      </div>
+      <div class="calendar-grid">
+        <div class="calendar-days">
+          <span *ngFor="let d of weekDays" class="calendar-day-label">{{ d }}</span>
+        </div>
+        <div class="calendar-dates">
+          <ng-container *ngFor="let day of calendarDays">
+            <button class="calendar-day-btn" [ngClass]="{'calendar-today': isToday(day)}" *ngIf="day">{{ day }}</button>
+            <span *ngIf="!day" class="calendar-day-empty"></span>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="events-list">
+    <div *ngFor="let month of eventsByMonth">
+      <h2 class="events-month-label">{{ month.label }}</h2>
+      <div *ngFor="let event of month.events; let last = last">
+        <div class="event-card">
+          <div class="event-info">
+            <div class="event-title">{{ event.title }}</div>
+            <div class="event-meta">
+              <span class="event-meta-item">
+                <span class="material-icons-outlined event-meta-icon">{{ event.icon }}</span>{{ event.location }}
+              </span>
+              <span class="event-meta-item">
+                <span class="material-icons-outlined event-meta-icon">calendar_today</span>{{ event.date }}
+                <span class="event-dot">·</span>
+                <span class="material-icons-outlined event-meta-icon">schedule</span>{{ event.time }}
+              </span>
+            </div>
+          </div>
+          <div class="event-actions">
+            <button class="register-btn" (click)="register(event)">
+              <span class="material-icons-outlined">how_to_reg</span> Register
+            </button>
+            <button class="calendar-add-btn" (click)="addToCalendar(event)">
+              <span class="material-icons-outlined">add_alarm</span> Add to Calendar
+            </button>
+          </div>
+        </div>
+        <hr *ngIf="!last" class="event-divider" />
+      </div>
+    </div>
+  </div>
+</div> 

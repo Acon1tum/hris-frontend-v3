@@ -1,0 +1,317 @@
+<!-- Template Management Section -->
+<div id="templates" class="template-management">
+  <div class="section-header">
+    <h2>Report Templates</h2>
+    <div class="header-actions">
+      <button class="btn-primary" (click)="openCreateTemplateModal()">
+        <i class="fas fa-plus"></i>
+        Create Template
+      </button>
+    </div>
+  </div>
+
+  <!-- Templates Grid -->
+  <div class="templates-grid">
+    <div class="template-card" *ngFor="let template of reportTemplates">
+      <div class="template-header">
+        <span class="template-type">{{ template.type }}</span>
+        <span class="template-status" [style.color]="getTemplateStatusColor(template.status)">
+          <i class="fas fa-circle" style="font-size: 8px; margin-right: 4px;"></i>
+          {{ template.status }}
+        </span>
+      </div>
+      <h3>{{ template.name }}</h3>
+      <p>{{ template.description }}</p>
+      <div class="template-meta">
+        <span class="department">
+          <i class="fas fa-building" style="margin-right: 4px;"></i>
+          {{ template.department }}
+        </span>
+        <span class="last-modified">
+          <i class="fas fa-clock" style="margin-right: 4px;"></i>
+          {{ formatDate(template.lastModified) }}
+        </span>
+      </div>
+      <div class="template-actions">
+        <button class="btn-icon" (click)="editTemplate(template)" title="Edit Template">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-icon" (click)="deleteTemplate(template.id)" title="Delete Template">
+          <i class="fas fa-trash"></i>
+        </button>
+        <button class="btn-icon" (click)="previewTemplate(template)" title="Preview Template">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Layouts Section -->
+  <div class="section-header">
+    <h2>Global Layouts</h2>
+    <div class="header-actions">
+      <button class="btn-primary" (click)="openCreateLayoutModal()">
+        <i class="fas fa-plus"></i>
+        Create Layout
+      </button>
+    </div>
+  </div>
+
+  <!-- Layouts Grid -->
+  <div class="layouts-grid">
+    <div class="layout-card" *ngFor="let layout of globalLayouts">
+      <div class="layout-header">
+        <h3>{{ layout.name }}</h3>
+        <span class="default-badge" *ngIf="layout.isDefault">Default</span>
+      </div>
+      <p>{{ layout.description }}</p>
+      <div class="layout-meta">
+        <div class="layout-specs">
+          <span><i class="fas fa-file"></i> {{ layout.config.pageSize }}</span>
+          <span><i class="fas fa-ruler"></i> {{ layout.config.margins }}</span>
+          <span><i class="fas fa-font"></i> {{ layout.config.fontFamily }}</span>
+        </div>
+        <div class="color-scheme">
+          <div class="color-dot" *ngFor="let color of layout.config.colorScheme"
+               [style.background-color]="color" [title]="color"></div>
+        </div>
+      </div>
+      <div class="layout-actions">
+        <button class="btn-icon" (click)="editLayout(layout)" title="Edit Layout">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-icon" (click)="deleteLayout(layout.id)" title="Delete Layout">
+          <i class="fas fa-trash"></i>
+        </button>
+        <button class="btn-icon" (click)="setDefaultLayout(layout.id)" 
+                [class.active]="layout.isDefault"
+                title="Set as Default">
+          <i class="fas fa-star"></i>
+        </button>
+        <button class="btn-icon" (click)="previewLayout(layout)" title="Preview Layout">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Template Modal -->
+<div class="modal" *ngIf="showCreateModal">
+  <div class="modal-overlay" (click)="closeCreateTemplateModal()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ editingTemplate ? 'Edit Template' : 'Create New Template' }}</h2>
+      <button class="btn-icon" (click)="closeCreateTemplateModal()" title="Close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="templateForm" (ngSubmit)="saveTemplate()" class="template-form">
+      <!-- Basic Information -->
+      <div class="form-group">
+        <label for="name" class="required">Template Name</label>
+        <input type="text" id="name" formControlName="name" placeholder="Enter template name">
+        <div class="error-message" *ngIf="templateForm.get('name')?.errors?.['required'] && templateForm.get('name')?.touched">
+          Template name is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" formControlName="description" rows="3" 
+                  placeholder="Enter template description"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="type" class="required">Report Type</label>
+          <select id="type" formControlName="type">
+            <option value="">Select type</option>
+            <option *ngFor="let type of reportTypes" [value]="type">
+              {{ type | titlecase }}
+            </option>
+          </select>
+          <div class="error-message" *ngIf="templateForm.get('type')?.errors?.['required'] && templateForm.get('type')?.touched">
+            Report type is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="department" class="required">Department</label>
+          <select id="department" formControlName="department">
+            <option value="">Select department</option>
+            <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+          </select>
+          <div class="error-message" *ngIf="templateForm.get('department')?.errors?.['required'] && templateForm.get('department')?.touched">
+            Department is required
+          </div>
+        </div>
+      </div>
+
+      <!-- Sections -->
+      <div class="form-group">
+        <label>Report Sections</label>
+        <div formArrayName="sections">
+          <div *ngFor="let section of sections.controls; let i=index" class="section-item">
+            <input [formControlName]="i" placeholder="Enter section name">
+            <button type="button" class="btn-icon" (click)="removeSection(i)" title="Remove Section">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <button type="button" class="btn-secondary" (click)="addSection()">
+          <i class="fas fa-plus"></i> Add Section
+        </button>
+      </div>
+
+      <!-- Fields -->
+      <div class="form-group">
+        <label>Report Fields</label>
+        <div formArrayName="fields">
+          <div *ngFor="let field of fields.controls; let i=index" class="field-item">
+            <input [formControlName]="i" placeholder="Enter field name">
+            <button type="button" class="btn-icon" (click)="removeField(i)" title="Remove Field">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <button type="button" class="btn-secondary" (click)="addField()">
+          <i class="fas fa-plus"></i> Add Field
+        </button>
+      </div>
+
+      <!-- Styling -->
+      <div class="form-group styling-section">
+        <label>Report Styling</label>
+        <div class="styling-grid" formGroupName="styling">
+          <div class="style-item">
+            <label for="headerColor">Header Color</label>
+            <input type="color" id="headerColor" formControlName="headerColor">
+          </div>
+          <div class="style-item">
+            <label for="fontFamily">Font Family</label>
+            <select id="fontFamily" formControlName="fontFamily">
+              <option value="Arial">Arial</option>
+              <option value="Calibri">Calibri</option>
+              <option value="Roboto">Roboto</option>
+              <option value="Times New Roman">Times New Roman</option>
+            </select>
+          </div>
+          <div class="style-item">
+            <label for="fontSize">Font Size</label>
+            <select id="fontSize" formControlName="fontSize">
+              <option value="10pt">10pt</option>
+              <option value="11pt">11pt</option>
+              <option value="12pt">12pt</option>
+              <option value="14pt">14pt</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="closeCreateTemplateModal()">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="templateForm.invalid">
+          <i class="fas" [class.fa-save]="editingTemplate" [class.fa-plus]="!editingTemplate"></i>
+          {{ editingTemplate ? 'Update Template' : 'Create Template' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Layout Modal -->
+<div class="modal" *ngIf="showLayoutModal">
+  <div class="modal-overlay" (click)="closeLayoutModal()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ editingLayout ? 'Edit Layout' : 'Create New Layout' }}</h2>
+      <button class="btn-icon" (click)="closeLayoutModal()" title="Close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="layoutForm" (ngSubmit)="saveLayout()" class="template-form">
+      <!-- Basic Information -->
+      <div class="form-group">
+        <label for="layoutName" class="required">Layout Name</label>
+        <input type="text" id="layoutName" formControlName="name" placeholder="Enter layout name">
+        <div class="error-message" *ngIf="layoutForm.get('name')?.errors?.['required'] && layoutForm.get('name')?.touched">
+          Layout name is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="layoutDescription">Description</label>
+        <textarea id="layoutDescription" formControlName="description" rows="3" 
+                  placeholder="Enter layout description"></textarea>
+      </div>
+
+      <!-- Layout Configuration -->
+      <div formGroupName="config">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pageSize" class="required">Page Size</label>
+            <select id="pageSize" formControlName="pageSize">
+              <option value="A4">A4</option>
+              <option value="Letter">Letter</option>
+              <option value="Legal">Legal</option>
+              <option value="Executive">Executive</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="margins" class="required">Margins</label>
+            <select id="margins" formControlName="margins">
+              <option value="1.0cm">Narrow (1.0cm)</option>
+              <option value="1.5cm">Moderate (1.5cm)</option>
+              <option value="2.5cm">Normal (2.5cm)</option>
+              <option value="3.0cm">Wide (3.0cm)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="layoutFontFamily" class="required">Font Family</label>
+          <select id="layoutFontFamily" formControlName="fontFamily">
+            <option value="Arial">Arial</option>
+            <option value="Calibri">Calibri</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Helvetica">Helvetica</option>
+          </select>
+        </div>
+
+        <!-- Color Scheme -->
+        <div class="form-group">
+          <label>Color Scheme</label>
+          <div class="color-scheme-grid" formArrayName="colorScheme">
+            <div *ngFor="let color of colorScheme.controls; let i=index" class="color-item">
+              <input type="color" [formControlName]="i" [title]="'Color ' + (i + 1)">
+              <button type="button" class="btn-icon" (click)="removeColor(i)" *ngIf="colorScheme.length > 1">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <button type="button" class="btn-secondary" (click)="addColor()" *ngIf="colorScheme.length < 6">
+              <i class="fas fa-plus"></i> Add Color
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="closeLayoutModal()">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="layoutForm.invalid">
+          <i class="fas" [class.fa-save]="editingLayout" [class.fa-plus]="!editingLayout"></i>
+          {{ editingLayout ? 'Update Layout' : 'Create Layout' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

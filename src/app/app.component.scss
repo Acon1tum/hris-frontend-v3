@@ -1,0 +1,162 @@
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+// Ensure header is properly positioned and visible
+app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  backdrop-filter: blur(5px); 
+  -webkit-backdrop-filter: blur(12px); 
+}
+
+.content-wrapper {
+  display: flex;
+  flex: 1;
+  position: relative;
+  margin-top: 70px; // Account for fixed header
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  transition: all 0.3s ease;
+
+  &.container-expanded {
+    max-width: 1600px; // Wider container when sidebar is collapsed/closed
+  }
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.feature-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-title {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-weight: 600;
+  }
+
+  .feature-description {
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+  }
+}
+
+// Desktop styles
+@media (min-width: 1024px) {
+  .main-content {
+    margin-left: 280px; // Full sidebar width
+    
+    &.sidebar-collapsed {
+      margin-left: 64px; // Collapsed sidebar width
+    }
+
+    .container {
+      padding: 0 3rem;
+    }
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+}
+
+// Tablet styles
+@media (min-width: 768px) and (max-width: 1023px) {
+  .main-content {
+    margin-left: 0;
+    padding: 1.5rem;
+    
+    .container {
+      padding: 0 1.5rem;
+    }
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+// Mobile styles
+@media (max-width: 767px) {
+  .main-content {
+    margin-left: 0;
+    padding: 1rem;
+    
+    .container {
+      padding: 0 1rem;
+    }
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .feature-card {
+    padding: 1.5rem;
+  }
+} 

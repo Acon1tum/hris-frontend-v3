@@ -1,0 +1,672 @@
+// Color variables
+:host {
+  --primary-color: #0c7ff2;
+  --primary-hover-color: #0a6dcf;
+  --text-primary: #0d141c;
+  --text-secondary: #49739c;
+  --text-on-primary: #ffffff;
+  --border-color: #e1e8ef;
+  --background-light: #f8fafc;
+  --background-active: #eff6ff;
+  --success-bg: #dcfce7;
+  --success-text: #166534;
+  --warning-bg: #fef9c3;
+  --warning-text: #854d0e;
+  --danger-bg: #fee2e2;
+  --danger-text: #991b1b;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+// Page Header
+.page-header {
+  margin-bottom: 2rem;
+  
+  .page-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .page-header-text {
+    flex: 1;
+    
+    .page-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 0.25rem 0;
+      line-height: 1.3;
+    }
+    
+    .page-description {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+// Content Sections
+.content-section {
+  margin-bottom: 1.5rem;
+}
+
+.content-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+// Buttons
+.btn-primary,
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+  
+  .btn-icon {
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--text-on-primary);
+  
+  &:hover:not(:disabled) {
+    background-color: var(--primary-hover-color);
+  }
+}
+
+.btn-secondary {
+  background-color: var(--background-light);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  
+  &:hover:not(:disabled) {
+    background-color: #e2e8f0;
+  }
+}
+
+// Search
+.search-container {
+  position: relative;
+  max-width: 32rem;
+  
+  .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: var(--text-secondary);
+    pointer-events: none;
+  }
+}
+
+.search-input {
+  width: 100%;
+  height: 2.75rem;
+  padding: 0.75rem 0.75rem 0.75rem 2.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background-color: white;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(12, 127, 242, 0.1);
+  }
+}
+
+// Adjustment Sections
+.adjustment-section {
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+    
+    .section-count {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+  }
+}
+
+// Adjustment Grid
+.adjustment-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+// Adjustment Cards
+.adjustment-card {
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  
+  .employee-info {
+    flex: 1;
+    
+    .employee-id {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--primary-color);
+      margin: 0 0 0.25rem 0;
+    }
+    
+    .employee-name {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 0.25rem 0;
+    }
+    
+    .submission-date {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+  }
+}
+
+// Status Badges
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  white-space: nowrap;
+  
+  .status-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+    fill: currentColor;
+  }
+  
+  &.status-pending {
+    background-color: var(--warning-bg);
+    color: var(--warning-text);
+  }
+  
+  &.status-approved {
+    background-color: var(--success-bg);
+    color: var(--success-text);
+  }
+  
+  &.status-rejected {
+    background-color: var(--danger-bg);
+    color: var(--danger-text);
+  }
+  
+  &.status-default {
+    background-color: var(--border-color);
+    color: var(--text-secondary);
+  }
+}
+
+// Card Details
+.card-details {
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  margin-bottom: 1rem;
+  
+  .missed-log-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+  }
+  
+  .time-info {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .reason-info {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0 0 0.5rem 0;
+    line-height: 1.4;
+    
+    .reason-label {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+  }
+  
+  .approval-info,
+  .rejection-info {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+  
+  .approval-info {
+    background-color: var(--success-bg);
+    
+    .approval-text {
+      color: var(--success-text);
+      margin: 0;
+    }
+  }
+  
+  .rejection-info {
+    background-color: var(--danger-bg);
+    
+    .rejection-text {
+      color: var(--danger-text);
+      margin: 0;
+    }
+  }
+}
+
+// Evidence Section
+.evidence-section {
+  .evidence-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+  }
+}
+
+.evidence-file {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: var(--background-light);
+  }
+  
+  .evidence-thumbnail {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.375rem;
+    object-fit: cover;
+  }
+  
+  .evidence-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: var(--background-light);
+    border-radius: 0.375rem;
+    
+    .file-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      fill: var(--text-secondary);
+    }
+  }
+  
+  .evidence-info {
+    flex: 1;
+    
+    .evidence-filename {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--primary-color);
+      margin: 0 0 0.125rem 0;
+    }
+    
+    .evidence-filesize {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+  }
+  
+  .download-icon {
+    width: 1rem;
+    height: 1rem;
+    fill: var(--text-secondary);
+  }
+}
+
+// Card Actions
+.card-actions {
+  border-top: 1px solid var(--border-color);
+  
+  &.actions-pending {
+    .pending-actions {
+      display: flex;
+      
+      .action-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: none;
+        background: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        
+        .action-icon {
+          width: 1rem;
+          height: 1rem;
+          fill: currentColor;
+        }
+        
+        &.reject-btn {
+          color: var(--danger-text);
+          border-right: 1px solid var(--border-color);
+          
+          &:hover {
+            background-color: var(--danger-bg);
+          }
+        }
+        
+        &.approve-btn {
+          color: var(--success-text);
+          
+          &:hover {
+            background-color: var(--success-bg);
+          }
+        }
+      }
+    }
+  }
+  
+  &.actions-approved,
+  &.actions-rejected {
+    .processed-actions {
+      padding: 0.75rem;
+      background-color: var(--background-light);
+      
+      .audit-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: color 0.2s ease;
+        
+        &:hover {
+          color: var(--primary-color);
+        }
+        
+        .action-icon {
+          width: 1rem;
+          height: 1rem;
+          fill: currentColor;
+        }
+      }
+    }
+  }
+}
+
+// Empty State
+.empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  
+  .empty-state-content {
+    max-width: 24rem;
+    margin: 0 auto;
+  }
+  
+  .empty-state-icon {
+    width: 3rem;
+    height: 3rem;
+    fill: var(--text-secondary);
+    margin: 0 auto 1rem auto;
+    opacity: 0.5;
+  }
+  
+  .empty-state-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .empty-state-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .page-header {
+    .page-header-content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+    
+    .page-header-text {
+      .page-title {
+        font-size: 1.5rem;
+      }
+    }
+    
+    .header-actions {
+      justify-content: stretch;
+      
+      button {
+        flex: 1;
+      }
+    }
+  }
+  
+  .search-container {
+    max-width: none;
+  }
+  
+  .adjustment-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .adjustment-card {
+    .card-content {
+      padding: 1rem;
+    }
+    
+    .card-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+      
+      .status-badge {
+        align-self: flex-start;
+      }
+    }
+  }
+  
+  .evidence-file {
+    .evidence-info {
+      .evidence-filename {
+        font-size: 0.8125rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    margin-bottom: 1.5rem;
+    
+    .page-header-content {
+      padding: 1rem;
+    }
+    
+    .page-header-text {
+      .page-title {
+        font-size: 1.25rem;
+      }
+      
+      .page-description {
+        font-size: 0.8125rem;
+      }
+    }
+  }
+  
+  .content-sections {
+    gap: 2rem;
+  }
+  
+  .adjustment-section {
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+  }
+  
+  .search-input {
+    height: 2.5rem;
+    font-size: 0.8125rem;
+  }
+  
+  .adjustment-grid {
+    grid-template-columns: 1fr;
+    min-width: 0;
+  }
+  
+  .adjustment-card {
+    .card-content {
+      padding: 0.75rem;
+    }
+    
+    .employee-info {
+      .employee-name {
+        font-size: 1rem;
+      }
+    }
+    
+    .card-details {
+      .missed-log-title,
+      .time-info,
+      .reason-info {
+        font-size: 0.8125rem;
+      }
+    }
+    
+    .evidence-file {
+      padding: 0.5rem;
+      gap: 0.5rem;
+      
+      .evidence-thumbnail,
+      .evidence-placeholder {
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+  }
+  
+  .empty-state {
+    padding: 2rem 1rem;
+    
+    .empty-state-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+    
+    .empty-state-title {
+      font-size: 1rem;
+    }
+    
+    .empty-state-description {
+      font-size: 0.8125rem;
+    }
+  }
+} 

@@ -1,0 +1,24 @@
+<div class="leave-container">
+  <div class="page-header">
+    <h1>{{ title }}</h1>
+    <p>Streamlined leave request and approval management system</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card" *ngFor="let feature of leaveFeatures">
+      <div class="feature-icon">{{ feature.icon }}</div>
+      <h3>{{ feature.name }}</h3>
+      <p>{{ feature.description }}</p>
+      <button class="btn btn-primary">Access</button>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="action-buttons">
+      <button class="btn btn-secondary">Request Leave</button>
+      <button class="btn btn-secondary">View Balance</button>
+      <button class="btn btn-secondary">Approve Requests</button>
+    </div>
+  </div>
+</div> 
