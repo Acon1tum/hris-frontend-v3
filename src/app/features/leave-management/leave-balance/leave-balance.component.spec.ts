@@ -36,9 +36,8 @@ describe('LeaveBalanceComponent', () => {
 
   it('should handle pagination correctly', () => {
     expect(component.currentPage).toBe(1);
-    expect(component.isPreviousDisabled).toBe(true);
-    
-    component.nextPage();
+    expect(component.currentPage === 1).toBe(true); // replaces isPreviousDisabled
+    component.onPageChange(component.currentPage + 1); // replaces nextPage()
     // Since we have 5 employees and 5 items per page, we should still be on page 1
     expect(component.currentPage).toBe(1);
   });

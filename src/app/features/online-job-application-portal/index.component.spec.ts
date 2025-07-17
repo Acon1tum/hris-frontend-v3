@@ -27,7 +27,7 @@ describe('OnlineJobApplicationPortalComponent', () => {
     expect(compiled.querySelector('h1').textContent).toContain('Online Job Application Portal');
   });
 
-  it('should have portal features', () => {
-    expect(component.portalFeatures.length).toBeGreaterThan(0);
+  it('should have jobs listed', () => {
+    expect(component.jobs.length).toBeGreaterThan(0);
   });
 }); 

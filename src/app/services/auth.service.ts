@@ -7,7 +7,6 @@ import {
   User, 
   LoginRequest, 
   LoginResponse, 
-  Permission, 
   ApiResponse, 
   MenuItem 
 } from '../interfaces/auth.interface';
@@ -40,9 +39,8 @@ export class AuthService {
   }
 
   private enhanceUserData(user: User): User {
-    // Enhance user object with display properties
     const enhancedUser = { ...user };
-    
+
     // Set display name from personnel data
     if (user.personnel && user.personnel.length > 0) {
       const personnel = user.personnel[0];
@@ -50,17 +48,21 @@ export class AuthService {
     } else {
       enhancedUser.name = user.username;
     }
-    
+
+    // Fix: Map single role to roles array if needed
+    if (!user.roles && user.role) {
+      enhancedUser.roles = [user.role];
+    }
+
     // Set primary role for display
-    if (user.roles && user.roles.length > 0) {
-      enhancedUser.role = user.roles[0].replace(/_/g, ' ');
+    if (enhancedUser.roles && enhancedUser.roles.length > 0) {
+      enhancedUser.role = enhancedUser.roles[0];
     } else {
       enhancedUser.role = 'User';
     }
-    
-    // Set default avatar (you can implement avatar upload later)
+
     enhancedUser.avatar = user.avatar || this.generateAvatarUrl(enhancedUser.name || user.username);
-    
+
     return enhancedUser;
   }
 
@@ -136,35 +138,14 @@ export class AuthService {
     return reason;
   }
 
-  hasPermission(permission: Permission): boolean {
+  hasRole(role: string): boolean {
     const user = this.getCurrentUser();
-    return user?.permissions?.includes(permission) || false;
+    return user?.role === role;
   }
 
-  hasAnyPermission(permissions: Permission[]): boolean {
+  hasAnyRole(roles: string[]): boolean {
     const user = this.getCurrentUser();
-    if (!user?.permissions) return false;
-    
-    return permissions.some(permission => user.permissions.includes(permission));
-  }
-
-  hasAllPermissions(permissions: Permission[]): boolean {
-    const user = this.getCurrentUser();
-    if (!user?.permissions) return false;
-    
-    return permissions.every(permission => user.permissions.includes(permission));
-  }
-
-  canAccess(requiredPermissions: Permission[]): boolean {
-    return this.hasAnyPermission(requiredPermissions);
-  }
-
-  canAccessRoute(routePermissions: Permission[]): boolean {
-    // If no permissions are required, allow access
-    if (!routePermissions || routePermissions.length === 0) return true;
-    
-    // Check if user has any of the required permissions
-    return this.hasAnyPermission(routePermissions);
+    return !!(user && user.role && roles.includes(user.role));
   }
 
   refreshToken(): Observable<string> {

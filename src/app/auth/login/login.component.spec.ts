@@ -29,7 +29,7 @@ describe('LoginComponent', () => {
   });
 
   it('should initialize with empty form data', () => {
-    expect(component.loginData.email).toBe('');
+    expect(component.loginData.username).toBe('');
     expect(component.loginData.password).toBe('');
     expect(component.loginData.rememberMe).toBe(false);
   });
@@ -47,16 +47,16 @@ describe('LoginComponent', () => {
   it('should set demo credentials and login', () => {
     spyOn(component, 'onLogin');
     
-    component.onDemoLogin();
+    component.onDemoLogin('admin');
     
-    expect(component.loginData.email).toBe('admin@hris.com');
-    expect(component.loginData.password).toBe('admin123');
+    expect(component.loginData.username).toBe('admin');
+    expect(component.loginData.password).toBe('Admin123!');
     expect(component.onLogin).toHaveBeenCalled();
   });
 
   it('should handle successful login', (done) => {
-    component.loginData.email = 'admin@hris.com';
-    component.loginData.password = 'admin123';
+    component.loginData.username = 'admin';
+    component.loginData.password = 'Admin123!';
     
     component.onLogin();
     
@@ -68,13 +68,13 @@ describe('LoginComponent', () => {
   });
 
   it('should handle failed login', (done) => {
-    component.loginData.email = 'wrong@email.com';
+    component.loginData.username = 'wrong';
     component.loginData.password = 'wrongpassword';
     
     component.onLogin();
     
     setTimeout(() => {
-      expect(component.errorMessage).toBe('Invalid email or password. Please try again.');
+      expect(component.errorMessage).toBe('Invalid username or password. Please try again.');
       expect(localStorage.getItem('isAuthenticated')).toBeNull();
       done();
     }, 1600);
@@ -89,8 +89,8 @@ describe('LoginComponent', () => {
 
   it('should clear error message on new login attempt', (done) => {
     component.errorMessage = 'Previous error';
-    component.loginData.email = 'admin@hris.com';
-    component.loginData.password = 'admin123';
+    component.loginData.username = 'admin';
+    component.loginData.password = 'Admin123!';
     
     component.onLogin();
     expect(component.errorMessage).toBe('');

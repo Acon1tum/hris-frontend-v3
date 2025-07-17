@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MenuItem } from '../../interfaces/auth.interface';
-import { MENU_CONFIG } from '../../config/menu-config';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -38,6 +37,140 @@ export class SidebarComponent implements OnInit, OnDestroy {
     { name: 'Framer', icon: 'dashboard_customize' },
     { name: 'Typeform', icon: 'description' }
   ];
+
+  // Replace menuItemsConfig with a grouped config by role
+  menuItemsByRole: { [role: string]: MenuItem[] } = {
+    Admin: [
+      { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
+      { name: 'System Administration', icon: 'admin_panel_settings', path: '/system-administration', children: [
+        { name: 'User Management', icon: 'manage_accounts', path: '/system-administration/user-management' },
+        { name: 'Role Management', icon: 'security', path: '/system-administration/role-management' },
+        { name: 'Audit Trail', icon: 'history', path: '/system-administration/audit-trail' },
+        { name: 'System Parameters', icon: 'settings', path: '/system-administration/system-parameters' }
+      ] },
+      { name: 'Personnel Information', icon: 'people', path: '/personnel-information-management', children: [
+        { name: 'Admin Dashboard', icon: 'analytics', path: '/personnel-information-management/admin-dashboard' },
+        { name: 'Admin Custom', icon: 'build', path: '/personnel-information-management/admin-custom' },
+        { name: 'Admin Request', icon: 'build', path: '/personnel-information-management/admin-request' },
+        { name: 'Personnel 201 File', icon: 'folder', path: '/personnel-information-management/personnel-201-file' },
+        { name: 'Personnel Movement', icon: 'swap_horiz', path: '/personnel-information-management/personnel-movement' }
+      ] },
+      { name: 'Employee Self-Service', icon: 'person', path: '/employee-self-service', children: [
+        { name: 'My Profile', icon: 'person', path: '/employee-self-service/my-profile' },
+        { name: 'My Requests', icon: 'request_page', path: '/employee-self-service/my-requests' },
+        { name: 'My Reports', icon: 'report', path: '/employee-self-service/my-reports' }
+      ] },
+      { name: 'Timekeeping & Attendance', icon: 'schedule', path: '/timekeeping-attendance', children: [
+        { name: 'Attendance Overview', icon: 'analytics', path: '/timekeeping-attendance/attendance-overview' },
+        { name: 'Attendance Logs', icon: 'history', path: '/timekeeping-attendance/attendance-logs' },
+        { name: 'Time Schedules', icon: 'schedule', path: '/timekeeping-attendance/time-schedules' },
+        { name: 'DTR Adjustment', icon: 'adjust', path: '/timekeeping-attendance/dtr-adjustment' },
+        { name: 'Employee Attendance', icon: 'person', path: '/timekeeping-attendance/employee-attendance' }
+      ] },
+      { name: 'Payroll Management', icon: 'payments', path: '/payroll-management', children: [
+        { name: 'Payroll Overview', icon: 'analytics', path: '/payroll-management/payroll-overview' },
+        { name: 'Master Payroll', icon: 'payments', path: '/payroll-management/master-payroll' },
+        { name: 'Deductions', icon: 'payments', path: '/payroll-management/deductions' },
+        { name: 'Loan Management', icon: 'payments', path: '/payroll-management/loan-management' },
+        { name: 'Payroll Adjustment', icon: 'payments', path: '/payroll-management/payroll-adjustment' },
+        { name: 'Payroll Run', icon: 'payments', path: '/payroll-management/payroll-run' },
+        { name: 'Employee Payroll', icon: 'payments', path: '/payroll-management/employee-payroll' }
+      ] },
+      { name: 'Leave Management', icon: 'event', path: '/leave-management', children: [
+        { name: 'Leave Request Management', icon: 'event', path: '/leave-management/leave-request-management' },
+        { name: 'Leave Type Management', icon: 'event', path: '/leave-management/leave-type-management' },
+        { name: 'Leave Balance', icon: 'event', path: '/leave-management/leave-balance' },
+        { name: 'Leave Employee', icon: 'event', path: '/leave-management/leave-employee' }
+      ] },
+      { name: 'Report Generation', icon: 'assessment', path: '/report-generation' },
+      { name: 'Recruitment', icon: 'work', path: '/recruitment' },
+      { name: 'Job Portal Management', icon: 'admin_panel_settings', path: '/job-portal-management' },
+      { name: 'Performance Management', icon: 'trending_up', path: '/performance-management' },
+      { name: 'Learning & Development', icon: 'school', path: '/learning-development' },
+      { name: 'Health & Wellness', icon: 'health_and_safety', path: '/health-wellness' }
+    ],
+    HR: [
+      { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
+      { name: 'System Administration', icon: 'admin_panel_settings', path: '/system-administration', children: [
+        { name: 'User Management', icon: 'manage_accounts', path: '/system-administration/user-management' },
+        { name: 'Role Management', icon: 'security', path: '/system-administration/role-management' },
+        { name: 'Audit Trail', icon: 'history', path: '/system-administration/audit-trail' },
+        { name: 'System Parameters', icon: 'settings', path: '/system-administration/system-parameters' }
+      ] },
+      { name: 'Personnel Information', icon: 'people', path: '/personnel-information-management', children: [
+        { name: 'Admin Dashboard', icon: 'analytics', path: '/personnel-information-management/admin-dashboard' },
+        { name: 'Admin Custom', icon: 'build', path: '/personnel-information-management/admin-custom' },
+        { name: 'Admin Request', icon: 'build', path: '/personnel-information-management/admin-request' },
+        { name: 'Personnel 201 File', icon: 'folder', path: '/personnel-information-management/personnel-201-file' },
+        { name: 'Personnel Movement', icon: 'swap_horiz', path: '/personnel-information-management/personnel-movement' }
+      ] },
+      { name: 'Employee Self-Service', icon: 'person', path: '/employee-self-service', children: [
+        { name: 'My Profile', icon: 'person', path: '/employee-self-service/my-profile' },
+        { name: 'My Requests', icon: 'request_page', path: '/employee-self-service/my-requests' },
+        { name: 'My Reports', icon: 'report', path: '/employee-self-service/my-reports' }
+      ] },
+      { name: 'Timekeeping & Attendance', icon: 'schedule', path: '/timekeeping-attendance', children: [
+        { name: 'Attendance Overview', icon: 'analytics', path: '/timekeeping-attendance/attendance-overview' },
+        { name: 'Attendance Logs', icon: 'history', path: '/timekeeping-attendance/attendance-logs' },
+        { name: 'Time Schedules', icon: 'schedule', path: '/timekeeping-attendance/time-schedules' },
+        { name: 'DTR Adjustment', icon: 'adjust', path: '/timekeeping-attendance/dtr-adjustment' },
+        { name: 'Employee Attendance', icon: 'person', path: '/timekeeping-attendance/employee-attendance' }
+      ] },
+      { name: 'Payroll Management', icon: 'payments', path: '/payroll-management', children: [
+        { name: 'Payroll Overview', icon: 'analytics', path: '/payroll-management/payroll-overview' },
+        { name: 'Master Payroll', icon: 'payments', path: '/payroll-management/master-payroll' },
+        { name: 'Deductions', icon: 'payments', path: '/payroll-management/deductions' },
+        { name: 'Loan Management', icon: 'payments', path: '/payroll-management/loan-management' },
+        { name: 'Payroll Adjustment', icon: 'payments', path: '/payroll-management/payroll-adjustment' },
+        { name: 'Payroll Run', icon: 'payments', path: '/payroll-management/payroll-run' },
+        { name: 'Employee Payroll', icon: 'payments', path: '/payroll-management/employee-payroll' }
+      ] },
+      { name: 'Leave Management', icon: 'event', path: '/leave-management', children: [
+        { name: 'Leave Request Management', icon: 'event', path: '/leave-management/leave-request-management' },
+        { name: 'Leave Type Management', icon: 'event', path: '/leave-management/leave-type-management' },
+        { name: 'Leave Balance', icon: 'event', path: '/leave-management/leave-balance' },
+        { name: 'Leave Employee', icon: 'event', path: '/leave-management/leave-employee' }
+      ] },
+      { name: 'Report Generation', icon: 'assessment', path: '/report-generation' },
+      { name: 'Recruitment', icon: 'work', path: '/recruitment' },
+      { name: 'Performance Management', icon: 'trending_up', path: '/performance-management' },
+      { name: 'Learning & Development', icon: 'school', path: '/learning-development' },
+      { name: 'Health & Wellness', icon: 'health_and_safety', path: '/health-wellness' }
+    ],
+    Employee: [
+      { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
+      { name: 'My Profile', icon: 'person', path: '/employee-self-service/my-profile' },
+      { name: 'My Requests', icon: 'request_page', path: '/employee-self-service/my-requests' },
+      { name: 'My Reports', icon: 'report', path: '/employee-self-service/my-reports' },
+      { name: 'Employee Attendance', icon: 'person', path: '/timekeeping-attendance/employee-attendance' },
+      { name: 'Leave Employee', icon: 'event', path: '/leave-management/leave-employee' },
+      { name: 'Performance Management', icon: 'trending_up', path: '/performance-management' },
+      { name: 'Learning & Development', icon: 'school', path: '/learning-development' },
+      { name: 'Health & Wellness', icon: 'health_and_safety', path: '/health-wellness' }
+    ],
+    Manager: [
+      { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
+      { name: 'Team Management', icon: 'groups', path: '/manager/team-management' },
+      { name: 'Attendance Overview', icon: 'analytics', path: '/timekeeping-attendance/attendance-overview' },
+      { name: 'Attendance Logs', icon: 'history', path: '/timekeeping-attendance/attendance-logs' },
+      { name: 'Employee Attendance', icon: 'person', path: '/timekeeping-attendance/employee-attendance' },
+      { name: 'Leave Management', icon: 'event', path: '/leave-management', children: [
+        { name: 'Leave Balance', icon: 'event', path: '/leave-management/leave-balance' },
+        { name: 'Leave Employee', icon: 'event', path: '/leave-management/leave-employee' }
+      ] },
+      { name: 'Performance Management', icon: 'trending_up', path: '/performance-management' },
+      { name: 'Learning & Development', icon: 'school', path: '/learning-development' },
+      { name: 'Health & Wellness', icon: 'health_and_safety', path: '/health-wellness' }
+    ],
+    Applicant: [
+      { name: 'Job Portal', icon: 'work', path: '/online-job-application-portal' }
+    ]
+  };
+
+  get currentMenuItems(): MenuItem[] {
+    const user = this.authService.getCurrentUser();
+    return user && user.role && this.menuItemsByRole[user.role] ? this.menuItemsByRole[user.role] : [];
+  }
 
   private userSub: Subscription | undefined;
 
@@ -89,8 +222,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     const onJobPortal = this.router.url.startsWith('/online-job-application-portal');
     if (publicMode && onJobPortal) {
       this.menuItems = [
-        { name: 'Login', icon: 'login', path: '/login', permissions: [] },
-        { name: 'Register', icon: 'person_add', path: '/register', permissions: [] }
+        { name: 'Login', icon: 'login', path: '/login', roles: [] },
+        { name: 'Register', icon: 'person_add', path: '/register', roles: [] }
       ];
       return;
     }
@@ -99,27 +232,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       localStorage.removeItem('jobPortalPublicMode');
     }
     // Use the imported menu configuration instead of defining items inline
-    this.menuItems = this.filterMenuItemsByPermissions(MENU_CONFIG);
-  }
-
-  private filterMenuItemsByPermissions(items: MenuItem[]): MenuItem[] {
-    return items
-      .map(item => {
-        const hasAccess = this.authService.canAccessRoute(item.permissions);
-        const filteredChildren = item.children ? this.filterMenuItemsByPermissions(item.children) : [];
-        if (hasAccess && filteredChildren.length > 0) {
-          return { ...item, children: filteredChildren };
-        }
-        if (hasAccess && (!item.children || item.children.length === 0)) {
-          return { ...item, children: [] };
-        }
-        if (!hasAccess && filteredChildren.length > 0) {
-          // If parent is not accessible but has accessible children, show parent as a group
-          return { ...item, children: filteredChildren };
-        }
-        return null;
-      })
-      .filter(item => item !== null) as MenuItem[];
+    this.menuItems = this.currentMenuItems;
   }
 
   toggleMenuItem(itemName: string, event: Event) {
