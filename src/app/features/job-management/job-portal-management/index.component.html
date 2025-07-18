@@ -11,13 +11,6 @@
       <span class="divider">|</span>
       <span>Closed: {{ postingStatusCounts['Closed'] || 0 }}</span>
     </div>
-
-    <div class="job-cards-list" *ngIf="!showForm">
-      <div class="job-cards-list-header">
-        <input type="text" [(ngModel)]="searchTerm" placeholder="Search jobs..." class="job-search-input" />
-      </div>
-      <p *ngIf="filteredJobs.length === 0">No jobs found. Try adjusting your search or filters.</p>
-    </div>
   </div>
 
   <div class="job-cards-panel">
@@ -88,23 +81,24 @@
           </div>
           <div class="form-row">
             <label for="technical_competencies">Technical Competencies</label>
-            <textarea id="technical_competencies" [(ngModel)]="jobPosting.technical_competencies" name="technical_competencies" required placeholder="List technical skills..."></textarea>
+            <textarea id="technical_competencies" [(ngModel)]="jobPosting.technical_competencies" name="technical_competencies" placeholder="List technical skills..."></textarea>
           </div>
         </div>
         <div class="form-section">
           <h3>Job Settings</h3>
           <div class="form-row">
             <label for="salary_range">Salary Range</label>
-            <input id="salary_range" type="text" [(ngModel)]="jobPosting.salary_range" name="salary_range" required placeholder="e.g. 30,000 - 50,000" />
+            <input id="salary_range" type="text" [(ngModel)]="jobPosting.salary_range" name="salary_range" placeholder="e.g. 30,000 - 50,000" />
           </div>
           <div class="form-row">
             <label for="employment_type">Employment Type</label>
             <select id="employment_type" [(ngModel)]="jobPosting.employment_type" name="employment_type" required>
               <option value="" disabled selected>Select type</option>
-              <option value="Full-Time">Full-Time</option>
-              <option value="Part-Time">Part-Time</option>
-              <option value="Contract">Contract</option>
-              <option value="Internship">Internship</option>
+              <option value="Regular">Regular</option>
+              <option value="Contractual">Contractual</option>
+              <option value="Part_time">Part-time</option>
+              <option value="Temporary">Temporary</option>
+              <option value="Consultant">Consultant</option>
             </select>
           </div>
           <div class="form-row">
@@ -118,8 +112,10 @@
           <div class="form-row">
             <label for="posting_status">Posting Status</label>
             <select id="posting_status" [(ngModel)]="jobPosting.posting_status" name="posting_status" required>
-              <option value="Open">Open</option>
+              <option value="Draft">Draft</option>
+              <option value="Published">Published</option>
               <option value="Closed">Closed</option>
+              <option value="Filled">Filled</option>
             </select>
           </div>
         </div>
@@ -131,14 +127,6 @@
               <option value="" disabled selected>Select user</option>
               <option *ngFor="let user of users" [value]="user.id">{{ user.name }}</option>
             </select>
-          </div>
-          <div class="form-row">
-            <label for="department">Department (Name)</label>
-            <input id="department" type="text" [(ngModel)]="jobPosting.department" name="department" required placeholder="Department name" />
-          </div>
-          <div class="form-row">
-            <label for="created_by_user">Created By (User Name)</label>
-            <input id="created_by_user" type="text" [(ngModel)]="jobPosting.created_by_user" name="created_by_user" required placeholder="User name" />
           </div>
         </div>
       </div>

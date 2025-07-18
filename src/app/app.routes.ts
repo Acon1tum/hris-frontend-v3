@@ -231,7 +231,7 @@ export const routes: Routes = [
   },
   {
     path: 'recruitment',
-    loadComponent: () => import('./features/recruitment/index.component').then(m => m.RecruitmentComponent),
+    loadComponent: () => import('./features/job-management/recruitment/index.component').then(m => m.RecruitmentComponent),
     canActivate: [PermissionGuard],
     data: { roles: ['Admin', 'HR', 'Employee', 'Manager'] }
   },
@@ -265,7 +265,7 @@ export const routes: Routes = [
   },
   {
     path: 'job-portal-management',
-    loadComponent: () => import('./features/job-portal-management/index.component').then(m => m.JobPortalManagementComponent),
+    loadComponent: () => import('./features/job-management/job-portal-management/index.component').then(m => m.JobPortalManagementComponent),
     canActivate: [PermissionGuard],
     data: { roles: ['Admin'] }
   },

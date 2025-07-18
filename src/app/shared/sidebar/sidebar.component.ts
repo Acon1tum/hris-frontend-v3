@@ -82,9 +82,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { name: 'Leave Balance', icon: 'event', path: '/leave-management/leave-balance' },
         { name: 'Leave Employee', icon: 'event', path: '/leave-management/leave-employee' }
       ] },
+      { name: 'Job Management', icon: 'work', path: '/job-management', children: [
+        { name: 'Recruitment', icon: 'work', path: '/recruitment' },
+        { name: 'Job Portal Management', icon: 'admin_panel_settings', path: '/job-portal-management' }
+      ] },
       { name: 'Report Generation', icon: 'assessment', path: '/report-generation' },
-      { name: 'Recruitment', icon: 'work', path: '/recruitment' },
-      { name: 'Job Portal Management', icon: 'admin_panel_settings', path: '/job-portal-management' },
       { name: 'Performance Management', icon: 'trending_up', path: '/performance-management' },
       { name: 'Learning & Development', icon: 'school', path: '/learning-development' },
       { name: 'Health & Wellness', icon: 'health_and_safety', path: '/health-wellness' }
@@ -132,7 +134,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { name: 'Leave Employee', icon: 'event', path: '/leave-management/leave-employee' }
       ] },
       { name: 'Report Generation', icon: 'assessment', path: '/report-generation' },
-      { name: 'Recruitment', icon: 'work', path: '/recruitment' },
+      { name: 'Job Management', icon: 'work', path: '/job-management', children: [
+        { name: 'Recruitment', icon: 'work', path: '/recruitment' },
+        { name: 'Job Portal Management', icon: 'admin_panel_settings', path: '/job-portal-management' }
+      ] },
       { name: 'Performance Management', icon: 'trending_up', path: '/performance-management' },
       { name: 'Learning & Development', icon: 'school', path: '/learning-development' },
       { name: 'Health & Wellness', icon: 'health_and_safety', path: '/health-wellness' }
