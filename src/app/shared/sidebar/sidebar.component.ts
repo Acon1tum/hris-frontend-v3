@@ -44,7 +44,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
       { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
       { name: 'System Administration', icon: 'admin_panel_settings', path: '/system-administration', children: [
         { name: 'User Management', icon: 'manage_accounts', path: '/system-administration/user-management' },
-        { name: 'Role Management', icon: 'security', path: '/system-administration/role-management' },
         { name: 'Audit Trail', icon: 'history', path: '/system-administration/audit-trail' },
         { name: 'System Parameters', icon: 'settings', path: '/system-administration/system-parameters' }
       ] },
@@ -92,13 +91,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
       { name: 'Health & Wellness', icon: 'health_and_safety', path: '/health-wellness' }
     ],
     HR: [
-      { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
-      { name: 'System Administration', icon: 'admin_panel_settings', path: '/system-administration', children: [
-        { name: 'User Management', icon: 'manage_accounts', path: '/system-administration/user-management' },
-        { name: 'Role Management', icon: 'security', path: '/system-administration/role-management' },
-        { name: 'Audit Trail', icon: 'history', path: '/system-administration/audit-trail' },
-        { name: 'System Parameters', icon: 'settings', path: '/system-administration/system-parameters' }
-      ] },
       { name: 'Personnel Information', icon: 'people', path: '/personnel-information-management', children: [
         { name: 'Admin Dashboard', icon: 'analytics', path: '/personnel-information-management/admin-dashboard' },
         { name: 'Admin Custom', icon: 'build', path: '/personnel-information-management/admin-custom' },

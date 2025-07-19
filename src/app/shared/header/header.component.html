@@ -9,7 +9,9 @@
   <div class="header-container">
     <!-- Left: Logo -->
     <div class="header-left">
-      <span class="app-title" *ngIf="isSidebarCollapsed || isMobile || publicMode">Quanby HRIS</span>
+      <span class="app-title" *ngIf="isSidebarCollapsed || isMobile || publicMode">
+        {{ publicMode ? 'Quanby Job Portal' : 'Quanby HRIS' }}
+      </span>
     </div>
 
     <div class="header-right">

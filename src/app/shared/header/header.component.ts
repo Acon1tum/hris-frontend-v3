@@ -127,9 +127,9 @@ export class HeaderComponent implements OnInit {
   }
 
   goToLogin() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/online-job-login']);
   }
   goToRegister() {
-    this.router.navigate(['/register']);
+    this.router.navigate(['/online-job-register']);
   }
 } 

@@ -1,58 +1,289 @@
-<div class="register-bg">
-  <div class="register-card">
-    <div class="register-title">
-      <span class="material-symbols-outlined icon-blue">person_add</span>
-      Create Your Account
+<div class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden">
+  <div class="layout-container flex h-full grow flex-col">
+    <main class="flex flex-1 items-center justify-center py-10 px-4 sm:px-6 lg:px-8 bg-cover bg-center" style="background: linear-gradient(135deg, #3b82f6 0%, #ec4899 100%);">
+      <div class="absolute inset-0 bg-white opacity-5"></div>
+      <div class="relative layout-content-container flex flex-col w-full max-w-lg bg-white p-8 sm:p-10 rounded-xl shadow-custom">
+        <div class="text-center mb-8">
+          <div class="flex items-center justify-center gap-3 mb-4">
+            <img alt="Company Logo" class="h-12 w-12 text-blue-600" src="assets/images/QuanbyLogo.png" />
+            <h2 class="text-slate-800 text-2xl font-semibold leading-tight">Quanby HRIS</h2>
+          </div>
+          <h1 class="text-slate-800 text-3xl font-bold leading-tight tracking-tight">Create Job Portal Account</h1>
+          <p class="text-slate-600 text-base mt-2">Join our talent pool and start your career journey with us.</p>
+        </div>
+        
+        <form class="space-y-6" (ngSubmit)="onRegister()" #registerForm="ngForm">
+          <!-- Personal Information Section -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">Personal Information</h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5" for="firstName">First Name *</label>
+                <div class="relative">
+                  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <span class="material-symbols-outlined text-slate-400"> badge </span>
+                  </div>
+                  <input 
+                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 placeholder:text-slate-400 pl-10 pr-3 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
+                    id="firstName" 
+                    name="firstName"
+                    [(ngModel)]="registerData.firstName"
+                    placeholder="Enter your first name" 
+                    type="text"
+                    required
+                    [class.border-red-500]="errorMessage && !registerData.firstName"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5" for="lastName">Last Name *</label>
+                <div class="relative">
+                  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <span class="material-symbols-outlined text-slate-400"> badge </span>
+                  </div>
+                  <input 
+                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 placeholder:text-slate-400 pl-10 pr-3 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
+                    id="lastName" 
+                    name="lastName"
+                    [(ngModel)]="registerData.lastName"
+                    placeholder="Enter your last name" 
+                    type="text"
+                    required
+                    [class.border-red-500]="errorMessage && !registerData.lastName"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5" for="middleName">Middle Name</label>
+              <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <span class="material-symbols-outlined text-slate-400"> badge </span>
     </div>
-    <form>
-      <div class="register-field">
-        <span class="material-symbols-outlined icon-blue">badge</span>
-        <input type="text" placeholder="First Name" aria-label="First Name" required />
+                <input 
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 placeholder:text-slate-400 pl-10 pr-3 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
+                  id="middleName" 
+                  name="middleName"
+                  [(ngModel)]="registerData.middleName"
+                  placeholder="Enter your middle name (optional)" 
+                  type="text"
+                />
       </div>
-      <div class="register-field">
-        <span class="material-symbols-outlined icon-blue">badge</span>
-        <input type="text" placeholder="Last Name" aria-label="Last Name" required />
       </div>
-      <div class="register-field">
-        <span class="material-symbols-outlined icon-blue">badge</span>
-        <input type="text" placeholder="Middle Name (optional)" aria-label="Middle Name" />
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5" for="gender">Gender</label>
+                <div class="relative">
+                  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <span class="material-symbols-outlined text-slate-400"> wc </span>
       </div>
-      <div class="register-field">
-        <span class="material-symbols-outlined icon-blue">wc</span>
-        <select aria-label="Gender">
-          <option value="">Gender (optional)</option>
+                  <select 
+                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 pl-10 pr-3 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
+                    id="gender" 
+                    name="gender"
+                    [(ngModel)]="registerData.gender"
+                  >
+                    <option value="">Select gender (optional)</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
           <option value="Other">Other</option>
         </select>
       </div>
-      <div class="register-field">
-        <span class="material-symbols-outlined icon-blue">favorite</span>
-        <select aria-label="Civil Status">
-          <option value="">Civil Status (optional)</option>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5" for="civilStatus">Civil Status</label>
+                <div class="relative">
+                  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <span class="material-symbols-outlined text-slate-400"> favorite </span>
+                  </div>
+                  <select 
+                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 pl-10 pr-3 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
+                    id="civilStatus" 
+                    name="civilStatus"
+                    [(ngModel)]="registerData.civilStatus"
+                  >
+                    <option value="">Select civil status (optional)</option>
           <option value="Single">Single</option>
           <option value="Married">Married</option>
           <option value="Divorced">Divorced</option>
           <option value="Widowed">Widowed</option>
         </select>
       </div>
-      <div class="register-field">
-        <span class="material-symbols-outlined icon-blue">call</span>
-        <input type="text" placeholder="Contact Number (optional)" aria-label="Contact Number" />
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5" for="contactNumber">Contact Number</label>
+              <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <span class="material-symbols-outlined text-slate-400"> call </span>
+                </div>
+                <input 
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 placeholder:text-slate-400 pl-10 pr-3 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
+                  id="contactNumber" 
+                  name="contactNumber"
+                  [(ngModel)]="registerData.contactNumber"
+                  placeholder="Enter your contact number (optional)" 
+                  type="tel"
+                />
+              </div>
+            </div>
+          </div>
+          
+          <!-- Account Information Section -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">Account Information</h3>
+            
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5" for="email">Email Address *</label>
+              <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <span class="material-symbols-outlined text-slate-400"> mail </span>
+                </div>
+                <input 
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 placeholder:text-slate-400 pl-10 pr-3 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
+                  id="email" 
+                  name="email"
+                  [(ngModel)]="registerData.email"
+                  placeholder="Enter your email address" 
+                  type="email"
+                  required
+                  [class.border-red-500]="errorMessage && !registerData.email"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5" for="password">Password *</label>
+              <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <span class="material-symbols-outlined text-slate-400"> lock </span>
+                </div>
+                <input 
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 placeholder:text-slate-400 pl-10 pr-10 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
+                  id="password" 
+                  name="password"
+                  [(ngModel)]="registerData.password"
+                  placeholder="Create a strong password" 
+                  [type]="showPassword ? 'text' : 'password'"
+                  required
+                  [class.border-red-500]="errorMessage && !registerData.password"
+                />
+                <button 
+                  aria-label="Toggle password visibility" 
+                  class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-500 transition-colors duration-150" 
+                  type="button"
+                  (click)="togglePasswordVisibility()"
+                >
+                  <span class="material-symbols-outlined text-lg">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+                </button>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">Password must be at least 8 characters long</p>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5" for="confirmPassword">Confirm Password *</label>
+              <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <span class="material-symbols-outlined text-slate-400"> lock </span>
+                </div>
+                <input 
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 placeholder:text-slate-400 pl-10 pr-3 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
+                  id="confirmPassword" 
+                  name="confirmPassword"
+                  [(ngModel)]="registerData.confirmPassword"
+                  placeholder="Confirm your password" 
+                  type="password"
+                  required
+                  [class.border-red-500]="errorMessage && registerData.password !== registerData.confirmPassword"
+                />
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex items-center">
+            <input 
+              class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 checked:bg-blue-600 checked:border-blue-600" 
+              id="agree-terms" 
+              name="agreeTerms"
+              [(ngModel)]="registerData.agreeTerms"
+              type="checkbox"
+              required
+            />
+            <label class="ml-2 block text-sm text-slate-700" for="agree-terms">
+              I agree to the <a class="text-blue-600 hover:text-blue-500 hover:underline" href="#">Terms of Service</a> and <a class="text-blue-600 hover:text-blue-500 hover:underline" href="#">Privacy Policy</a>
+            </label>
+          </div>
+          
+          <!-- Error Message -->
+          <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 rounded-lg p-3">
+            <div class="flex">
+              <span class="material-symbols-outlined text-red-400 mr-2">error</span>
+              <p class="text-sm text-red-600">{{ errorMessage }}</p>
+            </div>
+          </div>
+          
+          <div>
+            <button 
+              class="flex w-full items-center justify-center gap-2 rounded-lg h-11 px-5 bg-blue-600 text-white text-sm font-semibold leading-normal tracking-wide hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-150 group" 
+              type="submit"
+              [disabled]="isLoading || !registerForm.form.valid"
+            >
+              <span class="truncate" *ngIf="!isLoading">Create Account</span>
+              <span class="truncate" *ngIf="isLoading">Creating Account...</span>
+              <span class="material-symbols-outlined text-xl" *ngIf="!isLoading"> person_add </span>
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" *ngIf="isLoading" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
+              </svg>
+            </button>
+          </div>
+        </form>
+        
+        <!-- Login Link -->
+        <div class="relative my-6">
+          <div aria-hidden="true" class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-slate-300"></div>
+          </div>
+          <div class="relative flex justify-center">
+            <span class="bg-white px-2 text-sm text-slate-500">Already have an account?</span>
+          </div>
+        </div>
+        
+        <button 
+          class="flex w-full items-center justify-center gap-2 rounded-md h-10 px-4 border border-slate-300 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors duration-150"
+          (click)="goToLogin()"
+          [disabled]="isLoading"
+        >
+          <span class="material-symbols-outlined text-lg">login</span>
+          <span class="truncate">Sign In to Existing Account</span>
+        </button>
+        
+        <p class="mt-8 text-center text-xs text-slate-500">
+          Need help? <a class="font-medium text-blue-600 hover:text-blue-500 hover:underline" href="#">Contact support</a>.
+        </p>
+        <p class="mt-1 text-center text-xs text-slate-500">
+          Back to <a class="font-medium text-blue-600 hover:text-blue-500 hover:underline" href="/login">main login</a>.
+        </p>
       </div>
-      <div class="register-field">
-        <span class="material-symbols-outlined icon-blue">mail</span>
-        <input type="email" placeholder="Email" aria-label="Email" required />
+    </main>
+    
+    <footer class="bg-white border-t border-slate-200">
+      <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center md:flex md:items-center md:justify-between">
+        <div class="flex justify-center space-x-6 md:order-2">
+          <a class="text-slate-500 hover:text-slate-600 text-sm transition-colors duration-150" href="#">Privacy Policy</a>
+          <span class="text-slate-400">|</span>
+          <span class="text-slate-500 text-sm">Version 1.0.0</span>
+        </div>
+        <div class="mt-4 md:mt-0 md:order-1">
+          <p class="text-center text-sm text-slate-500">© 2024 Quanby HRIS. All rights reserved.</p>
       </div>
-      <div class="register-field">
-        <span class="material-symbols-outlined icon-blue">lock</span>
-        <input type="password" placeholder="Password" aria-label="Password" required />
       </div>
-      <button class="register-btn" type="submit">Register</button>
-    </form>
-    <div class="register-link">
-      Already have an account?
-      <button class="login-btn-alt" type="button" (click)="goToLogin()">Login</button>
-    </div>
+    </footer>
   </div>
 </div>
