@@ -1,0 +1,58 @@
+<div class="register-bg">
+  <div class="register-card">
+    <div class="register-title">
+      <span class="material-symbols-outlined icon-blue">person_add</span>
+      Create Your Account
+    </div>
+    <form>
+      <div class="register-field">
+        <span class="material-symbols-outlined icon-blue">badge</span>
+        <input type="text" placeholder="First Name" aria-label="First Name" required />
+      </div>
+      <div class="register-field">
+        <span class="material-symbols-outlined icon-blue">badge</span>
+        <input type="text" placeholder="Last Name" aria-label="Last Name" required />
+      </div>
+      <div class="register-field">
+        <span class="material-symbols-outlined icon-blue">badge</span>
+        <input type="text" placeholder="Middle Name (optional)" aria-label="Middle Name" />
+      </div>
+      <div class="register-field">
+        <span class="material-symbols-outlined icon-blue">wc</span>
+        <select aria-label="Gender">
+          <option value="">Gender (optional)</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="register-field">
+        <span class="material-symbols-outlined icon-blue">favorite</span>
+        <select aria-label="Civil Status">
+          <option value="">Civil Status (optional)</option>
+          <option value="Single">Single</option>
+          <option value="Married">Married</option>
+          <option value="Divorced">Divorced</option>
+          <option value="Widowed">Widowed</option>
+        </select>
+      </div>
+      <div class="register-field">
+        <span class="material-symbols-outlined icon-blue">call</span>
+        <input type="text" placeholder="Contact Number (optional)" aria-label="Contact Number" />
+      </div>
+      <div class="register-field">
+        <span class="material-symbols-outlined icon-blue">mail</span>
+        <input type="email" placeholder="Email" aria-label="Email" required />
+      </div>
+      <div class="register-field">
+        <span class="material-symbols-outlined icon-blue">lock</span>
+        <input type="password" placeholder="Password" aria-label="Password" required />
+      </div>
+      <button class="register-btn" type="submit">Register</button>
+    </form>
+    <div class="register-link">
+      Already have an account?
+      <button class="login-btn-alt" type="button" (click)="goToLogin()">Login</button>
+    </div>
+  </div>
+</div>

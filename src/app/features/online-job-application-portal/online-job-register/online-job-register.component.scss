@@ -1,0 +1,123 @@
+.register-bg {
+  min-height: 100vh;
+  background: #f6f8fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-card {
+  background: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 24px rgba(10,37,88,0.10);
+  max-width: 350px;
+  width: 100%;
+  padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.register-title {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #223b6a;
+  margin-bottom: 1.2rem;
+  justify-content: center;
+}
+
+.register-field {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+  background: #f8fafc;
+  border: 1px solid #e6eaf3;
+  border-radius: 0.7rem;
+  padding: 0.7rem 1rem;
+}
+
+.register-field input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-size: 1.05rem;
+  color: #223b6a;
+}
+
+.register-btn {
+  background: #223b6a;
+  color: #fff;
+  border: none;
+  border-radius: 0.7rem;
+  width: 100%;
+  padding: 0.9rem 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.register-btn:hover {
+  background: #0a2558;
+}
+
+.register-link {
+  margin-top: 1.2rem;
+  text-align: center;
+  font-size: 1rem;
+}
+.register-link a {
+  color: #0a2558;
+  text-decoration: underline;
+  font-weight: 600;
+  margin-left: 0.2rem;
+}
+
+.login-btn-alt {
+  background: #e6eaf3;
+  color: #223b6a;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.login-btn-alt:hover {
+  background: #ccd2e2;
+  color: #0a2558;
+}
+
+.register-field select {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-size: 1.05rem;
+  color: #223b6a;
+  padding: 0;
+  height: 2.1rem;
+  appearance: none;
+}
+.register-field select:focus {
+  outline: 2px solid #223b6a;
+  background: #f3f4f6;
+}
+
+@media (max-width: 600px) {
+  .register-card {
+    max-width: 98vw;
+    padding: 1.1rem 0.5rem 0.7rem 0.5rem;
+  }
+  .register-title {
+    font-size: 1.05rem;
+  }
+}

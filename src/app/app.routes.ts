@@ -2,6 +2,9 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PermissionGuard } from './guards/permission.guard'; // Rename PermissionGuard to RoleGuard
+import { OnlineJobApplicationPortalComponent } from './features/online-job-application-portal/index.component';
+import { OnlineJobLoginComponent } from './features/online-job-application-portal/online-job-login/online-job-login.component';
+import { OnlineJobRegisterComponent } from './features/online-job-application-portal/online-job-register/online-job-register.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -238,6 +241,14 @@ export const routes: Routes = [
   {
     path: 'online-job-application-portal',
     loadComponent: () => import('./features/online-job-application-portal/index.component').then(m => m.OnlineJobApplicationPortalComponent)
+  },
+  {
+    path: 'online-job-login',
+    component: OnlineJobLoginComponent
+  },
+  {
+    path: 'online-job-register',
+    component: OnlineJobRegisterComponent
   },
   {
     path: 'performance-management',
