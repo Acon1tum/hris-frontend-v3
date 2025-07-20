@@ -1,3 +1,36 @@
+// Header scroll animation styles
+.job-portal-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0);
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(10, 37, 88, 0.1);
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.95);
+  
+  &.header-hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    box-shadow: none;
+  }
+}
+
+// Smooth scroll behavior
+html {
+  scroll-behavior: smooth;
+}
+
+// Add top padding to account for fixed header
+.job-portal-title-area-with-img {
+  padding-top: 80px; // Adjust based on your header height
+}
+
 .jobstreet-portal-bg {
   background: #f6f8fa;
   min-height: 100vh;
@@ -968,6 +1001,15 @@
 }
 
 @media (max-width: 900px) {
+  .job-portal-header {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .job-portal-title-area-with-img {
+    padding-top: 70px; // Slightly less padding on mobile
+  }
+  
   .main-content {
     flex-direction: column;
     gap: 1.5rem;
@@ -1058,6 +1100,15 @@
 }
 
 @media (max-width: 600px) {
+  .job-portal-header {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .job-portal-title-area-with-img {
+    padding-top: 60px; // Even less padding on small mobile
+  }
+  
   .search-fields {
     flex-direction: column;
     gap: 0.7rem;

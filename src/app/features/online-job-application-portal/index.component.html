@@ -1,4 +1,4 @@
-<app-header *ngIf="publicMode" [publicMode]="publicMode" class="job-portal-header"></app-header>
+<app-header *ngIf="publicMode" [publicMode]="publicMode" class="job-portal-header" [class.header-hidden]="!isHeaderVisible"></app-header>
 <div *ngIf="publicMode" style="height: 0px;"></div>
 <div class="job-portal-title-area-with-img">
   <div class="job-portal-title-content">

@@ -243,6 +243,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/online-job-application-portal/index.component').then(m => m.OnlineJobApplicationPortalComponent)
   },
   {
+    path: 'applicant-dashboard',
+    loadComponent: () => import('./features/online-job-application-portal/applicant-dashboard/applicant-dashboard.component').then(m => m.ApplicantDashboardComponent)
+  },
+  {
     path: 'online-job-login',
     component: OnlineJobLoginComponent
   },

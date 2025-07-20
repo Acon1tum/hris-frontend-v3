@@ -1,0 +1,391 @@
+<app-header [publicMode]="false" class="dashboard-header"></app-header>
+
+<div class="dashboard-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-spinner">
+      <span class="material-symbols-outlined">refresh</span>
+      <p>Loading your dashboard...</p>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="dashboard-nav">
+    <div class="nav-container">
+      <button 
+        class="nav-tab" 
+        [class.active]="currentView === 'overview'"
+        (click)="onViewChange('overview')"
+      >
+        <span class="material-symbols-outlined">dashboard</span>
+        Overview
+      </button>
+      <button 
+        class="nav-tab" 
+        [class.active]="currentView === 'applications'"
+        (click)="onViewChange('applications')"
+      >
+        <span class="material-symbols-outlined">work</span>
+        Applications
+      </button>
+      <button 
+        class="nav-tab" 
+        [class.active]="currentView === 'profile'"
+        (click)="onViewChange('profile')"
+      >
+        <span class="material-symbols-outlined">person</span>
+        Profile
+      </button>
+      <button 
+        class="nav-tab" 
+        [class.active]="currentView === 'settings'"
+        (click)="onViewChange('settings')"
+      >
+        <span class="material-symbols-outlined">settings</span>
+        Settings
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="dashboard-content">
+    <!-- Overview View -->
+    <div *ngIf="currentView === 'overview'" class="overview-view">
+      <!-- Welcome Section -->
+      <div class="welcome-section">
+        <div class="welcome-content">
+          <h1 class="welcome-title">Welcome back, Applicant!</h1>
+          <p class="welcome-subtitle">Track your job applications and stay updated with your progress</p>
+        </div>
+        <button class="browse-jobs-btn" (click)="browseJobs()">
+          <span class="material-symbols-outlined">search</span>
+          Browse More Jobs
+        </button>
+      </div>
+
+      <!-- Statistics Cards -->
+      <div class="stats-grid">
+        <div class="stat-card total">
+          <div class="stat-icon">
+            <span class="material-symbols-outlined">work</span>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">{{ stats.totalApplications }}</h3>
+            <p class="stat-label">Total Applications</p>
+          </div>
+        </div>
+
+        <div class="stat-card pending">
+          <div class="stat-icon">
+            <span class="material-symbols-outlined">schedule</span>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">{{ stats.pendingReview }}</h3>
+            <p class="stat-label">Pending Review</p>
+          </div>
+        </div>
+
+        <div class="stat-card shortlisted">
+          <div class="stat-icon">
+            <span class="material-symbols-outlined">star</span>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">{{ stats.shortlisted }}</h3>
+            <p class="stat-label">Shortlisted</p>
+          </div>
+        </div>
+
+        <div class="stat-card interviews">
+          <div class="stat-icon">
+            <span class="material-symbols-outlined">event</span>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">{{ stats.interviews }}</h3>
+            <p class="stat-label">Interviews</p>
+          </div>
+        </div>
+
+        <div class="stat-card accepted">
+          <div class="stat-icon">
+            <span class="material-symbols-outlined">check_circle</span>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">{{ stats.accepted }}</h3>
+            <p class="stat-label">Accepted</p>
+          </div>
+        </div>
+
+        <div class="stat-card rejected">
+          <div class="stat-icon">
+            <span class="material-symbols-outlined">cancel</span>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-number">{{ stats.rejected }}</h3>
+            <p class="stat-label">Rejected</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Applications & Activity -->
+      <div class="overview-grid">
+        <!-- Recent Applications -->
+        <div class="overview-card applications-card">
+          <div class="card-header">
+            <h2 class="card-title">Recent Applications</h2>
+            <button class="view-all-btn" (click)="onViewChange('applications')">
+              View All
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </div>
+          <div class="applications-list">
+            <div *ngFor="let app of applications.slice(0, 3)" class="application-item">
+              <div class="app-info">
+                <h3 class="app-title">{{ app.jobTitle }}</h3>
+                <p class="app-company">{{ app.company }} • {{ app.department }}</p>
+                <p class="app-date">Applied {{ formatDate(app.applicationDate) }}</p>
+              </div>
+              <div class="app-status">
+                <span 
+                  class="status-badge" 
+                  [style.background-color]="getStatusColor(app.status)"
+                >
+                  {{ getStatusLabel(app.status) }}
+                </span>
+              </div>
+            </div>
+            <div *ngIf="applications.length === 0" class="empty-state">
+              <span class="material-symbols-outlined">work_off</span>
+              <p>No applications yet</p>
+              <button class="browse-btn" (click)="browseJobs()">Browse Jobs</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="overview-card activity-card">
+          <div class="card-header">
+            <h2 class="card-title">Recent Activity</h2>
+          </div>
+          <div class="activity-list">
+            <div *ngFor="let activity of recentActivities.slice(0, 4)" class="activity-item">
+              <div class="activity-icon" [style.background-color]="getActivityColor(activity.type)">
+                <span class="material-symbols-outlined">{{ getActivityIcon(activity.type) }}</span>
+              </div>
+              <div class="activity-content">
+                <h4 class="activity-title">{{ activity.title }}</h4>
+                <p class="activity-description">{{ activity.description }}</p>
+                <span class="activity-time">{{ getTimeAgo(activity.timestamp) }}</span>
+              </div>
+            </div>
+            <div *ngIf="recentActivities.length === 0" class="empty-state">
+              <span class="material-symbols-outlined">notifications_off</span>
+              <p>No recent activity</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Applications View -->
+    <div *ngIf="currentView === 'applications'" class="applications-view">
+      <div class="view-header">
+        <h1 class="view-title">My Applications</h1>
+        <div class="view-actions">
+          <div class="search-box">
+            <span class="material-symbols-outlined">search</span>
+            <input 
+              type="text" 
+              [(ngModel)]="searchTerm" 
+              placeholder="Search applications..."
+              class="search-input"
+            >
+          </div>
+          <div class="filter-dropdown">
+            <select [(ngModel)]="selectedFilter" class="filter-select">
+              <option value="all">All Status</option>
+              <option value="pending">Pending Review</option>
+              <option value="reviewing">Under Review</option>
+              <option value="shortlisted">Shortlisted</option>
+              <option value="interviewed">Interviewed</option>
+              <option value="rejected">Rejected</option>
+              <option value="accepted">Accepted</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="applications-table">
+        <div class="table-header">
+          <div class="header-cell">Job Title</div>
+          <div class="header-cell">Company</div>
+          <div class="header-cell">Applied Date</div>
+          <div class="header-cell">Status</div>
+          <div class="header-cell">Last Updated</div>
+          <div class="header-cell">Actions</div>
+        </div>
+
+        <div *ngFor="let app of filteredApplications" class="table-row">
+          <div class="table-cell job-info">
+            <h3 class="job-title">{{ app.jobTitle }}</h3>
+            <p class="job-department">{{ app.department }}</p>
+            <p class="job-salary">{{ app.salaryRange }} • {{ app.employmentType }}</p>
+          </div>
+          <div class="table-cell">
+            <span class="company-name">{{ app.company }}</span>
+          </div>
+          <div class="table-cell">
+            <span class="date">{{ formatDate(app.applicationDate) }}</span>
+          </div>
+          <div class="table-cell">
+            <span 
+              class="status-badge" 
+              [style.background-color]="getStatusColor(app.status)"
+            >
+              {{ getStatusLabel(app.status) }}
+            </span>
+          </div>
+          <div class="table-cell">
+            <span class="date">{{ formatDate(app.lastUpdated) }}</span>
+          </div>
+          <div class="table-cell actions">
+            <button class="action-btn view-btn" (click)="viewApplication(app)">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+            <button class="action-btn withdraw-btn" (click)="withdrawApplication(app)">
+              <span class="material-symbols-outlined">delete</span>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="filteredApplications.length === 0" class="empty-state">
+          <span class="material-symbols-outlined">search_off</span>
+          <h3>No applications found</h3>
+          <p>Try adjusting your search or filter criteria</p>
+          <button class="browse-btn" (click)="browseJobs()">Browse Jobs</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile View -->
+    <div *ngIf="currentView === 'profile'" class="profile-view">
+      <div class="profile-header">
+        <h1 class="view-title">My Profile</h1>
+        <button class="edit-profile-btn">
+          <span class="material-symbols-outlined">edit</span>
+          Edit Profile
+        </button>
+      </div>
+      
+      <div class="profile-content">
+        <div class="profile-card">
+          <div class="profile-avatar">
+            <span class="material-symbols-outlined">person</span>
+          </div>
+          <div class="profile-info">
+            <h2 class="profile-name">John Doe</h2>
+                         <p class="profile-email">john.doe&#64;email.com</p>
+            <p class="profile-phone">+63 912 345 6789</p>
+          </div>
+        </div>
+
+        <div class="profile-sections">
+          <div class="profile-section">
+            <h3 class="section-title">Personal Information</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Full Name</label>
+                <span>John Michael Doe</span>
+              </div>
+              <div class="info-item">
+                <label>Date of Birth</label>
+                <span>January 15, 1990</span>
+              </div>
+              <div class="info-item">
+                <label>Address</label>
+                <span>123 Main Street, Quezon City, Metro Manila</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <h3 class="section-title">Education</h3>
+            <div class="education-item">
+              <h4>Bachelor of Science in Computer Science</h4>
+              <p>University of the Philippines</p>
+              <p>2010 - 2014</p>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <h3 class="section-title">Skills</h3>
+            <div class="skills-list">
+              <span class="skill-tag">JavaScript</span>
+              <span class="skill-tag">TypeScript</span>
+              <span class="skill-tag">Angular</span>
+              <span class="skill-tag">React</span>
+              <span class="skill-tag">Node.js</span>
+              <span class="skill-tag">Python</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings View -->
+    <div *ngIf="currentView === 'settings'" class="settings-view">
+      <div class="settings-header">
+        <h1 class="view-title">Settings</h1>
+      </div>
+      
+      <div class="settings-content">
+        <div class="settings-section">
+          <h3 class="section-title">Account Settings</h3>
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Email Notifications</h4>
+              <p>Receive updates about your applications</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>SMS Notifications</h4>
+              <p>Receive SMS updates about interviews</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="section-title">Privacy</h3>
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Profile Visibility</h4>
+              <p>Allow employers to view your profile</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3 class="section-title">Account Actions</h3>
+          <div class="action-buttons">
+            <button class="action-btn secondary">Change Password</button>
+            <button class="action-btn secondary">Export Data</button>
+            <button class="action-btn danger">Delete Account</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

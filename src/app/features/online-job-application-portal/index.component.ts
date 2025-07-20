@@ -28,6 +28,13 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   showJobModal = false;
   modalJob: JobPosting | null = null;
 
+  // Header scroll animation properties
+  isHeaderVisible = true;
+  lastScrollTop = 0;
+  scrollThreshold = 50; // Reduced threshold for more responsive behavior
+  headerHeight = 80; // Approximate header height
+  scrollDirection = 'up'; // Track scroll direction
+
   activeFilters: { key: string, label: string }[] = [];
 
   @ViewChild('modalCloseBtn') modalCloseBtn!: ElementRef<HTMLButtonElement>;
@@ -53,6 +60,11 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
     }
   }
 
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll() {
+    this.handleScroll();
+  }
+
   @HostListener('document:keydown', ['$event'])
   handleModalKeydown(event: KeyboardEvent) {
     if (!this.showJobModal) return;
@@ -76,6 +88,39 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
         }
       }
     }
+  }
+
+  private handleScroll() {
+    const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
+    // Determine scroll direction
+    const isScrollingDown = currentScrollTop > this.lastScrollTop;
+    const isScrollingUp = currentScrollTop < this.lastScrollTop;
+    const scrollDistance = Math.abs(currentScrollTop - this.lastScrollTop);
+    
+    // Only trigger animation if we've scrolled past the threshold
+    if (scrollDistance < this.scrollThreshold) {
+      return;
+    }
+
+    // Update scroll direction
+    this.scrollDirection = isScrollingDown ? 'down' : 'up';
+
+    // Hide header when scrolling down, show when scrolling up
+    if (isScrollingDown && currentScrollTop > this.headerHeight) {
+      // Scrolling down - hide header
+      this.isHeaderVisible = false;
+    } else if (isScrollingUp) {
+      // Scrolling up - show header
+      this.isHeaderVisible = true;
+    }
+
+    // Always show header at the top of the page
+    if (currentScrollTop <= this.headerHeight) {
+      this.isHeaderVisible = true;
+    }
+
+    this.lastScrollTop = currentScrollTop;
   }
 
   fetchJobs() {
