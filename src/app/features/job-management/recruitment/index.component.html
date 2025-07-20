@@ -1,22 +1,105 @@
 <div class="recruitment-container">
+  <!-- Page Header -->
   <div class="page-header">
-    <h1>{{ title }}</h1>
-    <p>Manage job postings, applicants, and recruitment analytics</p>
-  </div>
-  <div class="features-grid">
-    <div class="feature-card" *ngFor="let feature of recruitmentFeatures">
-      <div class="feature-icon">{{ feature.icon }}</div>
-      <h3>{{ feature.name }}</h3>
-      <p>{{ feature.description }}</p>
-      <button class="btn btn-primary">Access</button>
+    <div class="header-content">
+      <h1 class="page-title">{{ title }}</h1>
+      <p class="page-subtitle">Streamline your recruitment process with comprehensive tools and analytics</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="onQuickAction('post-job')">
+        <span class="btn-icon">➕</span>
+        Post New Job
+      </button>
     </div>
   </div>
-  <div class="quick-actions">
-    <h2>Quick Actions</h2>
-    <div class="action-buttons">
-      <button class="btn btn-secondary">Post Job</button>
-      <button class="btn btn-secondary">View Applicants</button>
-      <button class="btn btn-secondary">Schedule Interview</button>
+
+  <!-- Recruitment Statistics -->
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of recruitmentStats" [style.--stat-color]="stat.color">
+      <div class="stat-icon">{{ stat.icon }}</div>
+      <div class="stat-content">
+        <h3 class="stat-value">{{ stat.value }}</h3>
+        <p class="stat-label">{{ stat.label }}</p>
+        <div class="stat-change" [class]="'trend-' + stat.trend">
+          {{ stat.change }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="content-grid">
+    <!-- Recruitment Features -->
+    <div class="features-section">
+      <div class="section-header">
+        <h2 class="section-title">Recruitment Tools</h2>
+        <p class="section-subtitle">Access all recruitment features and manage your hiring process</p>
+      </div>
+      <div class="features-grid">
+        <div 
+          class="feature-card" 
+          *ngFor="let feature of recruitmentFeatures"
+          (click)="navigateToFeature(feature.route)"
+          [style.--feature-color]="feature.color"
+        >
+          <div class="feature-header">
+            <div class="feature-icon">{{ feature.icon }}</div>
+            <div class="feature-status" [class]="'status-' + feature.status">
+              {{ feature.status }}
+            </div>
+          </div>
+          <div class="feature-content">
+            <h3 class="feature-name">{{ feature.name }}</h3>
+            <p class="feature-description">{{ feature.description }}</p>
+          </div>
+          <div class="feature-arrow">→</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Content -->
+    <div class="sidebar-content">
+      <!-- Quick Actions -->
+      <div class="quick-actions-section">
+        <h3 class="sidebar-title">Quick Actions</h3>
+        <div class="quick-actions-grid">
+          <button 
+            class="quick-action-btn" 
+            *ngFor="let action of quickActions"
+            (click)="onQuickAction(action.action)"
+            [style.--action-color]="action.color"
+          >
+            <span class="action-icon">{{ action.icon }}</span>
+            <span class="action-name">{{ action.name }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Activities -->
+      <div class="recent-activities-section">
+        <h3 class="sidebar-title">Recent Activities</h3>
+        <div class="activities-list">
+          <div class="activity-item" *ngFor="let activity of recentActivities">
+            <div class="activity-icon" [class]="'type-' + activity.type">
+              <span *ngIf="activity.type === 'job-posting'">📢</span>
+              <span *ngIf="activity.type === 'interview'">📅</span>
+              <span *ngIf="activity.type === 'offer'">✉️</span>
+              <span *ngIf="activity.type === 'resume'">📄</span>
+              <span *ngIf="activity.type === 'application'">👤</span>
+            </div>
+            <div class="activity-content">
+              <p class="activity-action">{{ activity.action }}</p>
+              <div class="activity-meta">
+                <span class="activity-user">{{ activity.user }}</span>
+                <span class="activity-time">{{ activity.time }}</span>
+              </div>
+            </div>
+            <div class="activity-status" [class]="'status-' + activity.status">
+              {{ activity.status }}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div> 
