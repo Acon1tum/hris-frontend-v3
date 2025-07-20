@@ -77,7 +77,7 @@
               </div>
               <div>
                 <div class="job-title">{{ job.position_title }}</div>
-                <div class="job-company">{{ job.department?.department_name }}</div>
+                <div class="job-company">{{ job.department.department_name }}</div>
               </div>
               <span class="bookmark material-symbols-outlined icon-pink" title="Save job" aria-label="Save job">bookmark</span>
             </div>
@@ -106,7 +106,7 @@
           <div class="job-details-title">{{ selectedJob.position_title }}</div>
           <div class="job-details-company">
             <span class="material-symbols-outlined icon-yellow">apartment</span>
-            {{ selectedJob.department?.department_name }}
+            {{ selectedJob.department.department_name }}
           </div>
           <div class="job-details-badges">
             <span class="badge badge-type">
