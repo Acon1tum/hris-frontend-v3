@@ -160,7 +160,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
       { name: 'Health & Wellness', icon: 'health_and_safety', path: '/health-wellness' }
     ],
     Applicant: [
-      { name: 'Job Portal', icon: 'work', path: '/online-job-application-portal' }
+      { name: 'Job Portal', icon: 'work', path: '/online-job-application-portal' },
+      { name: 'Applicant Dashboard', icon: 'dashboard', path: '/applicant-dashboard' }
     ]
   };
 
