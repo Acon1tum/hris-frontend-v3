@@ -18,4 +18,4 @@ COPY . .
 EXPOSE 4200
 
 # Start Angular dev server
-CMD ["npm", "run", "start"]
+CMD sh -c "npm run build && npm run start"
