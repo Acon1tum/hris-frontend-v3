@@ -1,22 +1,31 @@
-# Stage 1: Build the Angular app
-FROM node:20 AS builder
+#Step 1: Build the Angular app
+FROM node:alpine as build
 
 WORKDIR /app
+
+# Copy package.json and install dependencies
 COPY package*.json ./
 RUN npm install
+RUN npm install -g @angular/cli
+RUN npm install --save-dev @angular-devkit/build-angular
 
+# Copy the rest of the application code
 COPY . .
-RUN npm run build
 
-# Stage 2: Serve with nginx
+# Build the application
+RUN npm run build --prod
+
+# Step 2: Serve the Angular app
 FROM nginx:alpine
 
-# Copy build output to nginx html folder
-COPY --from=builder /app/dist/hris-frontend/browser /usr/share/nginx/html
+# Copy the built Angular app from the previous stage
+COPY --from=build /app/dist/hris-frontend/browser /usr/share/nginx/html
 
-# Copy custom nginx config (optional)
-# COPY nginx.conf /etc/nginx/nginx.conf
+# NGINX configuration file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Expose the port the app runs on
 EXPOSE 80
 
+# Start NGINX
 CMD ["nginx", "-g", "daemon off;"]
