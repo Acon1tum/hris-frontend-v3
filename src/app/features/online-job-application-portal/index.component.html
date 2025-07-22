@@ -150,12 +150,28 @@
 
       <!-- Job Details Modal -->
       <div class="job-modal-backdrop" *ngIf="showJobModal">
-        <div class="job-modal" role="dialog" aria-modal="true" aria-labelledby="job-modal-title" aria-describedby="job-modal-desc" tabindex="-1">
-          <button class="modal-close-btn" (click)="closeViewModal()" aria-label="Close job details">
-            <span class="material-symbols-outlined icon-gray">close</span>
-          </button>
+        <div class="job-modal dynamic-modal" role="dialog" aria-modal="true" aria-labelledby="job-modal-title" aria-describedby="job-modal-desc" tabindex="-1">
+          <div class="modal-header-gradient" [ngClass]="getDepartmentThemeClass(modalJob?.department?.department_name)">
+            <div class="modal-logo-avatar">
+              <span class="material-symbols-outlined company-logo">business</span>
+            </div>
+            <div class="modal-title-group">
+              <div class="modal-job-title-main">{{ modalJob?.position_title }}</div>
+              <div class="modal-job-company">{{ modalJob?.department?.department_name }}</div>
+            </div>
+            <div class="modal-header-actions">
+              <button class="modal-action-btn" title="Save job" aria-label="Save job">
+                <span class="material-symbols-outlined">bookmark</span>
+              </button>
+              <button class="modal-action-btn" title="Share job" aria-label="Share job">
+                <span class="material-symbols-outlined">share</span>
+              </button>
+              <button #modalCloseBtn class="modal-close-btn" (click)="closeViewModal()" aria-label="Close job details">
+                <span class="material-symbols-outlined icon-gray">close</span>
+              </button>
+            </div>
+          </div>
           <div class="job-modal-content">
-            <h2 id="job-modal-title" class="visually-hidden">Job Details: {{ modalJob?.position_title }}</h2>
             <div id="job-modal-desc">
               <div class="modal-section modal-section-title">
                 <span class="material-symbols-outlined icon-blue">work</span>
@@ -190,6 +206,11 @@
                 <span class="modal-label"><span class="material-symbols-outlined icon-blue">description</span> Description:</span>
                 <span class="modal-value">{{ modalJob?.job_description }}</span>
               </div>
+            </div>
+            <div class="modal-footer">
+              <button class="apply-btn dynamic-apply-btn" (click)="applyToJob(modalJob!)" aria-label="Apply to this job">
+                <span class="material-symbols-outlined">rocket_launch</span> Apply Now
+              </button>
             </div>
           </div>
         </div>

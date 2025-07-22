@@ -243,5 +243,21 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   get isMobile(): boolean {
     return window.innerWidth < 900;
   }
+
+  getDepartmentThemeClass(department: string | undefined): string {
+    switch ((department || '').toLowerCase()) {
+      case 'information technology':
+        return 'theme-it';
+      case 'human resources':
+        return 'theme-hr';
+      case 'finance':
+        return 'theme-finance';
+      case 'marketing':
+        return 'theme-marketing';
+      // Add more as needed
+      default:
+        return 'theme-default';
+    }
+  }
 }
  
