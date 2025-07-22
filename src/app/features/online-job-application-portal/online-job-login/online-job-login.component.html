@@ -1,182 +1,170 @@
-<div class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden">
-  <div class="layout-container flex h-full grow flex-col">
-    <main class="flex flex-1 items-center justify-center py-10 px-4 sm:px-6 lg:px-8 bg-cover bg-center" style="background: linear-gradient(135deg, #3b82f6 0%, #ec4899 100%);">
-      <div class="absolute inset-0 bg-white opacity-5"></div>
-      <div class="relative layout-content-container flex flex-col w-full max-w-md bg-white p-8 sm:p-10 rounded-xl shadow-custom">
-        <div class="text-center mb-8">
-          <div class="flex items-center justify-center gap-3 mb-4">
-            <img alt="Company Logo" class="h-12 w-12 text-blue-600" src="assets/images/QuanbyLogo.png" />
-            <h2 class="text-slate-800 text-2xl font-semibold leading-tight">Quanby HRIS</h2>
-          </div>
-          <h1 class="text-slate-800 text-3xl font-bold leading-tight tracking-tight">Job Portal Login</h1>
-          <p class="text-slate-600 text-base mt-2">Access your job application account to track your applications.</p>
-        </div>
-        
-        <!-- Session Timeout Message -->
-        <div *ngIf="sessionTimeoutMessage" class="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-6">
-          <div class="flex">
-            <span class="material-symbols-outlined text-orange-400 mr-2">schedule</span>
-            <p class="text-sm text-orange-700">{{ sessionTimeoutMessage }}</p>
-          </div>
-        </div>
-        
-        <form class="space-y-6" (ngSubmit)="onLogin()" #loginForm="ngForm">
-          <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1.5" for="email">Email Address</label>
-            <div class="relative">
-              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <span class="material-symbols-outlined text-slate-400"> mail </span>
-              </div>
-              <input 
-                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 placeholder:text-slate-400 pl-10 pr-3 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
-                id="email" 
-                name="email"
-                [(ngModel)]="loginData.email"
-                placeholder="Enter your email address" 
-                type="email"
-                required
-                [class.border-red-500]="errorMessage && !loginData.email"
-                [class.focus:border-red-500]="errorMessage && !loginData.email"
-                [class.focus:ring-red-500]="errorMessage && !loginData.email"
-              />
+<div class="login-root-container">
+  <div class="login-main-card" [ngClass]="animationState">
+    <div class="login-content-wrapper">
+      <!-- Left: Login Form -->
+      <div class="login-form-section">
+        <div class="layout-content-container flex flex-col bg-white w-full max-w-md p-10 rounded-2xl shadow-custom animate-fade-in">
+          <div class="text-center mb-8">
+            <div class="flex items-center justify-center gap-3 mb-4">
+              <img alt="Company Logo" class="h-12 w-12" src="assets/images/QuanbyLogo.png" />
+              <h2 class="text-blue-600 text-2xl font-extrabold leading-tight">Quanby HRIS</h2>
             </div>
+            <h1 class="text-slate-800 text-3xl font-extrabold leading-tight tracking-tight mb-2">Job Portal Login</h1>
+            <p class="text-slate-500 text-sm">Track your applications and manage your career journey.</p>
           </div>
-          
-          <div>
-            <div class="flex items-center justify-between mb-1.5">
-              <label class="block text-sm font-medium text-slate-700" for="password">Password</label>
-              <a class="text-sm font-medium text-blue-600 hover:text-blue-500 hover:underline transition-colors duration-150" href="#" (click)="onForgotPassword()">Forgot Password?</a>
-            </div>
-            <div class="relative">
-              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <span class="material-symbols-outlined text-slate-400"> lock </span>
+          <!-- Session Timeout Message -->
+          <div *ngIf="sessionTimeoutMessage" class="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-6 flex items-center gap-2">
+            <span class="material-symbols-outlined text-orange-400">schedule</span>
+            <p class="text-sm text-orange-700 m-0">{{ sessionTimeoutMessage }}</p>
+          </div>
+          <form class="space-y-4" (ngSubmit)="onLogin()" #loginForm="ngForm" autocomplete="on">
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1.5" for="email">Email Address</label>
+              <div class="relative">
+                <span class="material-symbols-outlined input-icon">mail</span>
+                <input 
+                  class="form-input w-full pl-12 pr-3 py-2 text-base"
+                  id="email" 
+                  name="email"
+                  [(ngModel)]="loginData.email"
+                  placeholder="Enter your email address" 
+                  type="email"
+                  required
+                  [class.border-red-500]="errorMessage && !loginData.email"
+                  [class.focus:border-red-500]="errorMessage && !loginData.email"
+                  [class.focus:ring-red-500]="errorMessage && !loginData.email"
+                />
               </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="block text-sm font-medium text-slate-700" for="password">Password</label>
+                <a class="text-xs font-medium text-blue-600 hover:text-blue-500 hover:underline transition-colors duration-150" href="#" (click)="onForgotPassword()">Forgot Password?</a>
+              </div>
+              <div class="relative">
+                <span class="material-symbols-outlined input-icon">lock</span>
+                <input 
+                  class="form-input w-full pl-12 pr-12 py-2 text-base"
+                  id="password" 
+                  name="password"
+                  [(ngModel)]="loginData.password"
+                  placeholder="Enter your password" 
+                  [type]="showPassword ? 'text' : 'password'"
+                  required
+                  [class.border-red-500]="errorMessage && !loginData.password"
+                  [class.focus:border-red-500]="errorMessage && !loginData.password"
+                  [class.focus:ring-red-500]="errorMessage && !loginData.password"
+                />
+                <button 
+                  aria-label="Toggle password visibility" 
+                  class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-500 transition-colors duration-150" 
+                  type="button"
+                  (click)="togglePasswordVisibility()"
+                  tabindex="-1"
+                >
+                  <span class="material-symbols-outlined text-lg">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center">
               <input 
-                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 placeholder:text-slate-400 pl-10 pr-10 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
-                id="password" 
-                name="password"
-                [(ngModel)]="loginData.password"
-                placeholder="Enter your password" 
-                [type]="showPassword ? 'text' : 'password'"
-                required
-                [class.border-red-500]="errorMessage && !loginData.password"
-                [class.focus:border-red-500]="errorMessage && !loginData.password"
-                [class.focus:ring-red-500]="errorMessage && !loginData.password"
+                class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 checked:bg-blue-600 checked:border-blue-600" 
+                id="remember-me" 
+                name="rememberMe"
+                [(ngModel)]="loginData.rememberMe"
+                type="checkbox"
               />
+              <label class="ml-2 block text-xs text-slate-700" for="remember-me">Remember me</label>
+            </div>
+            <!-- Error Message -->
+            <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center gap-2">
+              <span class="material-symbols-outlined text-red-400">error</span>
+              <p class="text-sm text-red-600 m-0">{{ errorMessage }}</p>
+            </div>
+            <div class="justify-end flex">
               <button 
-                aria-label="Toggle password visibility" 
-                class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-500 transition-colors duration-150" 
-                type="button"
-                (click)="togglePasswordVisibility()"
+                class="login-btn flex w-50 items-center justify-center gap-2 rounded-lg h-10 px-5 bg-blue-600 text-white text-sm font-semibold leading-normal tracking-wide hover:from-blue-700 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-150 group" 
+                type="submit"
+                [disabled]="isLoading || !loginForm.form.valid"
               >
-                <span class="material-symbols-outlined text-lg">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+                <span class="truncate" *ngIf="!isLoading">Sign In</span>
+                <span class="truncate" *ngIf="isLoading">Signing in...</span>
+                <span class="material-symbols-outlined text-xl" *ngIf="!isLoading">login</span>
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" *ngIf="isLoading" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
+                </svg>
               </button>
             </div>
-          </div>
-          
-          <div class="flex items-center">
-            <input 
-              class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 checked:bg-blue-600 checked:border-blue-600" 
-              id="remember-me" 
-              name="rememberMe"
-              [(ngModel)]="loginData.rememberMe"
-              type="checkbox"
-            />
-            <label class="ml-2 block text-sm text-slate-700" for="remember-me">Remember me</label>
-          </div>
-          
-          <!-- Error Message -->
-          <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 rounded-lg p-3">
-            <div class="flex">
-              <span class="material-symbols-outlined text-red-400 mr-2">error</span>
-              <p class="text-sm text-red-600">{{ errorMessage }}</p>
+          </form>
+          <!-- Demo Login Section -->
+          <div class="relative my-6">
+            <div aria-hidden="true" class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-slate-300"></div>
+            </div>
+            <div class="relative flex justify-center">
+              <span class="bg-white px-2 text-xs text-slate-500">Demo Credentials</span>
             </div>
           </div>
-          
-          <div>
+          <div class="grid grid-cols-1 gap-3">
             <button 
-              class="flex w-full items-center justify-center gap-2 rounded-lg h-11 px-5 bg-blue-600 text-white text-sm font-semibold leading-normal tracking-wide hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-150 group" 
-              type="submit"
-              [disabled]="isLoading || !loginForm.form.valid"
+              class="flex w-full items-center justify-center gap-2 rounded-md h-10 px-4 border border-slate-300 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors duration-150"
+              (click)="onDemoLogin()"
+              [disabled]="isLoading"
             >
-              <span class="truncate" *ngIf="!isLoading">Sign In</span>
-              <span class="truncate" *ngIf="isLoading">Signing in...</span>
-              <span class="material-symbols-outlined text-xl" *ngIf="!isLoading"> login </span>
-              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" *ngIf="isLoading" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
-              </svg>
+              <span class="material-symbols-outlined text-lg">work</span>
+              <span class="truncate text-xs">Demo Applicant</span>
             </button>
           </div>
-        </form>
-        
-        <!-- Demo Login Section -->
-        <div class="relative my-6">
-          <div aria-hidden="true" class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-slate-300"></div>
+          <div class="mt-4 p-3 bg-slate-50 rounded-lg">
+            <p class="text-xs text-slate-600 text-center">
+              <strong>Email:</strong> demo&#64;example.com<br>
+              <strong>Password:</strong> demo123
+            </p>
           </div>
-          <div class="relative flex justify-center">
-            <span class="bg-white px-2 text-sm text-slate-500">Demo Credentials</span>
+          <!-- Register Link -->
+          <div class="relative my-6">
+            <div aria-hidden="true" class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-slate-300"></div>
+            </div>
+            <div class="relative flex justify-center">
+              <span class="bg-white px-2 text-xs text-slate-500">New to Job Portal?</span>
+            </div>
           </div>
-        </div>
-        
-        <div class="grid grid-cols-1 gap-3">
           <button 
-            class="flex w-full items-center justify-center gap-2 rounded-md h-10 px-4 border border-slate-300 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors duration-150"
-            (click)="onDemoLogin()"
+            class="flex w-full items-center justify-center gap-2 rounded-md h-10 px-4 border border-blue-300 bg-blue-50 text-blue-700 text-sm font-medium hover:bg-blue-100 transition-colors duration-150"
+            (click)="goToRegister()"
             [disabled]="isLoading"
           >
-            <span class="material-symbols-outlined text-lg">work</span>
-            <span class="truncate">Demo Applicant</span>
+            <span class="material-symbols-outlined text-lg">person_add</span>
+            <span class="truncate text-xs">Create New Account</span>
           </button>
-        </div>
-        
-        <div class="mt-4 p-3 bg-slate-50 rounded-lg">
-          <p class="text-xs text-slate-600 text-center">
-            <strong>Email:</strong> demo&#64;example.com<br>
-            <strong>Password:</strong> demo123
+          <p class="mt-8 text-center text-xs text-slate-500">
+            Need help? <a class="font-medium text-blue-600 hover:text-blue-500 hover:underline" href="#">Contact support</a>.
+          </p>
+          <p class="mt-1 text-center text-xs text-slate-500">
+            Back to <a class="font-medium text-blue-600 hover:text-blue-500 hover:underline" href="/login">main login</a>.
           </p>
         </div>
-        
-        <!-- Register Link -->
-        <div class="relative my-6">
-          <div aria-hidden="true" class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-slate-300"></div>
-          </div>
-          <div class="relative flex justify-center">
-            <span class="bg-white px-2 text-sm text-slate-500">New to Job Portal?</span>
-          </div>
+      </div>
+      <!-- Right: Illustration -->
+      <div class="login-illustration-section">
+        <div class="illustration-bg">
+          <div #lottieContainer style="width:100%;height:100%"></div>
+        </div>
+      </div>
     </div>
-        
-        <button 
-          class="flex w-full items-center justify-center gap-2 rounded-md h-10 px-4 border border-blue-300 bg-blue-50 text-blue-700 text-sm font-medium hover:bg-blue-100 transition-colors duration-150"
-          (click)="goToRegister()"
-          [disabled]="isLoading"
-        >
-          <span class="material-symbols-outlined text-lg">person_add</span>
-          <span class="truncate">Create New Account</span>
-        </button>
-        
-        <p class="mt-8 text-center text-xs text-slate-500">
-          Need help? <a class="font-medium text-blue-600 hover:text-blue-500 hover:underline" href="#">Contact support</a>.
-        </p>
-        <p class="mt-1 text-center text-xs text-slate-500">
-          Back to <a class="font-medium text-blue-600 hover:text-blue-500 hover:underline" href="/login">main login</a>.
-        </p>
-      </div>
-    </main>
-    
-    <footer class="bg-white border-t border-slate-200">
-      <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center md:flex md:items-center md:justify-between">
-        <div class="flex justify-center space-x-6 md:order-2">
-          <a class="text-slate-500 hover:text-slate-600 text-sm transition-colors duration-150" href="#">Privacy Policy</a>
-          <span class="text-slate-400">|</span>
-          <span class="text-slate-500 text-sm">Version 1.0.0</span>
-        </div>
-        <div class="mt-4 md:mt-0 md:order-1">
-          <p class="text-center text-sm text-slate-500">© 2024 Quanby HRIS. All rights reserved.</p>
-        </div>
-      </div>
-    </footer>
   </div>
+  <footer class="bg-white border-t border-slate-200">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center md:flex md:items-center md:justify-between">
+      <div class="flex justify-center space-x-6 md:order-2">
+        <a class="text-slate-500 hover:text-slate-600 text-sm transition-colors duration-150" href="#">Privacy Policy</a>
+        <span class="text-slate-400">|</span>
+        <span class="text-slate-500 text-sm">Version 1.0.0</span>
+      </div>
+      <div class="mt-4 md:mt-0 md:order-1">
+        <p class="text-center text-sm text-slate-500">© 2024 Quanby HRIS. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 </div>

@@ -15,6 +15,7 @@ export class OnlineJobRegisterComponent implements OnInit {
     firstName: '',
     lastName: '',
     middleName: '',
+    suffix: '',           // <-- Add this line
     gender: '',
     civilStatus: '',
     contactNumber: '',
@@ -27,6 +28,7 @@ export class OnlineJobRegisterComponent implements OnInit {
   isLoading = false;
   showPassword = false;
   errorMessage = '';
+  animationState = 'fade-up-enter';
 
   constructor(
     private router: Router,
@@ -34,7 +36,9 @@ export class OnlineJobRegisterComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Any initialization logic can go here
+    setTimeout(() => {
+      this.animationState = '';
+    }, 500); // Remove class after animation
   }
 
   onRegister() {
@@ -92,6 +96,9 @@ export class OnlineJobRegisterComponent implements OnInit {
   }
 
   goToLogin() {
-    this.router.navigate(['/online-job-login']);
+    this.animationState = 'fade-down-leave';
+    setTimeout(() => {
+      this.router.navigate(['/online-job-login']);
+    }, 500); // Match animation duration
   }
 }

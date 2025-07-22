@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import lottie from 'lottie-web';
 
 @Component({
   selector: 'app-online-job-login',
@@ -10,7 +11,9 @@ import { Router, ActivatedRoute } from '@angular/router';
   templateUrl: './online-job-login.component.html',
   styleUrls: ['./online-job-login.component.scss']
 })
-export class OnlineJobLoginComponent implements OnInit {
+export class OnlineJobLoginComponent implements OnInit, AfterViewInit {
+  @ViewChild('lottieContainer', { static: true }) lottieContainer!: ElementRef;
+
   loginData = {
     email: '',
     password: '',
@@ -22,17 +25,33 @@ export class OnlineJobLoginComponent implements OnInit {
   errorMessage = '';
   sessionTimeoutMessage = '';
 
+  animationState = 'fade-up-enter';
+
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    setTimeout(() => {
+      this.animationState = '';
+    }, 500); // Remove class after animation
+
     // Check for session timeout reason from URL parameters
     this.activatedRoute.queryParams.subscribe(params => {
       if (params['reason'] === 'session_timeout') {
         this.sessionTimeoutMessage = 'Your session has expired due to inactivity. Please log in again.';
       }
+    });
+  }
+
+  ngAfterViewInit() {
+    lottie.loadAnimation({
+      container: this.lottieContainer.nativeElement,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: 'assets/images/register.json'
     });
   }
 
@@ -88,6 +107,9 @@ export class OnlineJobLoginComponent implements OnInit {
   }
 
   goToRegister() {
-    this.router.navigate(['/online-job-register']);
+    this.animationState = 'fade-down-leave';
+    setTimeout(() => {
+      this.router.navigate(['/online-job-register']);
+    }, 500); // Match animation duration
   }
 }
