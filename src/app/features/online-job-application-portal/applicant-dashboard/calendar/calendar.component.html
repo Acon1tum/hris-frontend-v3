@@ -1,0 +1,226 @@
+<div class="p-8 bg-gray-50 min-h-screen">
+  <!-- Calendar Title and Description -->
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-1">My Calendar</h1>
+    <p class="text-gray-600 text-base">View, manage, and track your interviews and events. Use the mini calendar to quickly jump to any date, or switch views for a dynamic experience.</p>
+  </div>
+  <!-- Back Button at the top -->
+  <button class="back-btn-ui mb-6 w-fit flex items-center gap-2 text-[#111518] text-sm font-medium px-4 py-1.5 rounded-full border border-gray-300 bg-white hover:bg-gray-100 focus:outline-none transition" (click)="goBack()">
+    Back
+  </button>
+  <div class="flex flex-col md:flex-row gap-8">
+    <!-- Mini Calendar Sidebar -->
+    <aside class="w-full md:w-1/4 bg-white rounded-xl shadow p-6 flex flex-col items-center">
+      <div class="mini-calendar-header flex items-center justify-between w-full mb-4">
+        <span class="mini-calendar-month-label font-semibold text-lg">{{ getMiniMonthLabel() }}</span>
+        <div class="mini-calendar-arrows flex items-center gap-0.1rem">
+          <button (click)="prevMiniMonth()" class="mini-arrow-btn" title="Previous month">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <button (click)="nextMiniMonth()" class="mini-arrow-btn" title="Next month">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </div>
+      <div class="grid grid-cols-7 gap-1 w-full">
+        <span *ngFor="let d of weekDays" class="text-xs font-bold text-center">{{ d }}</span>
+        <ng-container *ngFor="let blank of [].constructor(getMiniFirstDayOfWeek())">
+          <span></span>
+        </ng-container>
+        <ng-container *ngFor="let day of getMiniDaysInMonth()">
+          <button (click)="selectMiniDate(day)"
+            class="w-8 h-8 rounded-full flex flex-col items-center justify-center text-sm font-medium transition relative"
+            [ngClass]="isSelectedMiniDate(day) ? 'bg-blue-600 text-white' : 'hover:bg-blue-100 text-gray-800'">
+            {{ day }}
+            <ng-container *ngFor="let interview of getMiniDayInterviews(day)">
+              <span
+                class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full"
+                [ngStyle]="{'background': getStatusColor(interview.status || '')}"
+                [attr.title]="interview.jobTitle + ' (' + (interview.time || '') + ')'"
+                (click)="$event.stopPropagation(); openInterviewModal(interview)"
+                style="cursor:pointer"
+              ></span>
+            </ng-container>
+          </button>
+        </ng-container>
+      </div>
+      <!-- My calendars section -->
+      <div class="mt-6 w-full">
+        <button class="flex items-center justify-between w-full px-2 py-1 rounded bg-gray-100 font-semibold text-gray-700 text-sm mb-2" (click)="toggleCalendars()">
+          My calendars
+          <span class="material-symbols-outlined text-base transform transition-transform duration-200" [ngClass]="{'rotate-180': showCalendars}">expand_more</span>
+        </button>
+        <div *ngIf="showCalendars">
+          <ul class="space-y-2">
+            <li class="flex items-center gap-2">
+              <span class="inline-block w-4 h-4 rounded bg-blue-400 border-2 border-white"></span>
+              <input type="checkbox" checked class="accent-blue-400" />
+              <span class="text-sm">Interviews</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="inline-block w-4 h-4 rounded bg-green-400 border-2 border-white"></span>
+              <input type="checkbox" checked class="accent-green-400" />
+              <span class="text-sm">Meet</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="inline-block w-4 h-4 rounded bg-blue-800 border-2 border-white"></span>
+              <input type="checkbox" checked class="accent-blue-800" />
+              <span class="text-sm">Others</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Calendar -->
+    <main class="flex-1 bg-white rounded-xl shadow p-6">
+      <div class="main-calendar-header flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <button class="main-today-btn" (click)="goToToday()">Today</button>
+          <button (click)="prevMainMonth()" class="main-arrow-btn" title="Previous month">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <button (click)="nextMainMonth()" class="main-arrow-btn" title="Next month">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+          <span class="main-calendar-date-label font-semibold text-2xl ml-4">{{ selectedDate | date: 'MMMM d, yyyy' }}</span>
+        </div>
+        <div class="relative flex items-center gap-2">
+          <button class="view-mode-btn flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 bg-white font-medium text-gray-900 hover:bg-gray-100 focus:outline-none" (click)="toggleViewDropdown()">
+            {{ viewModeLabel }}
+            <span class="material-symbols-outlined text-base">expand_more</span>
+          </button>
+          <div *ngIf="showViewDropdown" class="absolute right-0 mt-2 w-48 rounded-xl shadow-lg bg-white border border-gray-200 z-50">
+            <ul class="py-2">
+              <li *ngFor="let mode of viewModes" (click)="selectViewMode(mode)" class="flex items-center justify-between px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                <span>{{ mode.label }}</span>
+                <span class="text-xs text-gray-400 font-mono">{{ mode.shortcut }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <ng-container *ngIf="showDayView; else weekOrMonthView">
+        <div class="flex flex-col items-center mb-2">
+          <span class="text-xs font-bold text-gray-500 tracking-wide">{{ selectedDate | date: 'EEE' | uppercase }}</span>
+          <span class="text-3xl font-bold text-gray-900">{{ selectedDate | date: 'd' }}</span>
+        </div>
+        <div class="flex flex-row w-full">
+          <div class="flex flex-col items-end min-w-[56px] pr-2">
+            <span class="text-xs text-gray-500 mb-2">GMT+00</span>
+            <span *ngFor="let hour of hours" class="h-12 text-xs text-gray-500 flex items-start">{{ hour === 0 ? '12 AM' : hour < 12 ? hour + ' AM' : hour === 12 ? '12 PM' : (hour - 12) + ' PM' }}</span>
+          </div>
+          <div class="flex-1 flex flex-col relative">
+            <div class="absolute left-0 top-0 h-full w-px bg-gray-200"></div>
+            <div *ngFor="let hour of hours; let i = index" class="h-12 border-b border-gray-200 relative">
+              <ng-container *ngFor="let interview of selectedDayInterviews">
+                <div *ngIf="getInterviewHour(interview) === i" class="absolute left-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-3 py-1 rounded shadow text-xs font-semibold z-10 min-w-[120px] cursor-pointer hover:bg-blue-600 transition"
+                  [attr.title]="interview.jobTitle + ' at ' + interview.company + ' (' + (interview.time || '') + ')'"
+                  (click)="openInterviewModal(interview)">
+                  {{ interview.jobTitle }}<br><span class="font-normal">{{ interview.time }}</span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #weekOrMonthView>
+        <ng-container *ngIf="showWeekView; else monthView">
+          <div class="flex items-end mb-2">
+            <div class="min-w-[56px] pr-2"></div>
+            <div class="flex-1 grid grid-cols-5">
+              <div *ngFor="let day of weekViewDays" class="flex flex-col items-center">
+                <span class="text-xs font-bold text-gray-500 tracking-wide">{{ day | date: 'EEE' | uppercase }}</span>
+                <span [ngClass]="isSelectedWeekDay(day) ? 'bg-blue-600 text-white' : 'text-gray-900'" class="text-2xl font-bold rounded-full w-10 h-10 flex items-center justify-center">{{ day | date: 'd' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-row w-full relative">
+            <div class="flex flex-col items-end min-w-[56px] pr-2">
+              <span class="text-xs text-gray-500 mb-2">GMT+00</span>
+              <span *ngFor="let hour of hours" class="h-12 text-xs text-gray-500 flex items-start">{{ hour === 0 ? '12 AM' : hour < 12 ? hour + ' AM' : hour === 12 ? '12 PM' : (hour - 12) + ' PM' }}</span>
+            </div>
+            <div class="flex-1 grid grid-cols-5 relative">
+              <ng-container *ngFor="let day of weekViewDays; let col = index">
+                <div class="flex flex-col relative h-full" [ngClass]="col !== 0 ? 'border-l border-gray-200' : ''">
+                  <div *ngFor="let hour of hours; let i = index" class="h-12 border-b border-gray-200 w-full relative">
+                    <ng-container *ngFor="let interview of getInterviewsForDay(day)">
+                      <div *ngIf="getInterviewHour(interview) === i" class="absolute left-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-3 py-1 rounded shadow text-xs font-semibold z-10 min-w-[120px] cursor-pointer hover:bg-blue-600 transition"
+                        [attr.title]="interview.jobTitle + ' at ' + interview.company + ' (' + (interview.time || '') + ')'"
+                        (click)="openInterviewModal(interview)">
+                        {{ interview.jobTitle }}<br><span class="font-normal">{{ interview.time }}</span>
+                      </div>
+                    </ng-container>
+                  </div>
+                  <!-- Red line for current time if today -->
+                  <ng-container *ngIf="isSelectedWeekDay(day) && isToday(day)">
+                    <div class="absolute left-0 right-0" [style.top]="getCurrentTimeTop()" style="height:2px; background:#ea4335;">
+                      <span class="absolute -left-2 top-1/2 -translate-y-1/2 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #monthView>
+          <div class="grid grid-cols-7 gap-2">
+            <span *ngFor="let d of weekDays" class="text-xs font-bold text-center">{{ d }}</span>
+            <ng-container *ngFor="let blank of [].constructor(getMainFirstDayOfWeek())">
+              <span></span>
+            </ng-container>
+            <ng-container *ngFor="let day of getMainDaysInMonth()">
+              <button (click)="selectMainDate(day)"
+                class="w-12 h-12 rounded-full flex flex-col items-center justify-center text-base font-medium transition relative"
+                [ngClass]="isSelectedMainDate(day) ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-blue-100 text-gray-800'">
+                {{ day }}
+                <ng-container *ngFor="let interview of getMainDayInterviews(day)">
+                  <span
+                    class="absolute bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full"
+                    [ngStyle]="{'background': getStatusColor(interview.status || '')}"
+                    [attr.title]="interview.jobTitle + ' (' + (interview.time || '') + ')'"
+                    (click)="$event.stopPropagation(); openInterviewModal(interview)"
+                    style="cursor:pointer"
+                  ></span>
+                </ng-container>
+              </button>
+            </ng-container>
+          </div>
+          <div class="mt-8">
+            <h3 class="text-lg font-semibold mb-2">Interviews on {{ selectedDate | date: 'fullDate' }}</h3>
+            <div *ngIf="selectedDayInterviews.length > 0; else noInterviews">
+              <div *ngFor="let interview of selectedDayInterviews" class="mb-3 p-4 rounded border border-blue-200 bg-blue-50 flex flex-col md:flex-row md:items-center md:justify-between">
+                <div>
+                  <div class="font-semibold text-blue-900">{{ interview.jobTitle }}</div>
+                  <div class="text-sm text-gray-700">{{ interview.company }}</div>
+                  <div class="text-xs mt-1" [ngStyle]="{'color': getStatusColor(interview.status || '')}">Status: {{ interview.status | titlecase }}</div>
+                </div>
+                <div class="text-blue-700 font-medium mt-2 md:mt-0">{{ interview.time }}</div>
+                <button class="ml-0 md:ml-4 mt-2 md:mt-0 px-3 py-1 rounded bg-blue-100 text-blue-800 hover:bg-blue-200 text-xs font-semibold" (click)="openInterviewModal(interview)">Details</button>
+              </div>
+            </div>
+            <ng-template #noInterviews>
+              <div class="text-gray-500">No interviews scheduled for this day.</div>
+            </ng-template>
+          </div>
+        </ng-template>
+      </ng-template>
+    </main>
+
+    <!-- Interview Details Modal -->
+    <div *ngIf="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+      <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+        <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700" (click)="closeInterviewModal()">&times;</button>
+        <h3 class="text-lg font-bold mb-4">Interview Details</h3>
+        <div *ngIf="modalInterview">
+          <div class="mb-2 font-semibold text-blue-900">{{ modalInterview.jobTitle }}</div>
+          <div class="mb-2 text-gray-700">{{ modalInterview.company }}</div>
+          <div class="mb-2 text-gray-700">Date: {{ modalInterview.date | date: 'fullDate' }}</div>
+          <div class="mb-2 text-gray-700">Time: {{ modalInterview.time }}</div>
+          <div class="mb-2 text-gray-700">Status: <span [ngStyle]="{'color': getStatusColor(modalInterview.status || '')}">{{ modalInterview.status | titlecase }}</span></div>
+          <div class="mb-2 text-gray-700">Department: {{ modalInterview.department || '-' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+/* Custom styles for interviews component (if needed). Tailwind handles most styling. */
+.back-btn-ui {
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  color: #222;
+  border-radius: 9999px;
+  padding: 0.4rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background 0.2s, border 0.2s;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.04);
+  margin-bottom: 0.5rem;
+}
+.back-btn-ui:hover, .back-btn-ui:focus {
+  background: #f1f3f4;
+  border-color: #a1a1aa;
+}
+.back-btn-ui svg {
+  margin-right: 0.25rem;
+}
+
+.tooltip-trigger {
+  position: relative;
+}
+.tooltip-content {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 1.5rem;
+  z-index: 20;
+  background: #111827;
+  color: #fff;
+  font-size: 0.85rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
+  width: 16rem;
+  pointer-events: none;
+}
+.tooltip-trigger:hover .tooltip-content,
+.tooltip-trigger:focus .tooltip-content,
+.tooltip-trigger.group:hover .tooltip-content {
+  display: block;
+  pointer-events: auto;
+}

@@ -245,8 +245,6 @@ export const routes: Routes = [
   {
     path: 'applicant-dashboard',
     loadComponent: () => import('./features/online-job-application-portal/applicant-dashboard/applicant-dashboard.component').then(m => m.ApplicantDashboardComponent),
-    canActivate: [PermissionGuard],
-    data: { roles: ['Applicant'] }
   },
   {
     path: 'online-job-login',
@@ -285,6 +283,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/job-management/job-portal-management/index.component').then(m => m.JobPortalManagementComponent),
     canActivate: [PermissionGuard],
     data: { roles: ['Admin'] }
+  },
+  {
+    path: 'applicant-interviews',
+    loadComponent: () => import('./features/online-job-application-portal/applicant-dashboard/interviews/interviews.component').then(m => m.InterviewsComponent),
+  },
+  {
+    path: 'calendar',
+    loadComponent: () => import('./features/online-job-application-portal/applicant-dashboard/calendar/calendar.component').then(m => m.CalendarComponent),
   },
   { path: '**', redirectTo: '/login' }
 ]; 

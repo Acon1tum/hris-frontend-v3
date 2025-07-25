@@ -649,6 +649,15 @@
       color: white;
     }
   }
+  &.schedule-btn {
+    background: #e0f2fe;
+    color: #0284c7;
+    
+    &:hover {
+      background: #0284c7;
+      color: white;
+    }
+  }
 }
 
 // Profile View

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../../../shared/header/header.component';
+import { InterviewService, InterviewInfo } from './interview.service';
 
 interface JobApplication {
   id: string;
@@ -15,6 +16,7 @@ interface JobApplication {
   applicationDeadline: Date;
   salaryRange: string;
   employmentType: string;
+  time?: string; // Optional interview time
 }
 
 interface DashboardStats {
@@ -110,6 +112,20 @@ export class ApplicantDashboardComponent implements OnInit, OnDestroy {
       applicationDeadline: new Date('2024-01-20'),
       salaryRange: '₱22,000 - ₱32,000',
       employmentType: 'Regular'
+    },
+    // Dummy interview data
+    {
+      id: '5',
+      jobTitle: 'HR Specialist',
+      company: 'Quanby HRIS',
+      department: 'Human Resources',
+      applicationDate: new Date(),
+      status: 'interviewed',
+      lastUpdated: new Date(),
+      applicationDeadline: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 10),
+      salaryRange: '₱20,000 - ₱30,000',
+      employmentType: 'Regular',
+      time: '10:00 AM - 11:00 AM'
     }
   ];
 
@@ -147,7 +163,7 @@ export class ApplicantDashboardComponent implements OnInit, OnDestroy {
     }
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private interviewService: InterviewService) {}
 
   ngOnInit() {
     this.loadDashboardData();
@@ -165,6 +181,19 @@ export class ApplicantDashboardComponent implements OnInit, OnDestroy {
       this.applications = [...this.mockApplications];
       this.recentActivities = [...this.mockActivities];
       this.calculateStats();
+      // Set interviews in the shared service
+      const interviews: InterviewInfo[] = this.applications
+        .filter(app => app.status === 'interviewed')
+        .map(app => ({
+          id: app.id,
+          jobTitle: app.jobTitle,
+          company: app.company,
+          date: app.applicationDate,
+          time: app.time, // Pass time if available
+          status: app.status, // Pass status for color coding
+          department: app.department // Pass department for modal display
+        }));
+      this.interviewService.setInterviews(interviews);
       this.loading = false;
     }, 1000);
   }
@@ -279,6 +308,10 @@ export class ApplicantDashboardComponent implements OnInit, OnDestroy {
 
   browseJobs() {
     this.router.navigate(['/online-job-portal']);
+  }
+
+  goToInterviews() {
+    this.router.navigate(['/applicant-interviews']);
   }
 
   formatDate(date: Date): string {
