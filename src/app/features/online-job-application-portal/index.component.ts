@@ -27,6 +27,8 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   selectedSalaryRange = '';
   showJobModal = false;
   modalJob: JobPosting | null = null;
+  showFavourites = false;
+  favourites: string[] = [];
 
   // Header scroll animation properties
   isHeaderVisible = true;
@@ -42,7 +44,16 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   constructor(private jobPortalService: JobPortalService, private router: Router) {}
 
   ngOnInit() {
+    // Clear favourites on page refresh
+    if (performance && performance.getEntriesByType) {
+      const navEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+      if (navEntries.length > 0 && navEntries[0].type === 'reload') {
+        localStorage.removeItem('jobFavourites');
+        // No redirect, just clear favourites and continue loading the page
+      }
+    }
     this.publicMode = localStorage.getItem('jobPortalPublicMode') === 'true';
+    this.favourites = JSON.parse(localStorage.getItem('jobFavourites') || '[]');
     this.fetchJobs();
     this.fetchSalaryRanges();
     this.fetchDepartments();
@@ -258,6 +269,26 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
       default:
         return 'theme-default';
     }
+  }
+
+  get displayedJobs(): JobPosting[] {
+    return this.showFavourites
+      ? this.jobs.filter(job => this.favourites.includes(job.id))
+      : this.filteredJobs;
+  }
+
+  toggleFavourite(job: JobPosting) {
+    const idx = this.favourites.indexOf(job.id);
+    if (idx > -1) {
+      this.favourites.splice(idx, 1);
+    } else {
+      this.favourites.push(job.id);
+    }
+    localStorage.setItem('jobFavourites', JSON.stringify(this.favourites));
+  }
+
+  isFavourite(job: JobPosting): boolean {
+    return this.favourites.includes(job.id);
   }
 }
  

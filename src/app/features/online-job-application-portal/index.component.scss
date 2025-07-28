@@ -177,6 +177,14 @@ html {
   background: #0a2558;
   color: #fff;
 }
+.tab.favourites {
+  background: #ffebee;
+  color: #d32f2f;
+}
+.bookmark.favourited {
+  color: #d32f2f !important;
+  font-variation-settings: 'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 48;
+}
 .job-cards {
   display: flex;
   flex-direction: column;

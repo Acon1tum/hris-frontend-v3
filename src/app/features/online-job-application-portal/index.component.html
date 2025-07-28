@@ -58,17 +58,17 @@
   <section class="main-content">
     <div class="job-list-panel">
       <div class="job-list-tabs">
-        <button class="tab active">All jobs</button>
-        <button class="tab">New to you</button>
+        <button class="tab" [class.active]="!showFavourites" (click)="showFavourites = false">All jobs</button>
+        <button class="tab" [class.active]="showFavourites" (click)="showFavourites = true">Favourites</button>
       </div>
       <div *ngIf="loading" class="loading-spinner">Loading jobs...</div>
       <div *ngIf="error" class="error-message">{{ error }}</div>
-      <div class="job-count" *ngIf="!loading && !error && filteredJobs.length > 0">{{ filteredJobs.length }} jobs found</div>
+      <div class="job-count" *ngIf="!loading && !error && displayedJobs.length > 0">{{ displayedJobs.length }} jobs found</div>
       <div class="job-cards" *ngIf="!loading && !error">
-        <div *ngIf="filteredJobs.length === 0" class="no-jobs-message">
+        <div *ngIf="displayedJobs.length === 0" class="no-jobs-message">
           <p>No jobs found matching the selected filters.</p>
         </div>
-        <div class="job-card" *ngFor="let job of filteredJobs" (click)="selectJob(job)" [class.selected]="selectedJob?.id === job.id" tabindex="0" aria-label="View job details">
+        <div class="job-card" *ngFor="let job of displayedJobs" (click)="selectJob(job)" [class.selected]="selectedJob?.id === job.id" tabindex="0" aria-label="View job details">
           <div class="job-card-accent"></div>
           <div class="job-card-content">
             <div class="job-card-header-row">
@@ -79,7 +79,11 @@
                 <div class="job-title">{{ job.position_title }}</div>
                 <div class="job-company">{{ job.department.department_name }}</div>
               </div>
-              <span class="bookmark material-symbols-outlined icon-pink" title="Save job" aria-label="Save job">bookmark</span>
+              <span class="bookmark material-symbols-outlined icon-pink" title="Save job" aria-label="Save job"
+                [class.favourited]="isFavourite(job)"
+                (click)="toggleFavourite(job); $event.stopPropagation();">
+                {{ isFavourite(job) ? 'bookmark_added' : 'bookmark' }}
+              </span>
             </div>
             <div class="job-card-badges">
               <span class="badge badge-type">
