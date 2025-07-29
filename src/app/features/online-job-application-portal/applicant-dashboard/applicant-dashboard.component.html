@@ -389,3 +389,106 @@
     </div>
   </div>
 </div>
+
+<!-- Application Details Modal -->
+<div *ngIf="showApplicationModal" class="modal-overlay" (click)="closeApplicationModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Application Details</h2>
+      <button class="modal-close-btn" (click)="closeApplicationModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    
+    <div class="modal-body" *ngIf="selectedApplication">
+      <!-- Application Header -->
+      <div class="application-header">
+        <div class="job-title-section">
+          <h3 class="modal-job-title">{{ selectedApplication.jobTitle }}</h3>
+          <p class="modal-company">{{ selectedApplication.company }}</p>
+          <p class="modal-department">{{ selectedApplication.department }}</p>
+        </div>
+        <div class="status-section">
+          <span 
+            class="modal-status-badge" 
+            [style.background-color]="getStatusColor(selectedApplication.status)"
+          >
+            {{ getStatusLabel(selectedApplication.status) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Application Details Grid -->
+      <div class="details-grid">
+        <div class="detail-item">
+          <label>Application Date</label>
+          <span>{{ formatDate(selectedApplication.applicationDate) }}</span>
+        </div>
+        <div class="detail-item">
+          <label>Last Updated</label>
+          <span>{{ formatDate(selectedApplication.lastUpdated) }}</span>
+        </div>
+        <div class="detail-item">
+          <label>Application Deadline</label>
+          <span>{{ formatDate(selectedApplication.applicationDeadline) }}</span>
+        </div>
+        <div class="detail-item">
+          <label>Salary Range</label>
+          <span>{{ selectedApplication.salaryRange }}</span>
+        </div>
+        <div class="detail-item">
+          <label>Employment Type</label>
+          <span>{{ selectedApplication.employmentType }}</span>
+        </div>
+        <div class="detail-item" *ngIf="selectedApplication.time">
+          <label>Interview Time</label>
+          <span>{{ selectedApplication.time }}</span>
+        </div>
+      </div>
+
+      <!-- Application Timeline -->
+      <div class="timeline-section">
+        <h4 class="section-title">Application Timeline</h4>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h5>Application Submitted</h5>
+              <p>{{ formatDateTime(selectedApplication.applicationDate) }}</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h5>Status Updated</h5>
+              <p>{{ formatDateTime(selectedApplication.lastUpdated) }}</p>
+              <span class="status-note">Current status: {{ getStatusLabel(selectedApplication.status) }}</span>
+            </div>
+          </div>
+          <div class="timeline-item" *ngIf="selectedApplication.status === 'interviewed'">
+            <div class="timeline-marker interview"></div>
+            <div class="timeline-content">
+              <h5>Interview Scheduled</h5>
+              <p>{{ selectedApplication.time }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="modal-actions">
+        <button class="action-btn secondary" (click)="closeApplicationModal()">
+          Close
+        </button>
+        <button 
+          class="action-btn danger" 
+          (click)="withdrawApplication(selectedApplication); closeApplicationModal()"
+          *ngIf="selectedApplication.status !== 'rejected' && selectedApplication.status !== 'accepted'"
+        >
+          <span class="material-symbols-outlined">delete</span>
+          Withdraw
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
