@@ -61,4 +61,6 @@ export interface MenuItem {
   badge?: string;
   roles?: string[];
   children?: MenuItem[];
+  external?: boolean; // Indicates if this is an external link
+  target?: string; // Target for external links (e.g., '_blank')
 } 

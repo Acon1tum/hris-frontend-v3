@@ -188,7 +188,24 @@ export class CreateEditModalComponent implements AfterViewInit {
       return;
     }
     if (this.mode === 'create') {
-      if (!this.data.username || !this.data.password || !this.data.confirmPassword || this.data.password !== this.data.confirmPassword) {
+      // Generate username from email
+      this.data.username = this.generateUsernameFromEmail();
+      
+      // Enhanced password validation
+      if (!this.data.password || !this.data.confirmPassword) {
+        this.showValidationMessage = true;
+        return;
+      }
+      
+      // Check password strength
+      const passwordValidation = this.validatePassword(this.data.password);
+      if (!passwordValidation.isValid) {
+        this.showValidationMessage = true;
+        return;
+      }
+      
+      // Check if passwords match
+      if (this.data.password !== this.data.confirmPassword) {
         this.showValidationMessage = true;
         return;
       }
@@ -198,6 +215,84 @@ export class CreateEditModalComponent implements AfterViewInit {
     if (this.selectedFiles.length > 0) {
       this.uploadDocuments.emit({ files: this.selectedFiles, metas: this.fileMetas });
     }
+  }
+
+  // Password validation method
+  private validatePassword(password: string): { isValid: boolean; errors: string[] } {
+    const errors: string[] = [];
+    
+    if (password.length < 8) {
+      errors.push('Password must be at least 8 characters long');
+    }
+    
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Password must contain at least one uppercase letter');
+    }
+    
+    if (!/[a-z]/.test(password)) {
+      errors.push('Password must contain at least one lowercase letter');
+    }
+    
+    if (!/\d/.test(password)) {
+      errors.push('Password must contain at least one number');
+    }
+    
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      errors.push('Password must contain at least one special character');
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+
+  // Password strength indicator methods
+  getPasswordStrengthClass(): string {
+    if (!this.data.password) return '';
+    
+    const validation = this.validatePassword(this.data.password);
+    const strength = 5 - validation.errors.length;
+    
+    if (strength <= 1) return 'weak';
+    if (strength <= 3) return 'medium';
+    return 'strong';
+  }
+
+  getPasswordStrengthText(): string {
+    if (!this.data.password) return '';
+    
+    const validation = this.validatePassword(this.data.password);
+    const strength = 5 - validation.errors.length;
+    
+    if (strength <= 1) return 'Weak';
+    if (strength <= 3) return 'Medium';
+    return 'Strong';
+  }
+
+  hasUppercase(): boolean {
+    return /[A-Z]/.test(this.data.password || '');
+  }
+
+  hasLowercase(): boolean {
+    return /[a-z]/.test(this.data.password || '');
+  }
+
+  hasNumber(): boolean {
+    return /\d/.test(this.data.password || '');
+  }
+
+  hasSpecialChar(): boolean {
+    return /[!@#$%^&*(),.?":{}|<>]/.test(this.data.password || '');
+  }
+
+  generateUsernameFromEmail(): string {
+    if (!this.data.email) {
+      return '';
+    }
+    // Extract the part before @ and remove any special characters
+    const emailPart = this.data.email.split('@')[0];
+    return emailPart.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
   }
 
   hideValidationMessage() {

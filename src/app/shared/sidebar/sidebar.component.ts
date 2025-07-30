@@ -85,7 +85,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       { name: 'Report Generation', icon: 'assessment', path: '/report-generation' },
       { name: 'Performance Management', icon: 'trending_up', path: '/performance-management' },
       { name: 'Learning & Development', icon: 'school', path: '/learning-development' },
-      { name: 'Health & Wellness', icon: 'health_and_safety', path: '/health-wellness' }
+      { name: 'Health & Wellness', icon: 'health_and_safety', path: 'https://quanby-health-care.vercel.app/', external: true, target: '_blank' }
     ],
     HR: [
       { name: 'Personnel Information', icon: 'people', path: '/personnel-information-management', children: [
@@ -129,7 +129,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       ] },
       { name: 'Performance Management', icon: 'trending_up', path: '/performance-management' },
       { name: 'Learning & Development', icon: 'school', path: '/learning-development' },
-      { name: 'Health & Wellness', icon: 'health_and_safety', path: '/health-wellness' }
+      { name: 'Health & Wellness', icon: 'health_and_safety', path: 'https://quanby-health-care.vercel.app/', external: true, target: '_blank' }
     ],
     Employee: [
       { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
@@ -139,8 +139,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       { name: 'Employee Attendance', icon: 'person', path: '/timekeeping-attendance/employee-attendance' },
       { name: 'Leave Employee', icon: 'event', path: '/leave-management/leave-employee' },
       { name: 'Performance Management', icon: 'trending_up', path: '/performance-management' },
-      { name: 'Learning & Development', icon: 'school', path: '/learning-development' },
-      { name: 'Health & Wellness', icon: 'health_and_safety', path: '/health-wellness' }
+      { name: 'Health & Wellness', icon: 'health_and_safety', path: 'https://quanby-health-care.vercel.app/', external: true, target: '_blank' }
     ],
     Manager: [
       { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
@@ -154,7 +153,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       ] },
       { name: 'Performance Management', icon: 'trending_up', path: '/performance-management' },
       { name: 'Learning & Development', icon: 'school', path: '/learning-development' },
-      { name: 'Health & Wellness', icon: 'health_and_safety', path: '/health-wellness' }
+      { name: 'Health & Wellness', icon: 'health_and_safety', path: 'https://quanby-health-care.vercel.app/', external: true, target: '_blank' }
     ],
     Applicant: [
       { name: 'Job Portal', icon: 'work', path: '/online-job-application-portal' },

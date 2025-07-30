@@ -324,10 +324,9 @@ export class Personnel201FileComponent implements OnInit {
     this.error = null;
 
     try {
-      // Generate unique username to avoid conflicts
-      const baseUsername = modalData.email?.split('@')[0] || 
-                          `${modalData.firstName?.toLowerCase()}.${modalData.lastName?.toLowerCase()}`;
-      const username = baseUsername;
+      // Use the username generated from email in the modal
+      const username = modalData.username || modalData.email?.split('@')[0] || 
+                      `${modalData.firstName?.toLowerCase()}.${modalData.lastName?.toLowerCase()}`;
 
       // Map department name to department_id
       let department_id: string | undefined = undefined;
@@ -347,7 +346,7 @@ export class Personnel201FileComponent implements OnInit {
       const createRequest: any = {
         username: username,
         email: modalData.email || '',
-        password: 'TempPassword123!', // TODO: Implement proper password generation
+        password: modalData.password || '', // Use user-inputted password instead of hardcoded temp password
         first_name: modalData.firstName || '',
         last_name: modalData.lastName || '',
         middle_name: modalData.middleName || undefined,

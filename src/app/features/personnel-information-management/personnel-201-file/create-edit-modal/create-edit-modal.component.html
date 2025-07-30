@@ -92,14 +92,14 @@
             </div>
             <div class="section-title-group">
           <h2 class="section-title">Account Credentials</h2>
-              <p class="section-description">Set up login credentials for the employee</p>
+              <p class="section-description">Username will be generated from email address</p>
             </div>
         </div>
         
           <div class="form-grid">
             <div class="form-field">
               <label class="field-label">
-                Username <span class="required">*</span>
+                Generated Username
               </label>
               <div class="input-wrapper">
                 <span class="input-icon">
@@ -107,58 +107,14 @@
                 </span>
                 <input 
                   type="text" 
-                  [(ngModel)]="data.username" 
-                  name="username" 
-                  required 
+                  [value]="generateUsernameFromEmail()" 
                   class="form-input" 
-                  placeholder="Enter username"
-                  [ngClass]="{'error': formSubmitted && !data.username}" 
+                  placeholder="Username will be generated from email"
+                  readonly
+                  disabled
                 />
               </div>
-              <span *ngIf="formSubmitted && !data.username" class="error-message">Username is required</span>
-            </div>
-
-            <div class="form-field">
-              <label class="field-label">
-                Password <span class="required">*</span>
-              </label>
-              <div class="input-wrapper">
-                <span class="input-icon">
-                  <span class="material-symbols-outlined">lock</span>
-                </span>
-                <input 
-                  type="password" 
-                  [(ngModel)]="data.password" 
-                  name="password" 
-                  required 
-                  class="form-input" 
-                  placeholder="Enter password"
-                  [ngClass]="{'error': formSubmitted && !data.password}" 
-                />
-              </div>
-              <span *ngIf="formSubmitted && !data.password" class="error-message">Password is required</span>
-            </div>
-
-            <div class="form-field">
-              <label class="field-label">
-                Confirm Password <span class="required">*</span>
-              </label>
-              <div class="input-wrapper">
-                <span class="input-icon">
-                  <span class="material-symbols-outlined">lock_reset</span>
-                </span>
-                <input 
-                  type="password" 
-                  [(ngModel)]="data.confirmPassword" 
-                  name="confirmPassword" 
-                  required 
-                  class="form-input" 
-                  placeholder="Confirm password"
-                  [ngClass]="{'error': formSubmitted && (!data.confirmPassword || data.password !== data.confirmPassword)}" 
-                />
-              </div>
-              <span *ngIf="formSubmitted && !data.confirmPassword" class="error-message">Confirm password is required</span>
-              <span *ngIf="formSubmitted && data.password && data.confirmPassword && data.password !== data.confirmPassword" class="error-message">Passwords do not match</span>
+              <span class="help-text">Username will be automatically generated from the email address</span>
             </div>
           </div>
         </section>
@@ -429,12 +385,13 @@
                   [ngClass]="{'error': formSubmitted && !data.employmentType}"
                 >
                   <option value="" disabled selected>Select employment type</option>
-                <option value="Regular">Regular</option>
-                <option value="Probationary">Probationary</option>
+                <option value="Full_Time">Full Time</option>
+                <option value="Part_time">Part Time</option>
+                <option value="Consultant">Consultant</option>
+                <option value="Intern">Intern</option>
                 <option value="Contractual">Contractual</option>
-                <option value="Project-based">Project-based</option>
-                <option value="Seasonal">Seasonal</option>
-                <option value="Casual">Casual</option>
+                <option value="Probationary">Probationary</option>
+                <option value="OJT">OJT</option>
               </select>
               </div>
               <span *ngIf="formSubmitted && !data.employmentType" class="error-message">Employment type is required</span>
@@ -783,6 +740,87 @@
                   placeholder="Enter relationship" 
                 />
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Password Section -->
+        <section class="form-section" *ngIf="mode === 'create'">
+          <div class="section-header">
+            <div class="section-icon">
+              <span class="material-symbols-outlined">lock</span>
+            </div>
+            <div class="section-title-group">
+              <h2 class="section-title">Login Password</h2>
+              <p class="section-description">Set up the employee's login password</p>
+            </div>
+          </div>
+          
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="field-label">
+                Password <span class="required">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <span class="material-symbols-outlined">lock</span>
+                </span>
+                <input 
+                  type="password" 
+                  [(ngModel)]="data.password" 
+                  name="password" 
+                  required 
+                  class="form-input" 
+                  placeholder="Enter password"
+                  [ngClass]="{'error': formSubmitted && !data.password}" 
+                />
+              </div>
+              <span *ngIf="formSubmitted && !data.password" class="error-message">Password is required</span>
+              <div *ngIf="data.password" class="password-strength">
+                <div class="strength-bar">
+                  <div class="strength-fill" [ngClass]="getPasswordStrengthClass()"></div>
+                </div>
+                <span class="strength-text">{{ getPasswordStrengthText() }}</span>
+              </div>
+              <div *ngIf="data.password" class="password-requirements">
+                <small class="requirement" [ngClass]="{'met': data.password.length >= 8}">
+                  ✓ At least 8 characters
+                </small>
+                <small class="requirement" [ngClass]="{'met': hasUppercase()}">
+                  ✓ One uppercase letter
+                </small>
+                <small class="requirement" [ngClass]="{'met': hasLowercase()}">
+                  ✓ One lowercase letter
+                </small>
+                <small class="requirement" [ngClass]="{'met': hasNumber()}">
+                  ✓ One number
+                </small>
+                <small class="requirement" [ngClass]="{'met': hasSpecialChar()}">
+                  ✓ One special character
+                </small>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label class="field-label">
+                Confirm Password <span class="required">*</span>
+              </label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <span class="material-symbols-outlined">lock_reset</span>
+                </span>
+                <input 
+                  type="password" 
+                  [(ngModel)]="data.confirmPassword" 
+                  name="confirmPassword" 
+                  required 
+                  class="form-input" 
+                  placeholder="Confirm password"
+                  [ngClass]="{'error': formSubmitted && (!data.confirmPassword || data.password !== data.confirmPassword)}" 
+                />
+              </div>
+              <span *ngIf="formSubmitted && !data.confirmPassword" class="error-message">Confirm password is required</span>
+              <span *ngIf="formSubmitted && data.password && data.confirmPassword && data.password !== data.confirmPassword" class="error-message">Passwords do not match</span>
             </div>
           </div>
         </section>

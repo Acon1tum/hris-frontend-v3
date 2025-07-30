@@ -196,6 +196,24 @@
           &:hover .nav-icon {
             transform: scale(1.1);
           }
+
+          // External link styling
+          &[href^="http"] {
+            position: relative;
+            
+            &::after {
+              content: "open_in_new";
+              font-family: 'Material Symbols Outlined';
+              font-size: 0.875rem;
+              margin-left: 0.5rem;
+              opacity: 0.7;
+              transition: opacity 0.2s ease;
+            }
+            
+            &:hover::after {
+              opacity: 1;
+            }
+          }
         }
 
         // Submenu styling

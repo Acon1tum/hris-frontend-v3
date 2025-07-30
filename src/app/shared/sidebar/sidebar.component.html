@@ -17,7 +17,8 @@
       <ul class="nav-list">
         <li class="nav-item" *ngFor="let item of menuItems">
           <!-- Main menu item -->
-          <a [routerLink]="item.children && item.children.length > 0 ? null : item.path" 
+          <a *ngIf="!item.external"
+             [routerLink]="item.children && item.children.length > 0 ? null : item.path" 
              routerLinkActive="active"
              class="nav-link"
              [class.has-submenu]="item.children && item.children.length > 0"
@@ -26,6 +27,30 @@
              (mouseleave)="hideTooltip()"
              (mousemove)="moveTooltip($event)"
              (click)="item.children && item.children.length > 0 ? toggleMenuItem(item.name, $event) : onMenuItemClick()">
+            <span class="nav-icon material-symbols-outlined">{{ item.icon }}</span>
+            <span class="nav-arrow-collapsed material-symbols-outlined"
+                  *ngIf="item.children && item.children.length > 0 && isCollapsed && !isMobile">
+              chevron_right
+            </span>
+            <span class="nav-text" *ngIf="!isCollapsed || isMobile">{{ item.name }}</span>
+            <span class="nav-badge" *ngIf="(item.badge && !isCollapsed) || isMobile">{{ item.badge }}</span>
+            <span class="nav-arrow material-symbols-outlined" 
+                  *ngIf="item.children && item.children.length > 0 && (!isCollapsed && !isMobile)"
+                  [class.rotated]="isMenuItemExpanded(item.name)">
+              expand_more
+            </span>
+          </a>
+          
+          <a *ngIf="item.external"
+             [href]="item.path"
+             [target]="item.target || '_blank'"
+             [rel]="item.target === '_blank' ? 'noopener noreferrer' : ''"
+             class="nav-link"
+             [class.has-submenu]="item.children && item.children.length > 0"
+             [class.expanded]="isMenuItemExpanded(item.name)"
+             (mouseenter)="showTooltip($event, item.name)"
+             (mouseleave)="hideTooltip()"
+             (mousemove)="moveTooltip($event)">
             <span class="nav-icon material-symbols-outlined">{{ item.icon }}</span>
             <span class="nav-arrow-collapsed material-symbols-outlined"
                   *ngIf="item.children && item.children.length > 0 && isCollapsed && !isMobile">

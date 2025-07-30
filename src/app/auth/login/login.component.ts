@@ -68,7 +68,15 @@ export class LoginComponent implements OnInit {
       },
       error: (error) => {
         console.error('Login error:', error);
-        this.errorMessage = error.message || 'Login failed. Please try again.';
+        
+        // Handle rate limiting specifically
+        if (error.message && error.message.includes('Too many login attempts')) {
+          const retryInfo = this.authService.getRetryInfo();
+          this.errorMessage = `${error.message} ${retryInfo.message}`;
+        } else {
+          this.errorMessage = error.message || 'Login failed. Please try again.';
+        }
+        
         this.isLoading = false;
       }
     });
@@ -121,7 +129,15 @@ export class LoginComponent implements OnInit {
       },
       error: (error) => {
         console.error('Demo login error:', error);
-        this.errorMessage = error.message || 'Demo login failed. Please try again.';
+        
+        // Handle rate limiting specifically
+        if (error.message && error.message.includes('Too many login attempts')) {
+          const retryInfo = this.authService.getRetryInfo();
+          this.errorMessage = `${error.message} ${retryInfo.message}`;
+        } else {
+          this.errorMessage = error.message || 'Demo login failed. Please try again.';
+        }
+        
         this.isLoading = false;
       }
     });
@@ -131,5 +147,20 @@ export class LoginComponent implements OnInit {
     // Set a flag to indicate public job portal mode
     localStorage.setItem('jobPortalPublicMode', 'true');
     this.router.navigate(['/online-job-application-portal']);
+  }
+
+  onResetRateLimit() {
+    // Clear rate limiting information
+    this.authService.clearRateLimitInfo().subscribe({
+      next: (response) => {
+        this.errorMessage = '';
+        console.log('Rate limit information cleared:', response);
+      },
+      error: (error) => {
+        console.error('Error clearing rate limit:', error);
+        // Still clear the error message even if server call fails
+        this.errorMessage = '';
+      }
+    });
   }
 } 

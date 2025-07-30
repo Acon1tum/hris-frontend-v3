@@ -87,6 +87,16 @@
                 <span class="material-symbols-outlined text-red-400 mr-2">error</span>
                 <p class="text-sm text-red-600">{{ errorMessage }}</p>
               </div>
+              <!-- Rate Limit Reset Button -->
+              <div *ngIf="errorMessage.includes('Too many login attempts')" class="mt-3 pt-3 border-t border-red-200">
+                <button 
+                  type="button"
+                  class="text-xs text-blue-600 hover:text-blue-500 hover:underline transition-colors duration-150"
+                  (click)="onResetRateLimit()"
+                >
+                  Reset Rate Limit (Development Only)
+                </button>
+              </div>
             </div>
             <div>
               <button 

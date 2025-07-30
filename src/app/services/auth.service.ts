@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError, timer } from 'rxjs';
+import { catchError, map, tap, retryWhen, take, delayWhen } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { 
   User, 
@@ -99,6 +99,20 @@ export class AuthService {
             throw new Error(response.message || 'Login failed');
           }
         }),
+        retryWhen(errors => 
+          errors.pipe(
+            delayWhen((error, index) => {
+              // Only retry for network errors or 5xx server errors, not for 429 or 401
+              if (error.status === 429 || error.status === 401) {
+                return throwError(() => error);
+              }
+              // Exponential backoff: 1s, 2s, 4s
+              const delay = Math.min(1000 * Math.pow(2, index), 4000);
+              return timer(delay);
+            }),
+            take(3) // Retry up to 3 times
+          )
+        ),
         catchError(this.handleError)
       );
   }
@@ -206,6 +220,46 @@ export class AuthService {
     return this.login(username, password);
   }
 
+  /**
+   * Get retry information for rate limited requests
+   * @param retryAfterSeconds - Retry-After header value in seconds
+   * @returns Object with retry information
+   */
+  getRetryInfo(retryAfterSeconds?: number): { canRetry: boolean; retryAfter: Date; message: string } {
+    const defaultRetryAfter = 15 * 60; // 15 minutes default
+    const retryAfter = retryAfterSeconds || defaultRetryAfter;
+    const retryTime = new Date(Date.now() + retryAfter * 1000);
+    const canRetry = Date.now() > retryTime.getTime();
+    
+    return {
+      canRetry,
+      retryAfter: retryTime,
+      message: canRetry 
+        ? 'You can now try logging in again.' 
+        : `Please wait until ${retryTime.toLocaleTimeString()} before trying again.`
+    };
+  }
+
+  /**
+   * Clear any stored rate limiting information
+   * This can be called when a user wants to reset their session
+   */
+  clearRateLimitInfo(): Observable<any> {
+    // Clear any stored rate limiting data
+    localStorage.removeItem('rate_limit_info');
+    localStorage.removeItem('last_login_attempt');
+    
+    // Call backend endpoint to clear rate limiting (development only)
+    return this.http.post<ApiResponse>(`${environment.apiUrl}/auth/clear-rate-limit`, {})
+      .pipe(
+        catchError(error => {
+          console.warn('Could not clear rate limit on server:', error);
+          // Return success even if server call fails
+          return [{ success: true, message: 'Rate limit cleared locally' }];
+        })
+      );
+  }
+
   private handleError = (error: HttpErrorResponse) => {
     let errorMessage = 'An error occurred';
     
@@ -221,6 +275,8 @@ export class AuthService {
       } else if (error.status === 401) {
         errorMessage = 'Invalid credentials';
         this.logout(); // Auto logout on 401
+      } else if (error.status === 429) {
+        errorMessage = 'Too many login attempts. Please wait a few minutes before trying again.';
       } else if (error.status >= 500) {
         errorMessage = 'Server error occurred';
       } else {
