@@ -357,7 +357,7 @@ export class Personnel201FileComponent implements OnInit {
         address: modalData.address || undefined,
         department_id: department_id, // Fixed: Now properly mapping department
         designation: modalData.designation || modalData.position || undefined,
-        employment_type: modalData.employmentType || 'Regular',
+        employment_type: modalData.employmentType || 'Full_Time',
         date_hired: modalData.startDate || modalData.appointmentDate || new Date().toISOString().slice(0, 10),
         salary: defaultSalary, // Fixed: Using reasonable default instead of 0
         gsis_number: modalData.gsis || undefined,

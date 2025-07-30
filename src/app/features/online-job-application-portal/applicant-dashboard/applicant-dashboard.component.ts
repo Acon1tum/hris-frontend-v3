@@ -79,7 +79,7 @@ export class ApplicantDashboardComponent implements OnInit, OnDestroy {
       lastUpdated: new Date('2024-01-20'),
       applicationDeadline: new Date('2024-02-15'),
       salaryRange: '₱25,000 - ₱35,000',
-      employmentType: 'Regular'
+      employmentType: 'Full_Time'
     },
     {
       id: '2',
@@ -91,7 +91,7 @@ export class ApplicantDashboardComponent implements OnInit, OnDestroy {
       lastUpdated: new Date('2024-01-18'),
       applicationDeadline: new Date('2024-02-10'),
       salaryRange: '₱20,000 - ₱30,000',
-      employmentType: 'Regular'
+      employmentType: 'Full_Time'
     },
     {
       id: '3',
@@ -115,7 +115,7 @@ export class ApplicantDashboardComponent implements OnInit, OnDestroy {
       lastUpdated: new Date('2024-01-10'),
       applicationDeadline: new Date('2024-01-20'),
       salaryRange: '₱22,000 - ₱32,000',
-      employmentType: 'Regular'
+      employmentType: 'Full_Time'
     },
     // Dummy interview data
     {
@@ -128,7 +128,7 @@ export class ApplicantDashboardComponent implements OnInit, OnDestroy {
       lastUpdated: new Date(),
       applicationDeadline: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 10),
       salaryRange: '₱20,000 - ₱30,000',
-      employmentType: 'Regular',
+      employmentType: 'Full_Time',
       time: '10:00 AM - 11:00 AM'
     }
   ];

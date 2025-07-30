@@ -1,0 +1,44 @@
+First Name,Middle Name,Last Name,Suffix,Birthdate,Gender,Civil Status,Email Address,Phone Number,Address,Employment Type,Position,Department,Designation,Appointment Date,Start Date,Employment Status
+John,Michael,Doe,Jr.,5/15/1990,Male,Single,[URL],555-123-4567,123 Main St,Full-time,Software Engineer,Engineering,Senior,1/10/2020,2/1/2020,Active
+Jane,Alice,Smith,,11/22/1988,Female,Married,[URL],555-987-6543,456 Oak Ave,Full-time,Project Manager,Operations,Lead,7/1/2018,7/15/2018,Active
+Robert,Lee,Johnson,III,3/8/1975,Male,Divorced,[URL],555-111-2222,789 Pine Ln,Full-time,Marketing Director,Marketing,Executive,9/1/2015,9/15/2015,Active
+Emily,Rose,Davis,,7/30/1992,Female,Single,[URL],555-333-4444,101 Elm St,Part-time,Graphic Designer,Creative,Junior,4/1/2023,4/15/2023,Active
+William,Arthur,Brown,,1/10/1985,Male,Married,[URL],555-555-6666,202 Birch Rd,Full-time,Financial Analyst,Finance,Senior,11/1/2017,11/15/2017,Active
+Gio Andrei ,Espiritu,Padua,,9/8/2003,Male,Single,gpadua.codes@gmail.com,9994843329,P-1 Cobo Tabaco City,Full-time,Software Engineer,Engineering,Junior,5/15/2025,6/15/2025,Active
+Christian,Lotino,Montesor,,7/13/1999,Male,Single,christianmontesor@gmail.com,9462704475,P-1 Barlin Street Inamnan Grande Guinobatan Albay,Full-time,Software Engineer,Engineering,Junior,5/15/2025,6/15/2025,Active
+John Raven,Musa,Arieta,,8/2/2002,male,Single,ravenmusaarieta@gmail.com,9517506389,"Macalaya, Castilla, Sorsogon",Full-time,Software Engineer,Engineering,Junior,5/15/2025,6/15/2025,Active
+James Paul,Saberola ,Samarista,,7/25/2003,Male,Single,jamessamarista88@gmail.com,9156720748,"096 Sabido Rd. Magurang Polangui, Albay",Full-Time,Marketing & Graphics Communications Associate,Marketing,Junior,4/5/2024,4/5/2024,Active
+Mark John,Llamas,Balcueva,,4/28/2003,Male,Single,mj.balcueva.3@gmail.com,0929 500 1017,"Pawa, Tabaco City",Full-Time,Software Engineer,Engineering,Junior,,6/15/2025,Active
+Jude Ivan,,Besmonte,,,,,,,,,,,,,,
+Trisha Marie,Rico,Peralta,,10/5/2002,Female,Single,trishaperalta1@gmail.com,9451140990,"Bagumbayan, Daraga, Albay",Full-Time,Multimedia Associate,Multimedia,Junior,,6/15/2025,Active
+Cesphillip,Miraflor,Lorica,,11/15/2001,Male,Single,loricaphilip@outlook.com,9203395846,"Malabog, Daraga, Albay",,Software Engineer,Engineering,Junior,5/10/2025,7/1/2025,
+Aethan Kieth,Peñano,Bagasala,,1/30/2003,Male,Single,baethankieth@gmail.com,9051487142,"Bogñabong, Tabaco City",Full-Time,Human Resources Associate ,Human Resources ,Junior,,7/1/2025,Active
+Engelrhand Matthew ,Almayda,Zaragoza,,6/17/2002,Male,Single,zaragozamatthew104@gmail.com,9918257729,"Central City Subd, Legazpi City ",Full-Time,Multimedia Developer Manager,Multimedia,Senior ,,4/12/2024,Active 
+Karl Nestor,Asejo,Buensalida,,11/18/2001,Male,Single,buensalidakarlnestor@gmail.com,9949944837,"Brgy. 18 Cabangan West, Legazpi City",Full-Time,Software Engineer,Engineering,Junior,,,Active
+Jamille,Brecia,Añonuevo,,1/21/2002,Male,Single,anonuevojamille@gmail.com,9936623943,Fidel Surtida Sto. Domingo Albay,,Software Engineer,Engineering,Junior,,,Active
+Ronnie,Figueras,Estillero,,9/8/2001,Male,Single,ronniewarrior09@gmail.com,9506460086,"Purok 2, Cota na Daco, Gubat, Sorsogon",Full-Time,Software Engineer,Engineering,Junior,,7/1/2025,Active
+Kurtney Luv,Duran,Corteza,,9/2/2003,Female,Single,cortezakurtneyluv@gmail.com,9776422645,"Sto. Cristo, Tabaco City",Intern,Multimedia Associate,Multimedia,Junior,,5/13/2025,Active
+Jaycel Joseph,Aycardo,Omanga,,1/25/2003,Male,Single,jayceljosephomanga@gmail.com,9061059091,"Kawit-East Washington Drive Pob., Legazpi City",Full-Time,Software Engineer,Engineering ,Junior ,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+Olivia,Grace,Miller,,9/5/1995,Female,Single,[URL],555-777-8888,303 Cedar Ct,Contract,HR Assistant,Human Resources,Associate,2/1/2024,2/15/2024,Active
