@@ -67,13 +67,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { name: 'Employee Attendance', icon: 'person', path: '/timekeeping-attendance/employee-attendance' }
       ] },
       { name: 'Payroll Management', icon: 'payments', path: '/payroll-management', children: [
-        { name: 'Payroll Overview', icon: 'analytics', path: '/payroll-management/payroll-overview' },
-        { name: 'Master Payroll', icon: 'payments', path: '/payroll-management/master-payroll' },
-        { name: 'Deductions', icon: 'payments', path: '/payroll-management/deductions' },
-        { name: 'Loan Management', icon: 'payments', path: '/payroll-management/loan-management' },
-        { name: 'Payroll Adjustment', icon: 'payments', path: '/payroll-management/payroll-adjustment' },
-        { name: 'Employee Payroll', icon: 'payments', path: '/payroll-management/employee-payroll' },
-        { name: 'Run Payroll', icon: 'payments', path: '/payroll-management/run-payroll' }
+        { name: 'Run Payroll', icon: 'payments', path: '/payroll-management/run-payroll' },
+        { name: 'Payslip Center', icon: 'payments', path: '/payroll-management/payslip-center' },
+        { name: 'Thirteen Month Pay', icon: 'payments', path: '/payroll-management/thirteen-month-pay' },
+        { name: 'Final Pay Process', icon: 'payments', path: '/payroll-management/final-pay-process' }
       ] },
       { name: 'Leave Management', icon: 'event', path: '/leave-management', children: [
         { name: 'Leave Request Management', icon: 'event', path: '/leave-management/leave-request-management' },

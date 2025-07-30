@@ -155,46 +155,28 @@ export const routes: Routes = [
     data: { roles: ['Admin', 'HR', 'Manager'] }
   },
   {
-    path: 'payroll-management/payroll-overview',
-    loadComponent: () => import('./features/payroll-management/payroll-overview/payroll-overview.component').then(m => m.PayrollOverviewComponent),
-    canActivate: [PermissionGuard],
-    data: { roles: ['Admin', 'HR', 'Manager'] }
-  },
-  {
-    path: 'payroll-management/master-payroll',
-    loadComponent: () => import('./features/payroll-management/master-payroll/master-payroll.component').then(m => m.MasterPayrollComponent),
-    canActivate: [PermissionGuard],
-    data: { roles: ['Admin', 'HR', 'Manager'] }
-  },
-  {
-    path: 'payroll-management/deductions',
-    loadComponent: () => import('./features/payroll-management/deductions/deductions.component').then(m => m.DeductionsComponent),
-    canActivate: [PermissionGuard],
-    data: { roles: ['Admin', 'HR', 'Manager'] }
-  },
-  {
-    path: 'payroll-management/loan-management',
-    loadComponent: () => import('./features/payroll-management/loan-management/loan-management.component').then(m => m.LoanManagementComponent),
-    canActivate: [PermissionGuard],
-    data: { roles: ['Admin', 'HR', 'Manager'] }
-  },
-  {
-    path: 'payroll-management/payroll-adjustment',
-    loadComponent: () => import('./features/payroll-management/payroll-adjustment/payroll-adjustment.component').then(m => m.PayrollAdjustmentComponent),
-    canActivate: [PermissionGuard],
-    data: { roles: ['Admin', 'HR', 'Manager'] }
-  },
-  {
     path: 'payroll-management/run-payroll',
     loadComponent: () => import('./features/payroll-management/run-payroll/run-payroll.component').then(m => m.RunPayrollComponent),
     canActivate: [PermissionGuard],
     data: { roles: ['Admin', 'HR', 'Manager'] }
   },
   {
-    path: 'payroll-management/employee-payroll',
-    loadComponent: () => import('./features/payroll-management/employee-payroll/employee-payroll.component').then(m => m.EmployeePayrollComponent),
+    path: 'payroll-management/payslip-center',
+    loadComponent: () => import('./features/payroll-management/payslip-center/payslip-center.component').then(m => m.PayslipCenterComponent),
     canActivate: [PermissionGuard],
-    data: { roles: ['Admin', 'HR', 'Employee', 'Manager'] }
+    data: { roles: ['Admin', 'HR', 'Manager'] }
+  },
+  {
+    path: 'payroll-management/thirteen-month-pay',
+    loadComponent: () => import('./features/payroll-management/thirteen-month-pay/thirteen-month-pay.component').then(m => m.ThirteenMonthPayComponent),
+    canActivate: [PermissionGuard],
+    data: { roles: ['Admin', 'HR', 'Manager'] }
+  },
+  {
+    path: 'payroll-management/final-pay-process',
+    loadComponent: () => import('./features/payroll-management/final-pay-process/final-pay-process.component').then(m => m.FinalPayProcessComponent),
+    canActivate: [PermissionGuard],
+    data: { roles: ['Admin', 'HR', 'Manager'] }
   },
   {
     path: 'leave-management',
