@@ -9,16 +9,24 @@ import { AuthService } from './services/auth.service';
 import { InactivityService } from './services/inactivity.service';
 import { environment } from '../environments/environment';
 
+const PUBLIC_URLS = [
+  '/job-portal/register',
+  '/job-portal/login'
+];
+
 // Create functional interceptors for Angular 18+
 const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  
-  console.log('🔍 Auth Interceptor called for:', req.url);
-  
+
+  // If the request is to a public URL, do not add token
+  if (PUBLIC_URLS.some(url => req.url.includes(url))) {
+    return next(req);
+  }
+
   // Only add auth header for API requests
   if (req.url.startsWith(environment.apiUrl)) {
     const token = authService.getToken();
-    
+
     if (token) {
       console.log('🔐 Adding auth token to request:', req.url);
       const authReq = req.clone({
@@ -29,7 +37,7 @@ const authInterceptor: HttpInterceptorFn = (req, next) => {
       console.warn('❌ No token found for request:', req.url);
     }
   }
-  
+
   return next(req);
 };
 
@@ -51,4 +59,4 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideHttpClient(withInterceptors([authInterceptor, sessionInterceptor]))
   ]
-}; 
+};

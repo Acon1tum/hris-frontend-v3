@@ -34,11 +34,22 @@
               <p class="info-feature-desc">Your personal data and applications are protected with industry-standard security.</p>
             </div>
           </div>
+
+          <!-- Sign-in prompt -->
+          <div class="text-center flex justify-end">
+            <button
+              class="flex items-center justify-center gap-2 rounded-lg h-10 px-6 bg-blue-600 text-white text-sm font-semibold leading-normal tracking-wide hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-150"
+              (click)="goToLogin()"
+            >
+              <span class="material-symbols-outlined text-base">login</span>
+              <span>Already have an account? Sign in</span>
+            </button>
+          </div>
         </div>
       </div>
       <!-- Right: Register Form -->
       <div class="register-form-section">
-        <div class="layout-content-container flex flex-col w-full max-w-2xl pt-12 pl-12 pr-12 pb-5 rounded-2xl animate-fade-in">
+        <div class="layout-content-container flex flex-col w-full max-w-2xl pt-12 pl-12 pr-12 pb-8 rounded-2xl animate-fade-in">
           <div class="text-center mb-8">
             <div class="flex items-center justify-center gap-3 mb-4">
               <img alt="Company Logo" class="h-11 w-11" src="assets/images/QuanbyLogo.png" />
@@ -173,7 +184,7 @@
               </div>
               
               <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1.5" for="contactNumber">Contact Number</label>
+                <label class="block text-xs font-medium text-slate-700 mb-1.5" for="contactNumber">Contact Number *</label>
                 <div class="relative">
                   <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <span class="material-symbols-outlined text-slate-400"> call </span>
@@ -183,9 +194,55 @@
                     id="contactNumber" 
                     name="contactNumber"
                     [(ngModel)]="registerData.contactNumber"
-                    placeholder="Enter your contact number (optional)" 
+                    placeholder="Enter your contact number" 
                     type="tel"
+                    required
+                    [class.border-red-500]="errorMessage && !registerData.contactNumber"
                   />
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-slate-700 mb-1.5" for="currentEmployer">Current Employer</label>
+                  <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <span class="material-symbols-outlined text-slate-400"> business </span>
+                    </div>
+                    <input 
+                      class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 placeholder:text-slate-400 pl-10 pr-3 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
+                      id="currentEmployer" 
+                      name="currentEmployer"
+                      [(ngModel)]="registerData.currentEmployer"
+                      placeholder="Enter your current employer (optional)" 
+                      type="text"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-xs font-medium text-slate-700 mb-1.5" for="highestEducation">Highest Education</label>
+                  <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <span class="material-symbols-outlined text-slate-400"> school </span>
+                    </div>
+                    <select 
+                      class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border border-slate-300 bg-white h-11 pl-10 pr-3 py-2.5 text-sm font-normal leading-normal transition-colors duration-150" 
+                      id="highestEducation" 
+                      name="highestEducation"
+                      [(ngModel)]="registerData.highestEducation"
+                    >
+                      <option value="">Select highest education (optional)</option>
+                      <option value="Elementary">Elementary</option>
+                      <option value="High School">High School</option>
+                      <option value="Vocational">Vocational</option>
+                      <option value="Associate's Degree">Associate's Degree</option>
+                      <option value="Bachelor's Degree">Bachelor's Degree</option>
+                      <option value="Master's Degree">Master's Degree</option>
+                      <option value="Doctorate">Doctorate</option>
+                      <option value="Post-Doctorate">Post-Doctorate</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
@@ -239,7 +296,7 @@
                       <span class="material-symbols-outlined text-lg">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
                     </button>
                   </div>
-                  <p class="text-xs text-slate-500 mt-1">Password must be at least 8 characters long</p>
+                  <p class="text-[10px] text-slate-500 mt-1">Password must be at least 8 characters long</p>
                 </div>
                 <div>
                   <label class="block text-xs font-medium text-slate-700 mb-1.5" for="confirmPassword">Confirm Password *</label>
@@ -302,11 +359,6 @@
             
             <!-- Add this after your submit button, before the closing </form> -->
             <div class="mt-8 text-center space-y-2">
-              <p class="text-xs text-slate-500">
-                Already have an account?
-                <a class="font-medium text-blue-600 hover:text-blue-500 hover:underline cursor-pointer"
-                   (click)="goToLogin()">Sign in</a>
-              </p>
               <p class="text-xs text-slate-500">
                 Back to
                 <a class="font-medium text-blue-600 hover:text-blue-500 hover:underline" href="/login">main login</a>.
