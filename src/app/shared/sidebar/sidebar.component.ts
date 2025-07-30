@@ -72,8 +72,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { name: 'Deductions', icon: 'payments', path: '/payroll-management/deductions' },
         { name: 'Loan Management', icon: 'payments', path: '/payroll-management/loan-management' },
         { name: 'Payroll Adjustment', icon: 'payments', path: '/payroll-management/payroll-adjustment' },
-        { name: 'Payroll Run', icon: 'payments', path: '/payroll-management/payroll-run' },
-        { name: 'Employee Payroll', icon: 'payments', path: '/payroll-management/employee-payroll' }
+        { name: 'Employee Payroll', icon: 'payments', path: '/payroll-management/employee-payroll' },
+        { name: 'Run Payroll', icon: 'payments', path: '/payroll-management/run-payroll' }
       ] },
       { name: 'Leave Management', icon: 'event', path: '/leave-management', children: [
         { name: 'Leave Request Management', icon: 'event', path: '/leave-management/leave-request-management' },

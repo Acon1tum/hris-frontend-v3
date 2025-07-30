@@ -185,8 +185,8 @@ export const routes: Routes = [
     data: { roles: ['Admin', 'HR', 'Manager'] }
   },
   {
-    path: 'payroll-management/payroll-run',
-    loadComponent: () => import('./features/payroll-management/payroll-run/payroll-run.component').then(m => m.PayrollRunComponent),
+    path: 'payroll-management/run-payroll',
+    loadComponent: () => import('./features/payroll-management/run-payroll/run-payroll.component').then(m => m.RunPayrollComponent),
     canActivate: [PermissionGuard],
     data: { roles: ['Admin', 'HR', 'Manager'] }
   },
