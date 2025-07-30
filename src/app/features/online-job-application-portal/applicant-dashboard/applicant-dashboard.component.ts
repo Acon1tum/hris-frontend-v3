@@ -63,6 +63,10 @@ export class ApplicantDashboardComponent implements OnInit, OnDestroy {
   searchTerm = '';
   currentView = 'overview'; // 'overview' | 'applications' | 'profile' | 'settings'
   
+  // Modal state
+  showApplicationModal = false;
+  selectedApplication: JobApplication | null = null;
+  
   // Mock data for demonstration
   private mockApplications: JobApplication[] = [
     {
@@ -287,8 +291,13 @@ export class ApplicantDashboardComponent implements OnInit, OnDestroy {
   }
 
   viewApplication(application: JobApplication) {
-    // Navigate to application details
-    console.log('Viewing application:', application);
+    this.selectedApplication = application;
+    this.showApplicationModal = true;
+  }
+
+  closeApplicationModal() {
+    this.showApplicationModal = false;
+    this.selectedApplication = null;
   }
 
   withdrawApplication(application: JobApplication) {

@@ -1,62 +1,57 @@
 <!-- CareerConnect Interview Page (Angularized) -->
 <div
-  class="relative flex size-full min-h-screen flex-col bg-gray-50 group/design-root overflow-x-hidden"
+  class="relative flex size-full min-h-screen flex-col bg-gray-50 group/design-root overflow-x-hidden layout-bg"
   style="--select-button-svg: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(93,117,137)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e'); font-family: Inter, 'Noto Sans', sans-serif;"
 >
   <div class="layout-container flex h-full grow flex-col">
-    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#eaedf1] px-10 py-3">
-      <div class="flex items-center gap-4 text-[#111518]">
-        <button class="back-btn-ui flex items-center gap-2 text-[#111518] text-sm font-medium px-4 py-1.5 rounded-full border border-gray-300 bg-white hover:bg-gray-100 focus:outline-none transition mb-2" (click)="goBack()">
-          Back
-        </button>
-      </div>
-    </header>
-    <div class="gap-1 px-6 flex flex-1 justify-center py-5">
+    <!-- Back Button at Top -->
+    <div class="flex items-center px-8 pt-6 pb-4">
+      <button 
+        class="back-btn-ui flex items-center gap-2 text-primary text-sm font-medium px-4 py-2 rounded-full border border-gray-300 bg-white hover:bg-gray-100 focus:outline-none transition"
+        (click)="goBack()"
+        aria-label="Go back to applicant dashboard"
+        type="button">
+        Back
+      </button>
+    </div>
+    
+    <div class="gap-1 px-8 flex flex-1 justify-center py-8">
       <div class="layout-content-container flex flex-col max-w-[920px] flex-1">
-        <div class="flex flex-wrap justify-between gap-3 p-4">
-          <p class="text-[#111518] tracking-light text-[32px] font-bold leading-tight min-w-72">My Interviews</p>
+        <div class="flex flex-wrap justify-between gap-3 p-6 section-divider">
+          <p class="text-primary tracking-light text-[2rem] font-bold leading-tight min-w-72">My Interviews</p>
           <button
-            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#eaedf1] text-[#111518] text-sm font-medium leading-normal"
-            (click)="syncCalendar()"
+            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-6 bg-[#eaedf1] text-primary text-base font-medium leading-normal shadow-sm hover:bg-blue-100 transition"
+            (click)="goToCalendar()"
           >
-            <span class="truncate">Sync with External Calendar</span>
+            <span class="truncate">My Interview Calendar</span>
           </button>
         </div>
-        <h3 class="text-[#111518] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Notification Settings</h3>
-        <div class="flex flex-wrap gap-3 p-4">
-          <label
-            class="text-sm font-medium leading-normal flex items-center justify-center rounded-xl border border-[#d5dce2] px-4 h-11 text-[#111518] has-[:checked]:border-[3px] has-[:checked]:px-3.5 has-[:checked]:border-[#c5daeb] relative cursor-pointer"
-          >
+        <h3 class="text-primary text-xl font-bold leading-tight tracking-[-0.015em] px-6 pb-2 pt-6 section-divider">Notification Settings</h3>
+        <div class="flex flex-wrap gap-4 p-6">
+          <label class="notification-label">
             Email Notifications
             <input type="radio" class="invisible absolute" name="notificationType" [(ngModel)]="notificationType" value="email" />
           </label>
-          <label
-            class="text-sm font-medium leading-normal flex items-center justify-center rounded-xl border border-[#d5dce2] px-4 h-11 text-[#111518] has-[:checked]:border-[3px] has-[:checked]:px-3.5 has-[:checked]:border-[#c5daeb] relative cursor-pointer"
-          >
+          <label class="notification-label">
             In-App Alerts
             <input type="radio" class="invisible absolute" name="notificationType" [(ngModel)]="notificationType" value="inapp" />
           </label>
-          <label
-            class="text-sm font-medium leading-normal flex items-center justify-center rounded-xl border border-[#d5dce2] px-4 h-11 text-[#111518] has-[:checked]:border-[3px] has-[:checked]:px-3.5 has-[:checked]:border-[#c5daeb] relative cursor-pointer"
-          >
+          <label class="notification-label">
             Both
             <input type="radio" class="invisible absolute" name="notificationType" [(ngModel)]="notificationType" value="both" />
           </label>
         </div>
-        <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+        <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-6 py-4">
           <label class="flex flex-col min-w-40 flex-1">
-            <p class="text-[#111518] text-base font-medium leading-normal pb-2">Reminder Time</p>
-            <select
-              class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#111518] focus:outline-0 focus:ring-0 border border-[#d5dce2] bg-gray-50 focus:border-[#d5dce2] h-14 bg-[image:--select-button-svg] placeholder:text-[#5d7589] p-[15px] text-base font-normal leading-normal"
-              [(ngModel)]="reminderTime"
-            >
+            <p class="text-primary text-base font-medium leading-normal pb-2">Reminder Time</p>
+            <select class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-primary focus:outline-0 focus:ring-0 border border-[#d5dce2] bg-gray-50 focus:border-[#d5dce2] h-14 bg-[image:--select-button-svg] placeholder:text-[#5d7589] p-[15px] text-base font-normal leading-normal" [(ngModel)]="reminderTime">
               <option value="">Select Reminder Time</option>
               <option *ngFor="let option of reminderOptions" [value]="option.value">{{ option.label }}</option>
             </select>
           </label>
         </div>
-        <div class="flex flex-wrap items-center justify-center gap-6 p-4">
-          <div class="flex min-w-72 max-w-[336px] flex-1 flex-col gap-0.5">
+        <div class="flex flex-wrap items-center justify-center gap-8 p-6 section-divider">
+          <div class="flex min-w-72 max-w-[336px] flex-1 flex-col gap-0.5 calendar-card">
             <div class="relative mb-2 flex items-center">
               <span class="tooltip-trigger flex items-center cursor-pointer group">
                 <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#e0e7ff"/><text x="10" y="15" text-anchor="middle" font-size="12" fill="#2563eb" font-family="Arial, Helvetica, sans-serif">?</text></svg>
@@ -67,28 +62,31 @@
             </div>
             <div class="flex items-center p-1 justify-between">
               <button (click)="prevMonth()">
-                <div class="text-[#111518] flex size-10 items-center justify-center" data-icon="CaretLeft" data-size="18px" data-weight="regular">
+                <div class="text-primary flex size-10 items-center justify-center" data-icon="CaretLeft" data-size="18px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256">
                     <path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path>
                   </svg>
                 </div>
               </button>
-              <p class="text-[#111518] text-base font-bold leading-tight flex-1 text-center cursor-pointer hover:underline" (click)="goToCalendar()">{{ currentMonthLabel }}</p>
+              <p class="text-primary text-lg font-bold flex-1 text-center cursor-pointer hover:underline" (click)="goToCalendar()">{{ currentMonthLabel }}</p>
               <button (click)="nextMonth()">
-                <div class="text-[#111518] flex size-10 items-center justify-center" data-icon="CaretRight" data-size="18px" data-weight="regular">
+                <div class="text-primary flex size-10 items-center justify-center" data-icon="CaretRight" data-size="18px" data-weight="regular">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256">
                     <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
                   </svg>
                 </div>
               </button>
             </div>
-            <div class="grid grid-cols-7">
-              <p *ngFor="let day of weekDays" class="text-[#111518] text-[13px] font-bold leading-normal tracking-[0.015em] flex h-12 w-full items-center justify-center pb-0.5">{{ day }}</p>
+            <div class="grid grid-cols-7 calendar-grid mt-2">
+              <p *ngFor="let day of weekDays" class="text-primary text-[13px] font-bold leading-normal tracking-[0.015em] flex h-12 w-full items-center justify-center pb-0.5">{{ day }}</p>
               <ng-container *ngFor="let blank of blanks">
                 <div></div>
               </ng-container>
               <ng-container *ngFor="let date of daysInMonth">
-                <button [class]="date === 1 ? 'col-start-' + firstDayOfWeek + ' h-12 w-full text-[#111518] text-sm font-medium leading-normal' : 'h-12 w-full text-[#111518] text-sm font-medium leading-normal'" (click)="selectDate(date)" [ngClass]="{'bg-blue-200': isInterviewDate(date)}" [attr.title]="getInterviewTooltip(date)">
+                <button [class]="date === 1 ? 'col-start-' + firstDayOfWeek + ' h-12 w-full text-primary text-sm font-medium leading-normal' : 'h-12 w-full text-primary text-sm font-medium leading-normal'"
+                  (click)="selectDate(date)"
+                  [ngClass]="{'bg-blue-200': isInterviewDate(date), 'interview-day': isInterviewDate(date)}"
+                  [attr.title]="getInterviewTooltip(date)">
                   <div class="flex size-full items-center justify-center rounded-full" [ngClass]="{'bg-[#c5daeb]': date === selectedDate}">{{ date }}</div>
                 </button>
               </ng-container>
@@ -96,35 +94,36 @@
           </div>
         </div>
       </div>
-      <div class="layout-content-container flex flex-col w-[360px]">
-        <h2 class="text-[#111518] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Upcoming Interviews</h2>
-        <div *ngFor="let interview of upcomingInterviews" class="flex items-center gap-4 bg-gray-50 px-4 min-h-[72px] py-2 justify-between">
+      <div class="layout-content-container flex flex-col w-[360px] side-panel">
+        <h2 class="text-primary text-[1.4rem] font-bold leading-tight tracking-[-0.015em] px-6 pb-3 pt-8 section-divider">Upcoming Interviews</h2>
+        <div *ngFor="let interview of upcomingInterviews" class="flex items-center gap-4 bg-gray-50 px-6 min-h-[72px] py-4 justify-between interview-card">
           <div class="flex items-center gap-4">
-            <div class="text-[#111518] flex items-center justify-center rounded-lg bg-[#eaedf1] shrink-0 size-12" data-icon="Briefcase" data-size="24px" data-weight="regular">
+            <div class="text-primary flex items-center justify-center rounded-lg bg-[#eaedf1] shrink-0 size-12" data-icon="Briefcase" data-size="24px" data-weight="regular">
               <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                 <path d="M216,56H176V48a24,24,0,0,0-24-24H104A24,24,0,0,0,80,48v8H40A16,16,0,0,0,24,72V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM96,48a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96ZM216,72v41.61A184,184,0,0,1,128,136a184.07,184.07,0,0,1-88-22.38V72Zm0,128H40V131.64A200.19,200.19,0,0,0,128,152a200.25,200.25,0,0,0,88-20.37V200ZM104,112a8,8,0,0,1,8-8h32a8,8,0,0,1,0,16H112A8,8,0,0,1,104,112Z"></path>
               </svg>
             </div>
             <div class="flex flex-col justify-center">
-              <p class="text-[#111518] text-base font-medium leading-normal line-clamp-1">{{ interview.title }}</p>
-              <p class="text-[#5d7589] text-sm font-normal leading-normal line-clamp-2">{{ interview.time }}</p>
+              <p class="text-primary text-base font-medium leading-normal line-clamp-1">{{ interview.title }}</p>
+              <p class="text-secondary text-sm font-normal leading-normal line-clamp-2">{{ interview.time }}</p>
             </div>
           </div>
           <div class="shrink-0">
-            <button class="text-base font-medium leading-normal" (click)="rescheduleInterview(interview)">Reschedule</button> |
-            <button class="text-base font-medium leading-normal" (click)="cancelInterview(interview)">Cancel</button>
+            <button class="text-base font-medium leading-normal text-blue-700 hover:underline" (click)="rescheduleInterview(interview)">Reschedule</button>
+            <span class="mx-1 text-gray-300">|</span>
+            <button class="text-base font-medium leading-normal text-red-600 hover:underline" (click)="cancelInterview(interview)">Cancel</button>
           </div>
         </div>
-        <h2 class="text-[#111518] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Past Interviews</h2>
-        <div *ngFor="let interview of pastInterviews" class="flex items-center gap-4 bg-gray-50 px-4 min-h-[72px] py-2">
-          <div class="text-[#111518] flex items-center justify-center rounded-lg bg-[#eaedf1] shrink-0 size-12" data-icon="Briefcase" data-size="24px" data-weight="regular">
+        <h2 class="text-primary text-[1.4rem] font-bold leading-tight tracking-[-0.015em] px-6 pb-3 pt-8 section-divider">Past Interviews</h2>
+        <div *ngFor="let interview of pastInterviews" class="flex items-center gap-4 bg-gray-50 px-6 min-h-[72px] py-4 interview-card">
+          <div class="text-primary flex items-center justify-center rounded-lg bg-[#eaedf1] shrink-0 size-12" data-icon="Briefcase" data-size="24px" data-weight="regular">
             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
               <path d="M216,56H176V48a24,24,0,0,0-24-24H104A24,24,0,0,0,80,48v8H40A16,16,0,0,0,24,72V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM96,48a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96ZM216,72v41.61A184,184,0,0,1,128,136a184.07,184.07,0,0,1-88-22.38V72Zm0,128H40V131.64A200.19,200.19,0,0,0,128,152a200.25,200.25,0,0,0,88-20.37V200ZM104,112a8,8,0,0,1,8-8h32a8,8,0,0,1,0,16H112A8,8,0,0,1,104,112Z"></path>
             </svg>
           </div>
           <div class="flex flex-col justify-center">
-            <p class="text-[#111518] text-base font-medium leading-normal line-clamp-1">{{ interview.title }}</p>
-            <p class="text-[#5d7589] text-sm font-normal leading-normal line-clamp-2">{{ interview.time }}</p>
+            <p class="text-primary text-base font-medium leading-normal line-clamp-1">{{ interview.title }}</p>
+            <p class="text-secondary text-sm font-normal leading-normal line-clamp-2">{{ interview.time }}</p>
           </div>
         </div>
       </div>
@@ -133,11 +132,11 @@
 </div>
 
 <!-- Day Summary Modal -->
-<div *ngIf="showDaySummary" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-  <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
-    <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700" (click)="closeDaySummary()">&times;</button>
+<div *ngIf="showDaySummary" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 modal-backdrop">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative modal-content">
+    <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 close-modal-btn" (click)="closeDaySummary()">&times;</button>
     <h3 class="text-lg font-bold mb-4">Interviews on {{ currentMonthLabel }} {{ selectedDate }}</h3>
-    <div *ngFor="let interview of selectedDayInterviews" class="mb-3 p-3 rounded border border-blue-200 bg-blue-50">
+    <div *ngFor="let interview of selectedDayInterviews" class="mb-3 p-3 rounded border border-blue-200 bg-blue-50 interview-summary-card">
       <div class="font-semibold">{{ interview.title }}</div>
       <div class="text-sm text-gray-700">{{ interview.time }}</div>
     </div>
