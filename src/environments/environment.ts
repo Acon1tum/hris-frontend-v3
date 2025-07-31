@@ -15,7 +15,7 @@ export const environment = {
     userKey: 'hris_user'
   },
   session: {
-    inactivityTimeout: 5 * 60 * 1000, // 30 minutes in milliseconds
+    inactivityTimeout: 60 * 60 * 1000, // 30 minutes in milliseconds
     warningTime: 1 * 60 * 1000, // 5 minutes warning before logout
     checkInterval: 1000 // Check every second
   },
