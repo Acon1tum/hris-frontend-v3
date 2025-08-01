@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <div class="job-cards-panel">
+  <div class="job-cards-panel" [class.loading]="loading">
     <!-- Loading State -->
     <div *ngIf="loading && jobs.length === 0" class="loading-state">
       <div class="loading-spinner"></div>
@@ -241,11 +241,13 @@
               [disabled]="loading"
             >
               <option value="" disabled selected>Select type</option>
-              <option value="Regular">Regular</option>
+              <option value="Full_Time">Full Time</option>
+              <option value="Part_time">Part Time</option>
               <option value="Contractual">Contractual</option>
-              <option value="Part_time">Part-time</option>
-              <option value="Temporary">Temporary</option>
               <option value="Consultant">Consultant</option>
+              <option value="Intern">Intern</option>
+              <option value="Probationary">Probationary</option>
+              <option value="OJT">OJT</option>
             </select>
           </div>
           <div class="form-row">
@@ -293,6 +295,7 @@
         <button 
           type="submit" 
           class="save-btn" 
+          [class.loading]="loading"
           [disabled]="!jobForm.form.valid || loading"
         >
           <span *ngIf="loading" class="loading-spinner"></span>

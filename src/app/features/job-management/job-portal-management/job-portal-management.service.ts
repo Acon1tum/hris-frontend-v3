@@ -65,7 +65,7 @@ export class JobPortalManagementService {
   constructor(private http: HttpClient) {}
 
   // Get all job postings
-  getAllJobPostings(page: number = 1, limit: number = 10, filters?: any): Observable<ApiResponse<JobPosting[]>> {
+  getAllJobPostings(page: number = 1, limit: number = 100, filters?: any): Observable<ApiResponse<JobPosting[]>> {
     let params = `?page=${page}&limit=${limit}`;
     
     if (filters) {
@@ -74,49 +74,64 @@ export class JobPortalManagementService {
       if (filters.search) params += `&search=${filters.search}`;
     }
     
+    // Add all=true parameter to get all jobs without pagination
+    params += '&all=true';
+    
     return this.http.get<ApiResponse<JobPosting[]>>(`${this.apiUrl}/jobs${params}`);
   }
 
-  // Get specific job posting
+  // Get all job postings without any limits (for testing)
+  getAllJobPostingsUnlimited(): Observable<ApiResponse<JobPosting[]>> {
+    const params = '?all=true&limit=10000'; // Very high limit to get all jobs
+    return this.http.get<ApiResponse<JobPosting[]>>(`${this.apiUrl}/jobs${params}`);
+  }
+
+  // ===== GET JOB POSTING BY ID =====
   getJobPosting(id: string): Observable<ApiResponse<JobPosting>> {
+    console.log('Service: Getting job posting by ID:', id);
     return this.http.get<ApiResponse<JobPosting>>(`${this.apiUrl}/jobs/${id}`);
   }
 
-  // Create new job posting
+  // ===== CREATE JOB POSTING =====
   createJobPosting(job: Partial<JobPosting>): Observable<ApiResponse<JobPosting>> {
+    console.log('Service: Creating new job posting');
+    console.log('Job data:', job);
     return this.http.post<ApiResponse<JobPosting>>(`${this.apiUrl}/jobs`, job);
   }
 
-  // Update job posting
+  // ===== UPDATE JOB POSTING =====
   updateJobPosting(id: string, job: Partial<JobPosting>): Observable<ApiResponse<JobPosting>> {
-    console.log('Service: Updating job posting:', id, 'with data:', job);
+    console.log('Service: Updating job posting');
+    console.log('Job ID:', id);
+    console.log('Update data:', job);
     return this.http.put<ApiResponse<JobPosting>>(`${this.apiUrl}/jobs/${id}`, job);
   }
 
-  // Update job posting status
-  updateJobPostingStatus(id: string, status: string): Observable<ApiResponse<JobPosting>> {
-    return this.http.patch<ApiResponse<JobPosting>>(`${this.apiUrl}/jobs/${id}/status`, { status });
-  }
-
-  // Delete job posting
+  // ===== DELETE JOB POSTING =====
   deleteJobPosting(id: string): Observable<ApiResponse<any>> {
+    console.log('Service: Deleting job posting');
+    console.log('Job ID:', id);
     return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/jobs/${id}`);
   }
 
-  // Get departments
+  // ===== UPDATE JOB POSTING STATUS =====
+  updateJobPostingStatus(id: string, status: string): Observable<ApiResponse<JobPosting>> {
+    console.log('Service: Updating job posting status');
+    console.log('Job ID:', id, 'New status:', status);
+    return this.http.patch<ApiResponse<JobPosting>>(`${this.apiUrl}/jobs/${id}/status`, { status });
+  }
+
+  // ===== GET DEPARTMENTS =====
   getDepartments(): Observable<ApiResponse<Department[]>> {
-    console.log('Service: Getting departments from:', `${this.apiUrl}/departments`);
+    console.log('Service: Getting departments');
+    console.log('Request URL:', `${this.apiUrl}/departments`);
     return this.http.get<ApiResponse<Department[]>>(`${this.apiUrl}/departments`);
   }
 
-  // Get salary ranges
+  // ===== GET SALARY RANGES =====
   getSalaryRanges(): Observable<ApiResponse<SalaryRange[]>> {
-    console.log('Service: Getting salary ranges from:', `${this.apiUrl}/salary-ranges`);
+    console.log('Service: Getting salary ranges');
+    console.log('Request URL:', `${this.apiUrl}/salary-ranges`);
     return this.http.get<ApiResponse<SalaryRange[]>>(`${this.apiUrl}/salary-ranges`);
-  }
-
-  // Get dashboard data
-  getDashboard(): Observable<ApiResponse<any>> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/dashboard`);
   }
 }
