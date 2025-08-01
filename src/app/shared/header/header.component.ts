@@ -122,7 +122,14 @@ export class HeaderComponent implements OnInit {
    */
   get headerDynamicStyle() {
     const margin = this.isMobile ? '0.5rem' : '1.5rem';
-    const sidebarWidth = this.isSidebarCollapsed ? '80px' : '290px';
+    
+    // Get current user to check if they are an Applicant
+    const currentUser = this.authService.getCurrentUser();
+    const isApplicant = currentUser && (currentUser.role === 'Applicant' || currentUser.roles?.includes('Applicant'));
+    
+    // Adjust sidebar width based on user role
+    const sidebarWidth = this.isSidebarCollapsed ? '80px' : (isApplicant ? '230px' : '290px');
+    
     return {
       left: sidebarWidth,
       width: `calc(100vw - ${sidebarWidth} - (${margin} * 2))`,
