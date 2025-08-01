@@ -156,8 +156,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
       { name: 'Health & Wellness', icon: 'health_and_safety', path: 'https://quanby-health-care.vercel.app/', external: true, target: '_blank' }
     ],
     Applicant: [
-      { name: 'Job Portal', icon: 'work', path: '/online-job-application-portal' },
-      { name: 'Applicant Dashboard', icon: 'dashboard', path: '/applicant-dashboard' }
+      { name: 'Applicant Dashboard', icon: 'dashboard', path: '/applicant-dashboard' },
+      { name: 'Job Portal', icon: 'work', path: '/online-job-application-portal' }
     ]
   };
 

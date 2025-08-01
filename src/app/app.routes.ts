@@ -227,6 +227,8 @@ export const routes: Routes = [
   {
     path: 'applicant-dashboard',
     loadComponent: () => import('./features/online-job-application-portal/applicant-dashboard/applicant-dashboard.component').then(m => m.ApplicantDashboardComponent),
+    canActivate: [PermissionGuard],
+    data: { roles: ['Applicant'] }
   },
   {
     path: 'online-job-login',

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { InterviewService, InterviewInfo } from './interview.service';
@@ -40,7 +40,7 @@ interface RecentActivity {
 @Component({
   selector: 'app-applicant-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderComponent],
+  imports: [CommonModule, FormsModule, HeaderComponent, RouterModule],
   templateUrl: './applicant-dashboard.component.html',
   styleUrls: ['./applicant-dashboard.component.scss']
 })
@@ -316,7 +316,7 @@ export class ApplicantDashboardComponent implements OnInit, OnDestroy {
   }
 
   browseJobs() {
-    this.router.navigate(['/online-job-portal']);
+    this.router.navigate(['/online-job-application-portal']);
   }
 
   goToInterviews() {

@@ -134,6 +134,10 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  setCurrentUser(user: User): void {
+    this.currentUserSubject.next(user);
+  }
+
   isAuthenticated(): boolean {
     const token = localStorage.getItem(environment.auth.tokenKey);
     const user = this.currentUserSubject.value;

@@ -11,20 +11,20 @@ import { environment } from '../environments/environment';
 
 const PUBLIC_URLS = [
   '/job-portal/register',
-  '/job-portal/login'
+  '/job-portal/login',
+  '/auth/login',
+  '/auth/register'
 ];
 
 // Create functional interceptors for Angular 18+
 const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
 
-  // If the request is to a public URL, do not add token
-  if (PUBLIC_URLS.some(url => req.url.includes(url))) {
-    return next(req);
-  }
-
-  // Only add auth header for API requests
-  if (req.url.startsWith(environment.apiUrl)) {
+  // Check if this is a public URL that doesn't need authentication
+  const isPublicUrl = PUBLIC_URLS.some(url => req.url.includes(url));
+  
+  // Only add auth header for API requests that are not public
+  if (req.url.startsWith(environment.apiUrl) && !isPublicUrl) {
     const token = authService.getToken();
 
     if (token) {
