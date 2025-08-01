@@ -262,8 +262,18 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   logout() {
+    // Get current user before logout
+    const currentUser = this.authService.getCurrentUser();
+    const isApplicant = currentUser && currentUser.role === 'Applicant';
+    
     this.authService.logout();
-    this.router.navigate(['/login']);
+    
+    // Redirect based on user role
+    if (isApplicant) {
+      this.router.navigate(['/online-job-login']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 
   showTooltip(event: MouseEvent, text: string) {
