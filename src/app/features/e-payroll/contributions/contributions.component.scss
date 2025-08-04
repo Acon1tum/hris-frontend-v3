@@ -1,0 +1,797 @@
+// Custom styles for contributions component
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+// Ensure proper font loading
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900&display=swap');
+
+// Fade in animation for tab transitions
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+// Custom scrollbar
+.layout-content-container {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #a8a8a8;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 1200px) {
+  .layout-content-container {
+    max-width: 100%;
+    margin-inline: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout-content-container {
+    margin-inline: 0.5rem;
+  }
+  
+  .min-w-72 {
+    min-width: 100%;
+  }
+  
+  .flex-wrap {
+    flex-direction: column;
+  }
+  
+  .grid-mobile-1 {
+    grid-template-columns: 1fr;
+  }
+  
+  .text-lg-mobile {
+    font-size: 16px;
+  }
+  
+  .text-28-mobile {
+    font-size: 24px;
+  }
+  
+  .text-20-mobile {
+    font-size: 18px;
+  }
+  
+  .p-3-mobile {
+    padding: 0.75rem;
+  }
+  
+  .p-4-mobile {
+    padding: 1rem;
+  }
+  
+  .gap-4-mobile {
+    gap: 0.75rem;
+  }
+  
+  .mb-6-mobile {
+    margin-bottom: 1.5rem;
+  }
+  
+  .mb-4-mobile {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .layout-content-container {
+    margin-inline: 0.25rem;
+  }
+  
+  .p-3-mobile {
+    padding: 0.5rem;
+  }
+  
+  .p-4-mobile {
+    padding: 0.75rem;
+  }
+  
+  .gap-4-mobile {
+    gap: 0.5rem;
+  }
+  
+  .flex-column-mobile {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .flex-column-mobile button {
+    width: 100%;
+  }
+}
+
+// Chart animation
+svg {
+  transition: all 0.3s ease-in-out;
+}
+
+// Hover effects
+button:hover {
+  transform: translateY(-1px);
+  transition: transform 0.2s ease;
+}
+
+a:hover {
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+// Tab hover effect
+.layout-content-container a {
+  position: relative;
+  overflow: hidden;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background-color: #0b80ee;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+  }
+  
+  &:hover::after {
+    width: 100%;
+  }
+}
+
+// Card hover
+.rounded-xl,
+.rounded-lg {
+  transition: all 0.2s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+}
+
+// Button styling
+button {
+  transition: all 0.2s ease;
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// Vertical spacing
+.space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+// Focus state
+button:focus,
+a:focus {
+  outline: 2px solid #0b80ee;
+  outline-offset: 2px;
+}
+
+// Grid display
+.grid {
+  display: grid;
+}
+
+// Overflow
+.overflow-x-auto {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+// Background
+.bg-white {
+  background-color: #ffffff;
+}
+
+// Custom colors
+.border-custom-1 {
+  border-color: #cedce8;
+}
+.border-custom-2 {
+  border-color: #e7edf4;
+}
+.text-dark {
+  color: #0d151c;
+}
+.text-muted {
+  color: #49749c;
+}
+.text-primary {
+  color: #0b80ee;
+}
+.bg-light {
+  background-color: #e7edf4;
+}
+.bg-primary {
+  background-color: #0b80ee;
+}
+
+// Hover colors
+.hover-bg-light:hover {
+  background-color: #d1d9e6;
+}
+.hover-bg-dark:hover {
+  background-color: #0966c0;
+}
+.hover-text-dark:hover {
+  color: #0966c0;
+}
+.hover-bg-soft:hover {
+  background-color: #f8f9fa;
+}
+
+// Contribution-specific styles
+.contribution-card {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.contribution-breakdown {
+  .contribution-item {
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: #f8f9fa;
+    }
+  }
+}
+
+// Status indicators
+.status-badge {
+  &.paid {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+  
+  &.pending {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+  
+  &.processing {
+    background-color: #dbeafe;
+    color: #1e40af;
+  }
+}
+
+// Yearly summary chart
+.yearly-chart {
+  .chart-bar {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      opacity: 0.8;
+      transform: scaleY(1.05);
+    }
+  }
+}
+
+// BIR 2316 section
+.bir-section {
+  .download-card {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(11, 128, 238, 0.15);
+    }
+  }
+}
+
+// Filter panel
+.filter-panel {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive grid adjustments
+@media (max-width: 1024px) {
+  .grid-cols-1.lg\:grid-cols-2.xl\:grid-cols-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-cols-1.lg\:grid-cols-2.xl\:grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Print styles
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-friendly {
+    background: white !important;
+    color: black !important;
+  }
+}
+
+// Chart-specific styles
+.chart-container {
+  min-height: 300px;
+  position: relative;
+}
+
+.chart-container .grid {
+  align-items: end;
+}
+
+.chart-container .bg-gray-200 {
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-container .bg-gray-200 > div {
+  transition: height 0.8s ease-in-out;
+  position: relative;
+}
+
+.chart-container .bg-gray-200 > div::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+}
+
+// Pie chart animations
+.chart-container svg circle {
+  transition: stroke-dasharray 0.8s ease-in-out;
+}
+
+// Chart controls
+.chart-controls {
+  .rounded-full {
+    transition: all 0.2s ease;
+  }
+  
+  button:hover {
+    transform: translateY(-1px);
+  }
+}
+
+// Responsive chart adjustments
+@media (max-width: 768px) {
+  .chart-container {
+    min-height: 200px;
+  }
+  
+  .chart-container .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .chart-container .w-64 {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-container .grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .chart-container .w-64 {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+// Chart legend responsive
+@media (max-width: 640px) {
+  .chart-container .grid-cols-2.md\:grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// Chart type selector responsive
+@media (max-width: 768px) {
+  .chart-controls .flex-wrap {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .chart-controls .flex-wrap > div {
+    width: 100%;
+  }
+  
+  .chart-controls .flex.h-10 {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+// Chart data cards responsive
+@media (max-width: 1024px) {
+  .grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Chart animations
+@keyframes chartBarGrow {
+  from {
+    height: 0%;
+  }
+  to {
+    height: var(--target-height);
+  }
+}
+
+.chart-container .bg-gray-200 > div {
+  animation: chartBarGrow 0.8s ease-out;
+}
+
+// Chart hover effects
+.chart-container .bg-gray-200:hover > div {
+  transform: scaleY(1.05);
+  transition: transform 0.2s ease;
+}
+
+// Chart tooltips (if needed)
+.chart-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.chart-container .bg-gray-200:hover .chart-tooltip {
+  opacity: 1;
+}
+
+// Print styles for charts
+@media print {
+  .chart-container {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  .chart-controls {
+    display: none !important;
+  }
+  
+  .chart-container .bg-gray-200 > div {
+    animation: none;
+  }
+}
+
+// Unified dashboard layout responsive styles
+.unified-dashboard {
+  .grid-cols-1.xl\:grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  @media (min-width: 1280px) {
+    .grid-cols-1.xl\:grid-cols-3 {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+}
+
+// Monthly contributions section responsive
+.monthly-section {
+  .max-h-96 {
+    max-height: 24rem;
+  }
+  
+  @media (max-width: 1024px) {
+    .grid-cols-1.lg\:grid-cols-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .max-h-96 {
+      max-height: 20rem;
+    }
+  }
+}
+
+// Yearly summary section responsive
+.yearly-summary-section {
+  .space-y-3 > * + * {
+    margin-top: 0.75rem;
+  }
+  
+  @media (max-width: 1280px) {
+    .space-y-3 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+    
+    .space-y-3 > * + * {
+      margin-top: 0;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .space-y-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// BIR 2316 section responsive
+.bir-section {
+  .grid-cols-1.lg\:grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  @media (min-width: 1024px) {
+    .grid-cols-1.lg\:grid-cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+// Overall layout responsive adjustments
+@media (max-width: 1400px) {
+  .layout-content-container {
+    max-width: 100%;
+    margin-inline: 1rem;
+  }
+}
+
+@media (max-width: 1280px) {
+  .grid-cols-1.xl\:grid-cols-3 {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .xl\:col-span-2,
+  .xl\:col-span-1 {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout-content-container {
+    margin-inline: 0.5rem;
+  }
+  
+  .p-3 {
+    padding: 0.75rem;
+  }
+  
+  .p-6 {
+    padding: 1rem;
+  }
+  
+  .gap-6 {
+    gap: 1rem;
+  }
+  
+  .text-lg {
+    font-size: 1.125rem;
+  }
+  
+  .text-xl {
+    font-size: 1.25rem;
+  }
+  
+  .text-2xl {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .layout-content-container {
+    margin-inline: 0.25rem;
+  }
+  
+  .p-3 {
+    padding: 0.5rem;
+  }
+  
+  .p-6 {
+    padding: 0.75rem;
+  }
+  
+  .gap-6 {
+    gap: 0.75rem;
+  }
+  
+  .text-lg {
+    font-size: 1rem;
+  }
+  
+  .text-xl {
+    font-size: 1.125rem;
+  }
+  
+  .text-2xl {
+    font-size: 1.25rem;
+  }
+  
+  .flex-wrap {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .flex-wrap > div {
+    width: 100%;
+  }
+}
+
+// Card hover effects for unified layout
+.bg-white.rounded-lg.border {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Scrollable content areas
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #a8a8a8;
+    }
+  }
+}
+
+// Progress bar animations for yearly summary
+.progress-bar {
+  transition: width 0.8s ease-in-out;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+  }
+}
+
+// Unified layout animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.unified-dashboard > div {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.unified-dashboard > div:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.unified-dashboard > div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.unified-dashboard > div:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+// Print styles for unified layout
+@media print {
+  .unified-dashboard {
+    display: block !important;
+  }
+  
+  .unified-dashboard > div {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 2rem;
+  }
+  
+  .overflow-y-auto {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  
+  .bg-white.rounded-lg.border {
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+  }
+}

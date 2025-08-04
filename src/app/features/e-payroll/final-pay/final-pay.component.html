@@ -1,0 +1,287 @@
+<div class="final-pay-container">
+  <div class="final-pay-content">
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">🔚 Final Pay</h1>
+        <p class="page-description">Review last payout and clearance for resigned/terminated employees.</p>
+      </div>
+    </div>
+
+    <!-- Employee Information -->
+    <div class="employee-info-section">
+      <div class="employee-card">
+        <div class="employee-details">
+          <div class="employee-name">{{ currentFinalPay.employeeName }}</div>
+          <div class="employee-id">ID: {{ currentFinalPay.employeeId }}</div>
+        </div>
+        <div class="status-badge" [style.background-color]="getStatusBgColor(currentFinalPay.status)" [style.color]="getStatusColor(currentFinalPay.status)">
+          {{ currentFinalPay.status }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-section">
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="card-icon">💰</div>
+          <div class="card-content">
+            <h3>Total Final Pay</h3>
+            <div class="amount">{{ formatCurrency(currentFinalPay.totalAmount) }}</div>
+            <div class="subtitle">Gross amount</div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-icon">💸</div>
+          <div class="card-content">
+            <h3>Net Final Pay</h3>
+            <div class="amount">{{ formatCurrency(currentFinalPay.breakdown.netFinalPay) }}</div>
+            <div class="subtitle">After deductions</div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-icon">📅</div>
+          <div class="card-content">
+            <h3>Last Working Day</h3>
+            <div class="amount">{{ formatDate(currentFinalPay.lastWorkingDay) }}</div>
+            <div class="subtitle">Resignation date</div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-icon">✅</div>
+          <div class="card-content">
+            <h3>Clearance Progress</h3>
+            <div class="amount">{{ getClearedItems() }}/{{ getTotalClearanceItems() }}</div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getClearanceProgress()"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final Pay Breakdown -->
+    <div class="breakdown-section">
+      <h2 class="section-title">Final Pay Breakdown</h2>
+      <div class="breakdown-grid">
+        <div class="breakdown-item">
+          <label>Basic Salary</label>
+          <span>{{ formatCurrency(currentFinalPay.breakdown.basicSalary) }}</span>
+        </div>
+        <div class="breakdown-item">
+          <label>Prorated Salary</label>
+          <span>{{ formatCurrency(currentFinalPay.breakdown.proratedSalary) }}</span>
+        </div>
+        <div class="breakdown-item">
+          <label>Unused Leaves ({{ currentFinalPay.breakdown.unusedLeaves }} days)</label>
+          <span>{{ formatCurrency(currentFinalPay.breakdown.leaveMonetization) }}</span>
+        </div>
+        <div class="breakdown-item">
+          <label>Overtime</label>
+          <span>{{ formatCurrency(currentFinalPay.breakdown.overtime) }}</span>
+        </div>
+        <div class="breakdown-item">
+          <label>Allowances</label>
+          <span>{{ formatCurrency(currentFinalPay.breakdown.allowances) }}</span>
+        </div>
+        <div class="breakdown-item">
+          <label>Bonuses</label>
+          <span>{{ formatCurrency(currentFinalPay.breakdown.bonuses) }}</span>
+        </div>
+        <div class="breakdown-item total">
+          <label>Total Earnings</label>
+          <span>{{ formatCurrency(currentFinalPay.totalAmount) }}</span>
+        </div>
+        <div class="breakdown-item deduction">
+          <label>Deductions</label>
+          <span>-{{ formatCurrency(currentFinalPay.breakdown.deductions) }}</span>
+        </div>
+        <div class="breakdown-item deduction">
+          <label>Tax Withholding</label>
+          <span>-{{ formatCurrency(currentFinalPay.breakdown.taxWithholding) }}</span>
+        </div>
+        <div class="breakdown-item deduction">
+          <label>Other Deductions</label>
+          <span>-{{ formatCurrency(currentFinalPay.breakdown.otherDeductions) }}</span>
+        </div>
+        <div class="breakdown-item net">
+          <label>Net Final Pay</label>
+          <span>{{ formatCurrency(currentFinalPay.breakdown.netFinalPay) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leave Balance -->
+    <div class="leave-section">
+      <h2 class="section-title">Leave Balance & Monetization</h2>
+      <div class="table-container">
+        <div class="table-wrapper">
+          <table class="leave-table">
+            <thead>
+              <tr>
+                <th>Leave Type</th>
+                <th>Total Days</th>
+                <th>Used Days</th>
+                <th>Remaining Days</th>
+                <th>Rate/Day</th>
+                <th>Monetization</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let leave of leaveBalances">
+                <td>{{ leave.leaveType }}</td>
+                <td>{{ leave.totalDays }}</td>
+                <td>{{ leave.usedDays }}</td>
+                <td>{{ leave.remainingDays }}</td>
+                <td>{{ formatCurrency(leave.monetizationRate) }}</td>
+                <td class="monetization">{{ formatCurrency(leave.monetizationAmount) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="total-monetization">
+        <strong>Total Leave Monetization: {{ formatCurrency(getTotalLeaveMonetization()) }}</strong>
+      </div>
+    </div>
+
+    <!-- Clearance Items -->
+    <div class="clearance-section">
+      <h2 class="section-title">Clearance Items</h2>
+      <div class="clearance-summary">
+        <div class="clearance-stats">
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalClearanceItems() }}</span>
+            <span class="stat-label">Total Items</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number cleared">{{ getClearedItems() }}</span>
+            <span class="stat-label">Cleared</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number pending">{{ getPendingItems() }}</span>
+            <span class="stat-label">Pending</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <div class="table-wrapper">
+          <table class="clearance-table">
+            <thead>
+              <tr>
+                <th>Department</th>
+                <th>Item</th>
+                <th>Status</th>
+                <th>Cleared By</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of currentFinalPay.clearanceItems">
+                <td>{{ item.department }}</td>
+                <td>{{ item.item }}</td>
+                <td>
+                  <span class="status-badge" [style.background-color]="getStatusBgColor(item.status)" [style.color]="getStatusColor(item.status)">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td>{{ item.clearedBy || 'N/A' }}</td>
+                <td>{{ item.clearedDate ? formatDate(item.clearedDate) : 'N/A' }}</td>
+                <td>
+                  <button class="view-details-btn" (click)="viewClearanceDetails(item)">
+                    <span>View Details</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Important Dates -->
+    <div class="dates-section">
+      <h2 class="section-title">Important Dates</h2>
+      <div class="dates-grid">
+        <div class="date-item">
+          <label>Resignation Date</label>
+          <span>{{ formatDate(currentFinalPay.resignationDate) }}</span>
+        </div>
+        <div class="date-item">
+          <label>Last Working Day</label>
+          <span>{{ formatDate(currentFinalPay.lastWorkingDay) }}</span>
+        </div>
+        <div class="date-item">
+          <label>Expected Clearance Date</label>
+          <span>{{ formatDate(currentFinalPay.clearanceDate) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Remarks -->
+    <div class="remarks-section" *ngIf="currentFinalPay.remarks">
+      <h2 class="section-title">Remarks</h2>
+      <div class="remarks-content">
+        <p>{{ currentFinalPay.remarks }}</p>
+      </div>
+    </div>
+
+    <!-- Action Section -->
+    <div class="action-section">
+      <button class="download-btn payslip" (click)="downloadFinalPayslip()">
+        <span>📄 Download Final Payslip</span>
+      </button>
+      <button class="download-btn clearance" (click)="downloadClearanceReport()">
+        <span>📋 Download Clearance Report</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Clearance Details Modal -->
+  <div class="modal-overlay" *ngIf="showClearanceModal" (click)="closeClearanceModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Clearance Details</h2>
+        <button class="close-btn" (click)="closeClearanceModal()">
+          <span>&times;</span>
+        </button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedClearanceItem">
+        <div class="clearance-details">
+          <div class="detail-item">
+            <label>Department</label>
+            <span>{{ selectedClearanceItem.department }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Item</label>
+            <span>{{ selectedClearanceItem.item }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Status</label>
+            <span class="status-badge" [style.background-color]="getStatusBgColor(selectedClearanceItem.status)" [style.color]="getStatusColor(selectedClearanceItem.status)">
+              {{ selectedClearanceItem.status }}
+            </span>
+          </div>
+          <div class="detail-item" *ngIf="selectedClearanceItem.clearedBy">
+            <label>Cleared By</label>
+            <span>{{ selectedClearanceItem.clearedBy }}</span>
+          </div>
+          <div class="detail-item" *ngIf="selectedClearanceItem.clearedDate">
+            <label>Cleared Date</label>
+            <span>{{ formatDate(selectedClearanceItem.clearedDate) }}</span>
+          </div>
+          <div class="detail-item" *ngIf="selectedClearanceItem.remarks">
+            <label>Remarks</label>
+            <span>{{ selectedClearanceItem.remarks }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

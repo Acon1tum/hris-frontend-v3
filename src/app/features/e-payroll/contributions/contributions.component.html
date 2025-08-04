@@ -1,0 +1,665 @@
+<div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
+  <div class="layout-container flex h-full grow flex-col">
+    <div class="flex flex-1 justify-center py-3">
+      <div class="layout-content-container flex flex-col max-w-[1400px] flex-1 mx-4">
+        <div class="flex flex-wrap justify-between gap-3 p-3">
+          <div class="flex items-center gap-3">
+            <div>
+              <p class="text-[#0d151c] tracking-light text-[28px] font-bold leading-tight">🏛️ Contributions</p>
+              <p class="text-[#49749c] text-sm">Track personal government deductions</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div class="pb-2">
+          <div class="flex border-b border-[#cedce8] px-3 gap-6">
+            <a 
+              class="flex flex-col items-center justify-center border-b-[3px] pb-[10px] pt-3 cursor-pointer transition-all duration-200"
+              [class.border-b-[#0b80ee]]="activeTab === 'Monthly View'"
+              [class.border-b-transparent]="activeTab !== 'Monthly View'"
+              [class.text-[#0d151c]]="activeTab === 'Monthly View'"
+              [class.text-[#49749c]]="activeTab !== 'Monthly View'"
+              (click)="onTabChange('Monthly View')"
+            >
+              <p class="text-sm font-bold leading-normal tracking-[0.015em]">Monthly View</p>
+            </a>
+            <a 
+              class="flex flex-col items-center justify-center border-b-[3px] pb-[10px] pt-3 cursor-pointer transition-all duration-200"
+              [class.border-b-[#0b80ee]]="activeTab === 'Yearly Summary'"
+              [class.border-b-transparent]="activeTab !== 'Yearly Summary'"
+              [class.text-[#0d151c]]="activeTab === 'Yearly Summary'"
+              [class.text-[#49749c]]="activeTab !== 'Yearly Summary'"
+              (click)="onTabChange('Yearly Summary')"
+            >
+              <p class="text-sm font-bold leading-normal tracking-[0.015em]">Yearly Summary</p>
+            </a>
+            <a 
+              class="flex flex-col items-center justify-center border-b-[3px] pb-[10px] pt-3 cursor-pointer transition-all duration-200"
+              [class.border-b-[#0b80ee]]="activeTab === 'BIR 2316'"
+              [class.border-b-transparent]="activeTab !== 'BIR 2316'"
+              [class.text-[#0d151c]]="activeTab === 'BIR 2316'"
+              [class.text-[#49749c]]="activeTab !== 'BIR 2316'"
+              (click)="onTabChange('BIR 2316')"
+            >
+              <p class="text-sm font-bold leading-normal tracking-[0.015em]">BIR 2316</p>
+            </a>
+          </div>
+        </div>
+
+        <!-- Monthly View Tab -->
+        <div *ngIf="activeTab === 'Monthly View'" class="animate-fadeIn">
+          <!-- Monthly Contributions Section -->
+          <div class="p-3">
+            <div class="bg-white rounded-lg border border-[#cedce8] p-6">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-[#0d151c] text-lg font-bold">Monthly Contributions View</h3>
+                <div class="flex gap-2">
+                  <button 
+                    (click)="toggleFilters()"
+                    class="flex items-center gap-2 px-3 py-2 bg-[#e7edf4] text-[#0d151c] rounded-lg hover:bg-[#d1d9e6] transition-colors text-sm"
+                  >
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd"/>
+                    </svg>
+                    {{ showFilters ? 'Hide' : 'Show' }} Filters
+                  </button>
+                  <button 
+                    (click)="clearFilters()"
+                    class="px-3 py-2 bg-[#f8f9fa] text-[#49749c] rounded-lg hover:bg-[#e9ecef] transition-colors text-sm"
+                  >
+                    Clear All
+                  </button>
+                </div>
+              </div>
+
+              <!-- Filter Panel -->
+              <div *ngIf="showFilters" class="mb-6 p-4 bg-[#f8f9fa] rounded-lg border border-[#e7edf4] animate-fadeIn">
+                <h4 class="text-[#0d151c] font-semibold mb-3">Filter Contributions</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <!-- Year Filter -->
+                  <div>
+                    <label class="block text-[#49749c] text-sm font-medium mb-2">Year</label>
+                    <select 
+                      [(ngModel)]="filterOptions.year"
+                      class="w-full px-3 py-2 border border-[#cedce8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0b80ee] focus:border-transparent"
+                    >
+                      <option [value]="null">All Years</option>
+                      <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
+                    </select>
+                  </div>
+
+                  <!-- Month Filter -->
+                  <div>
+                    <label class="block text-[#49749c] text-sm font-medium mb-2">Month</label>
+                    <select 
+                      [(ngModel)]="filterOptions.month"
+                      class="w-full px-3 py-2 border border-[#cedce8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0b80ee] focus:border-transparent"
+                    >
+                      <option [value]="null">All Months</option>
+                      <option *ngFor="let month of availableMonths" [value]="month">{{ month }}</option>
+                    </select>
+                  </div>
+
+                  <!-- Status Filter -->
+                  <div>
+                    <label class="block text-[#49749c] text-sm font-medium mb-2">Status</label>
+                    <select 
+                      [(ngModel)]="filterOptions.status"
+                      class="w-full px-3 py-2 border border-[#cedce8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0b80ee] focus:border-transparent"
+                    >
+                      <option [value]="null">All Status</option>
+                      <option *ngFor="let status of availableStatuses" [value]="status">{{ status | titlecase }}</option>
+                    </select>
+                  </div>
+
+                  <!-- Amount Range -->
+                  <div>
+                    <label class="block text-[#49749c] text-sm font-medium mb-2">Min Amount</label>
+                    <input 
+                      type="number" 
+                      [(ngModel)]="filterOptions.minAmount"
+                      placeholder="Min amount"
+                      class="w-full px-3 py-2 border border-[#cedce8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0b80ee] focus:border-transparent"
+                    >
+                  </div>
+
+                  <div>
+                    <label class="block text-[#49749c] text-sm font-medium mb-2">Max Amount</label>
+                    <input 
+                      type="number" 
+                      [(ngModel)]="filterOptions.maxAmount"
+                      placeholder="Max amount"
+                      class="w-full px-3 py-2 border border-[#cedce8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0b80ee] focus:border-transparent"
+                    >
+                  </div>
+
+                  <!-- Apply Filters Button -->
+                  <div class="flex items-end">
+                    <button 
+                      (click)="applyFilters()"
+                      class="w-full px-4 py-2 bg-[#0b80ee] text-white rounded-lg hover:bg-[#0966c0] transition-colors font-medium"
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Active Filters Display -->
+                <div *ngIf="hasActiveFilters" class="mt-4 pt-4 border-t border-[#e7edf4]">
+                  <h5 class="text-[#49749c] text-sm font-medium mb-2">Active Filters:</h5>
+                  <div class="flex flex-wrap gap-2">
+                    <span *ngIf="filterOptions.year" class="px-2 py-1 bg-[#e7edf4] text-[#0d151c] rounded text-sm">
+                      Year: {{ filterOptions.year }}
+                    </span>
+                    <span *ngIf="filterOptions.month" class="px-2 py-1 bg-[#e7edf4] text-[#0d151c] rounded text-sm">
+                      Month: {{ filterOptions.month }}
+                    </span>
+                    <span *ngIf="filterOptions.status" class="px-2 py-1 bg-[#e7edf4] text-[#0d151c] rounded text-sm">
+                      Status: {{ filterOptions.status }}
+                    </span>
+                    <span *ngIf="filterOptions.minAmount" class="px-2 py-1 bg-[#e7edf4] text-[#0d151c] rounded text-sm">
+                      Min: ₱{{ filterOptions.minAmount.toLocaleString() }}
+                    </span>
+                    <span *ngIf="filterOptions.maxAmount" class="px-2 py-1 bg-[#e7edf4] text-[#0d151c] rounded text-sm">
+                      Max: ₱{{ filterOptions.maxAmount.toLocaleString() }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Results Summary -->
+              <div class="mb-4 p-3 bg-[#f8f9fa] rounded-lg">
+                <div class="flex justify-between items-center">
+                  <span class="text-[#49749c] text-sm">
+                    Showing {{ filteredContributions.length }} of {{ monthlyContributions.length }} contributions
+                  </span>
+                  <span *ngIf="hasActiveFilters" class="text-[#0b80ee] text-sm font-medium">
+                    Filtered Results
+                  </span>
+                </div>
+              </div>
+
+              <!-- Contributions Grid -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div *ngFor="let contribution of filteredContributions" class="p-4 rounded-lg border border-[#cedce8] bg-white hover:shadow-md transition-shadow">
+                  <div class="flex justify-between items-start mb-3">
+                    <div>
+                      <h4 class="text-[#0d151c] font-semibold">{{ contribution.month }} {{ contribution.year }}</h4>
+                      <p class="text-[#49749c] text-sm">Total: ₱{{ contribution.total.toLocaleString() }}</p>
+                    </div>
+                    <span class="px-2 py-1 rounded-full text-xs font-medium" [class]="getStatusColor(contribution.status)">
+                      {{ contribution.status | titlecase }}
+                    </span>
+                  </div>
+
+                  <!-- Contribution Breakdown -->
+                  <div class="space-y-2 mb-4">
+                    <div class="flex justify-between items-center">
+                      <span class="text-[#49749c] text-sm">SSS</span>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[#0d151c] font-medium">₱{{ contribution.sss.toLocaleString() }}</span>
+                        <span class="text-[#49749c] text-xs">({{ getContributionPercentage(contribution.sss, contribution.total) }}%)</span>
+                      </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-[#49749c] text-sm">PhilHealth</span>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[#0d151c] font-medium">₱{{ contribution.philhealth.toLocaleString() }}</span>
+                        <span class="text-[#49749c] text-xs">({{ getContributionPercentage(contribution.philhealth, contribution.total) }}%)</span>
+                      </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-[#49749c] text-sm">Pag-IBIG</span>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[#0d151c] font-medium">₱{{ contribution.pagibig.toLocaleString() }}</span>
+                        <span class="text-[#49749c] text-xs">({{ getContributionPercentage(contribution.pagibig, contribution.total) }}%)</span>
+                      </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-[#49749c] text-sm">BIR</span>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[#0d151c] font-medium">₱{{ contribution.bir.toLocaleString() }}</span>
+                        <span class="text-[#49749c] text-xs">({{ getContributionPercentage(contribution.bir, contribution.total) }}%)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="flex gap-2">
+                    <button 
+                      (click)="viewContributionDetails(contribution)"
+                      class="w-8 h-8 flex items-center justify-center bg-[#e7edf4] text-[#0d151c] rounded-full hover:bg-[#d1d9e6] transition-colors"
+                      title="View Details"
+                    >
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                      </svg>
+                    </button>
+                    <button 
+                      (click)="downloadContributionReport(contribution)"
+                      class="w-8 h-8 flex items-center justify-center bg-[#0b80ee] text-white rounded-full hover:bg-[#0966c0] transition-colors"
+                      title="Download Report"
+                    >
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Yearly Summary Tab -->
+        <div *ngIf="activeTab === 'Yearly Summary'" class="animate-fadeIn">
+          <div class="p-3">
+            <h3 class="text-[#0d151c] text-lg font-bold mb-4">Yearly Summary</h3>
+            
+            <!-- Chart Controls -->
+            <div class="mb-6 p-4 bg-white rounded-lg border border-[#cedce8]">
+              <div class="flex flex-wrap gap-4 items-center justify-between">
+                <!-- Year Selection -->
+                <div class="flex items-center gap-3">
+                  <label class="text-[#49749c] text-sm font-medium">Year:</label>
+                  <select 
+                    [(ngModel)]="selectedYear"
+                    (change)="onYearChange(selectedYear)"
+                    class="px-3 py-2 border border-[#cedce8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0b80ee] focus:border-transparent"
+                  >
+                    <option *ngFor="let year of availableChartYears" [value]="year">{{ year }}</option>
+                  </select>
+                </div>
+                
+                <!-- Chart Type Selection -->
+                <div class="flex items-center gap-3">
+                  <label class="text-[#49749c] text-sm font-medium">Chart Type:</label>
+                  <div class="flex h-10 rounded-full bg-[#e7edf4] p-1">
+                    <button 
+                      (click)="onChartTypeChange('Bar Chart')"
+                      class="flex items-center px-4 rounded-full text-sm font-medium transition-all duration-200"
+                      [class.bg-white]="selectedChartType === 'Bar Chart'"
+                      [class.text-[#0d151c]]="selectedChartType === 'Bar Chart'"
+                      [class.text-[#49749c]]="selectedChartType !== 'Bar Chart'"
+                      [class.shadow-sm]="selectedChartType === 'Bar Chart'"
+                    >
+                      Bar Chart
+                    </button>
+                    <button 
+                      (click)="onChartTypeChange('Pie Chart')"
+                      class="flex items-center px-4 rounded-full text-sm font-medium transition-all duration-200"
+                      [class.bg-white]="selectedChartType === 'Pie Chart'"
+                      [class.text-[#0d151c]]="selectedChartType === 'Pie Chart'"
+                      [class.text-[#49749c]]="selectedChartType !== 'Pie Chart'"
+                      [class.shadow-sm]="selectedChartType === 'Pie Chart'"
+                    >
+                      Pie Chart
+                    </button>
+                    <button 
+                      (click)="onChartTypeChange('Comparison')"
+                      class="flex items-center px-4 rounded-full text-sm font-medium transition-all duration-200"
+                      [class.bg-white]="selectedChartType === 'Comparison'"
+                      [class.text-[#0d151c]]="selectedChartType === 'Comparison'"
+                      [class.text-[#49749c]]="selectedChartType !== 'Comparison'"
+                      [class.shadow-sm]="selectedChartType === 'Comparison'"
+                    >
+                      Comparison
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div class="p-4 bg-white rounded-lg border border-[#cedce8]">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span class="text-[#49749c] text-sm font-medium">SSS</span>
+                </div>
+                <p class="text-[#0d151c] text-xl font-bold">₱{{ selectedYearSSS.toLocaleString() }}</p>
+                <p class="text-[#49749c] text-xs">{{ selectedYearSSSPercentage }}% of total</p>
+              </div>
+              <div class="p-4 bg-white rounded-lg border border-[#cedce8]">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span class="text-[#49749c] text-sm font-medium">PhilHealth</span>
+                </div>
+                <p class="text-[#0d151c] text-xl font-bold">₱{{ selectedYearPhilHealth.toLocaleString() }}</p>
+                <p class="text-[#49749c] text-xs">{{ selectedYearPhilHealthPercentage }}% of total</p>
+              </div>
+              <div class="p-4 bg-white rounded-lg border border-[#cedce8]">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <span class="text-[#49749c] text-sm font-medium">Pag-IBIG</span>
+                </div>
+                <p class="text-[#0d151c] text-xl font-bold">₱{{ selectedYearPagIBIG.toLocaleString() }}</p>
+                <p class="text-[#49749c] text-xs">{{ selectedYearPagIBIGPercentage }}% of total</p>
+              </div>
+              <div class="p-4 bg-white rounded-lg border border-[#cedce8]">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <span class="text-[#49749c] text-sm font-medium">BIR</span>
+                </div>
+                <p class="text-[#0d151c] text-xl font-bold">₱{{ selectedYearBIR.toLocaleString() }}</p>
+                <p class="text-[#49749c] text-xs">{{ selectedYearBIRPercentage }}% of total</p>
+              </div>
+            </div>
+            
+            <!-- Total Summary -->
+            <div class="p-4 bg-[#0b80ee] text-white rounded-lg mb-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-sm opacity-90">Total Contributions ({{ selectedYear }})</p>
+                  <p class="text-2xl font-bold">₱{{ selectedYearTotal.toLocaleString() }}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-sm opacity-90">Growth from {{ selectedYear - 1 }}</p>
+                  <p class="text-lg font-semibold" [class.text-green-300]="selectedYearGrowth >= 0" [class.text-red-300]="selectedYearGrowth < 0">
+                    {{ selectedYearGrowth >= 0 ? '+' : '' }}{{ selectedYearGrowth }}%
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="bg-white p-6 rounded-lg border border-[#cedce8]">
+              <h4 class="text-[#0d151c] font-semibold mb-4">
+                {{ selectedChartType === 'Comparison' ? 'Year-over-Year Comparison' : selectedChartType }} - {{ selectedYear }}
+              </h4>
+              
+              <!-- Bar Chart -->
+              <div *ngIf="selectedChartType === 'Bar Chart'" class="chart-container">
+                <div class="grid grid-cols-4 gap-4 h-64 items-end">
+                  <div *ngFor="let item of getChartData()?.datasets[0].data; let i = index" class="flex flex-col items-center">
+                    <div class="w-full bg-gray-200 rounded-t" style="height: 20px;">
+                      <div 
+                        class="rounded-t transition-all duration-500"
+                        [style.height.%]="getContributionPercentage(item, selectedYearTotal)"
+                        [style.background-color]="getChartData()?.datasets[0].backgroundColor[i]"
+                      ></div>
+                    </div>
+                    <p class="text-[#49749c] text-sm font-medium mt-2">{{ getChartData()?.labels[i] }}</p>
+                    <p class="text-[#0d151c] text-xs font-bold">₱{{ item.toLocaleString() }}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Pie Chart -->
+              <div *ngIf="selectedChartType === 'Pie Chart'" class="chart-container">
+                <div class="flex justify-center">
+                  <div class="relative w-64 h-64">
+                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <circle 
+                        cx="50" 
+                        cy="50" 
+                        r="40" 
+                        fill="none" 
+                        stroke="#e5e7eb" 
+                        stroke-width="8"
+                      />
+                      <circle 
+                        *ngFor="let item of getChartData()?.datasets[0].data; let i = index"
+                        cx="50" 
+                        cy="50" 
+                        r="40" 
+                        fill="none" 
+                        [attr.stroke]="getChartData()?.datasets[0].backgroundColor[i]"
+                        stroke-width="8"
+                        [attr.stroke-dasharray]="getContributionPercentage(item, selectedYearTotal) * 2.51"
+                        stroke-dashoffset="0"
+                        class="transition-all duration-500"
+                      />
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <div class="text-center">
+                        <p class="text-[#0d151c] text-lg font-bold">₱{{ selectedYearTotal.toLocaleString() }}</p>
+                        <p class="text-[#49749c] text-sm">Total</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Pie Chart Legend -->
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div *ngFor="let item of getChartData()?.datasets[0].data; let i = index" class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full" [style.background-color]="getChartData()?.datasets[0].backgroundColor[i]"></div>
+                    <div>
+                      <p class="text-[#0d151c] text-sm font-medium">{{ getChartData()?.labels[i] }}</p>
+                      <p class="text-[#49749c] text-xs">{{ getContributionPercentage(item, selectedYearTotal) }}%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Comparison Chart -->
+              <div *ngIf="selectedChartType === 'Comparison'" class="chart-container">
+                <div class="grid grid-cols-4 gap-4 h-64 items-end">
+                  <div *ngFor="let label of getComparisonChartData()?.labels; let i = index" class="flex flex-col items-center">
+                    <div class="w-full bg-gray-200 rounded-t" style="height: 20px;">
+                      <div 
+                        class="rounded-t transition-all duration-500"
+                        [style.height.%]="getContributionPercentage(getComparisonChartData()?.datasets[0].data[i], selectedYearTotal)"
+                        [style.background-color]="getComparisonChartData()?.datasets[0].backgroundColor[i]"
+                      ></div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-t mt-1" style="height: 20px;">
+                      <div 
+                        class="rounded-t transition-all duration-500"
+                        [style.height.%]="getContributionPercentage(getComparisonChartData()?.datasets[1].data[i], selectedYearTotal)"
+                        [style.background-color]="getComparisonChartData()?.datasets[1].backgroundColor[i]"
+                      ></div>
+                    </div>
+                    <p class="text-[#49749c] text-sm font-medium mt-2">{{ label }}</p>
+                    <p class="text-[#0d151c] text-xs font-bold">₱{{ getComparisonChartData()?.datasets[0].data[i].toLocaleString() }}</p>
+                  </div>
+                </div>
+                <!-- Comparison Legend -->
+                <div class="mt-4 flex justify-center gap-6">
+                  <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-[#3b82f6] rounded"></div>
+                    <span class="text-[#49749c] text-sm">{{ selectedYear }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-[#93c5fd] rounded"></div>
+                    <span class="text-[#49749c] text-sm">{{ selectedYear - 1 }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BIR 2316 Tab -->
+        <div *ngIf="activeTab === 'BIR 2316'" class="animate-fadeIn">
+          <div class="p-3">
+            <h3 class="text-[#0d151c] text-lg font-bold mb-4">BIR 2316 - Certificate of Compensation Payment/Tax Withheld</h3>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Download Section -->
+              <div class="p-6 bg-white rounded-lg border border-[#cedce8]">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-12 h-12 bg-[#0b80ee] rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-[#0d151c] font-semibold">Download BIR 2316</h4>
+                    <p class="text-[#49749c] text-sm">For annual tax filing</p>
+                  </div>
+                </div>
+                
+                <div class="space-y-3 mb-4">
+                  <div class="flex justify-between">
+                    <span class="text-[#49749c]">Tax Year</span>
+                    <span class="text-[#0d151c] font-medium">2024</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-[#49749c]">Total Tax Withheld</span>
+                    <span class="text-[#0d151c] font-medium">₱{{ (currentYearSummary?.birTotal || 0).toLocaleString() }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-[#49749c]">Status</span>
+                    <span class="text-green-600 font-medium">Ready for Download</span>
+                  </div>
+                </div>
+                
+                <button 
+                  (click)="downloadBIR2316()"
+                  class="w-full py-3 bg-[#0b80ee] text-white rounded-lg hover:bg-[#0966c0] transition-colors font-medium"
+                >
+                  Download BIR 2316
+                </button>
+              </div>
+
+              <!-- Information Section -->
+              <div class="p-6 bg-[#f8f9fa] rounded-lg">
+                <h4 class="text-[#0d151c] font-semibold mb-3">About BIR 2316</h4>
+                <div class="space-y-3 text-sm text-[#49749c]">
+                  <p>The BIR Form 2316 is a certificate of compensation payment/tax withheld that employers provide to their employees.</p>
+                  <p>This form contains:</p>
+                  <ul class="list-disc list-inside space-y-1 ml-4">
+                    <li>Total compensation paid</li>
+                    <li>Total tax withheld</li>
+                    <li>Employee's tax information</li>
+                    <li>Employer's tax information</li>
+                  </ul>
+                  <p class="mt-4 text-[#0d151c] font-medium">Use this form for:</p>
+                  <ul class="list-disc list-inside space-y-1 ml-4">
+                    <li>Annual tax filing</li>
+                    <li>Tax refund applications</li>
+                    <li>Loan applications</li>
+                    <li>Government transactions</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- View Details Modal -->
+        <div *ngIf="showDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4" style="top: 0; left: 0; right: 0; bottom: 0;">
+          <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative" style="margin-top: 60px;">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-6 border-b border-[#cedce8] sticky top-0 bg-white z-10">
+              <h3 class="text-[#0d151c] text-xl font-bold">
+                Contribution Details - {{ selectedContribution?.month }} {{ selectedContribution?.year }}
+              </h3>
+              <button (click)="closeDetailsModal()" class="text-[#49749c] hover:text-[#0d151c] transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+            
+            <!-- Modal Content -->
+            <div class="p-6" *ngIf="selectedContribution">
+              <!-- Summary Section -->
+              <div class="mb-6 p-4 bg-[#f8f9fa] rounded-lg">
+                <div class="flex justify-between items-center mb-3">
+                  <h4 class="text-[#0d151c] font-semibold">Summary</h4>
+                  <span class="px-3 py-1 rounded-full text-sm font-medium" [class]="getStatusColor(selectedContribution.status)">
+                    {{ selectedContribution.status | titlecase }}
+                  </span>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span class="text-[#49749c]">Total Contributions:</span>
+                    <span class="text-[#0d151c] font-semibold ml-2">₱{{ selectedContribution.total.toLocaleString() }}</span>
+                  </div>
+                  <div>
+                    <span class="text-[#49749c]">Pay Date:</span>
+                    <span class="text-[#0d151c] font-semibold ml-2">{{ selectedContribution.payDate | date:'longDate' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contribution Breakdown -->
+              <div class="space-y-4">
+                <h4 class="text-[#0d151c] font-semibold">Contribution Breakdown</h4>
+                
+                <!-- SSS -->
+                <div class="p-4 border border-[#cedce8] rounded-lg">
+                  <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center gap-3">
+                      <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <h5 class="text-[#0d151c] font-medium">SSS (Social Security System)</h5>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-[#0d151c] font-bold">₱{{ selectedContribution.sss.amount.toLocaleString() }}</p>
+                      <p class="text-[#49749c] text-sm">{{ selectedContribution.sss.percentage }}% of total</p>
+                    </div>
+                  </div>
+                  <p class="text-[#49749c] text-sm">{{ selectedContribution.sss.description }}</p>
+                </div>
+
+                <!-- PhilHealth -->
+                <div class="p-4 border border-[#cedce8] rounded-lg">
+                  <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center gap-3">
+                      <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <h5 class="text-[#0d151c] font-medium">PhilHealth</h5>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-[#0d151c] font-bold">₱{{ selectedContribution.philhealth.amount.toLocaleString() }}</p>
+                      <p class="text-[#49749c] text-sm">{{ selectedContribution.philhealth.percentage }}% of total</p>
+                    </div>
+                  </div>
+                  <p class="text-[#49749c] text-sm">{{ selectedContribution.philhealth.description }}</p>
+                </div>
+
+                <!-- Pag-IBIG -->
+                <div class="p-4 border border-[#cedce8] rounded-lg">
+                  <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center gap-3">
+                      <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <h5 class="text-[#0d151c] font-medium">Pag-IBIG</h5>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-[#0d151c] font-bold">₱{{ selectedContribution.pagibig.amount.toLocaleString() }}</p>
+                      <p class="text-[#49749c] text-sm">{{ selectedContribution.pagibig.percentage }}% of total</p>
+                    </div>
+                  </div>
+                  <p class="text-[#49749c] text-sm">{{ selectedContribution.pagibig.description }}</p>
+                </div>
+
+                <!-- BIR -->
+                <div class="p-4 border border-[#cedce8] rounded-lg">
+                  <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center gap-3">
+                      <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <h5 class="text-[#0d151c] font-medium">BIR (Tax Withholding)</h5>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-[#0d151c] font-bold">₱{{ selectedContribution.bir.amount.toLocaleString() }}</p>
+                      <p class="text-[#49749c] text-sm">{{ selectedContribution.bir.percentage }}% of total</p>
+                    </div>
+                  </div>
+                  <p class="text-[#49749c] text-sm">{{ selectedContribution.bir.description }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex justify-end gap-3 p-6 border-t border-[#cedce8] sticky bottom-0 bg-white">
+              <button 
+                (click)="closeDetailsModal()"
+                class="px-4 py-2 text-[#49749c] hover:text-[#0d151c] transition-colors"
+              >
+                Close
+              </button>
+              <button 
+                (click)="downloadContributionReport(getSelectedContributionForDownload())"
+                class="px-4 py-2 bg-[#0b80ee] text-white rounded-lg hover:bg-[#0966c0] transition-colors"
+              >
+                Download Report
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

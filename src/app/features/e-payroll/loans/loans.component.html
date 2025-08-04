@@ -1,0 +1,176 @@
+<div class="loans-container">
+  <div class="loans-content">
+    <div class="loans-header">
+      <div class="header-content">
+        <h1 class="page-title">💳 Loans</h1>
+        <p class="page-description">Manage your current loans and apply for new ones.</p>
+      </div>
+    </div>
+    
+    <div class="loans-section">
+      <h2 class="section-title">Current Loan List</h2>
+      <div class="table-container">
+        <div class="table-wrapper">
+          <table class="loans-table">
+            <thead>
+              <tr>
+                <th>Loan Type</th>
+                <th>Amount</th>
+                <th>Balance</th>
+                <th>Term</th>
+                <th>Status</th>
+                <th>Repayment Progress</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let loan of loans">
+                <td>{{ loan.loanType }}</td>
+                <td>{{ loan.amount }}</td>
+                <td>{{ loan.balance }}</td>
+                <td>{{ loan.term }}</td>
+                <td>
+                  <button class="status-badge">
+                    <span>{{ loan.status }}</span>
+                  </button>
+                </td>
+                <td>
+                  <div class="progress-container">
+                    <div class="progress-bar">
+                      <div class="progress-fill" [style.width.%]="loan.repaymentProgress"></div>
+                    </div>
+                    <span class="progress-text">{{ loan.repaymentProgress }}%</span>
+                  </div>
+                </td>
+                <td>
+                  <button class="view-details-btn" (click)="viewLoanDetails(loan)">
+                    <span>View Details</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <div class="loans-section">
+      <h2 class="section-title">Repayment History</h2>
+      <div class="table-container">
+        <div class="table-wrapper">
+          <table class="loans-table">
+            <thead>
+              <tr>
+                <th>Cutoff</th>
+                <th>Installment Amount</th>
+                <th>Payment Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let payment of repaymentHistory">
+                <td>{{ payment.cutoff }}</td>
+                <td>{{ payment.installmentAmount }}</td>
+                <td>{{ payment.paymentDate }}</td>
+                <td>
+                  <button class="status-badge">
+                    <span>{{ payment.status }}</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <div class="action-section">
+      <button class="download-btn" (click)="downloadSummary()">
+        <span>Download Summary</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loan Details Modal -->
+  <div class="modal-overlay" *ngIf="showLoanDetails" (click)="closeLoanDetails()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">{{ selectedLoan?.loanType }} - Loan Details</h2>
+        <button class="close-btn" (click)="closeLoanDetails()">
+          <span>&times;</span>
+        </button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedLoan">
+        <div class="loan-summary">
+          <div class="summary-grid">
+            <div class="summary-item">
+              <label>Original Amount</label>
+              <span class="amount">{{ formatCurrency(selectedLoan.originalAmount) }}</span>
+            </div>
+            <div class="summary-item">
+              <label>Interest Rate</label>
+              <span class="rate">{{ formatPercentage(selectedLoan.interestRate) }}</span>
+            </div>
+            <div class="summary-item">
+              <label>Monthly Payment</label>
+              <span class="amount">{{ formatCurrency(selectedLoan.monthlyPayment) }}</span>
+            </div>
+            <div class="summary-item">
+              <label>Total Interest</label>
+              <span class="amount">{{ formatCurrency(selectedLoan.totalInterest) }}</span>
+            </div>
+            <div class="summary-item">
+              <label>Total Amount</label>
+              <span class="amount total">{{ formatCurrency(selectedLoan.totalAmount) }}</span>
+            </div>
+            <div class="summary-item">
+              <label>Total Repaid</label>
+              <span class="amount repaid">{{ formatCurrency(selectedLoan.totalAmountRepaid) }}</span>
+            </div>
+            <div class="summary-item">
+              <label>Remaining Balance</label>
+              <span class="amount remaining">{{ formatCurrency(selectedLoan.remainingBalance) }}</span>
+            </div>
+            <div class="summary-item">
+              <label>Repayment Progress</label>
+              <span class="progress">{{ selectedLoan.repaymentProgress }}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="loan-dates">
+          <div class="date-item">
+            <label>Loan Start Date</label>
+            <span>{{ formatDate(selectedLoan.startDate) }}</span>
+          </div>
+          <div class="date-item">
+            <label>Loan End Date</label>
+            <span>{{ formatDate(selectedLoan.endDate) }}</span>
+          </div>
+        </div>
+
+        <div class="loan-breakdown">
+          <h3>Payment Breakdown</h3>
+          <div class="breakdown-chart">
+            <div class="chart-item">
+              <div class="chart-bar principal" [style.width.%]="(selectedLoan.originalAmount / selectedLoan.totalAmount) * 100">
+                <span>Principal</span>
+              </div>
+            </div>
+            <div class="chart-item">
+              <div class="chart-bar interest" [style.width.%]="(selectedLoan.totalInterest / selectedLoan.totalAmount) * 100">
+                <span>Interest</span>
+              </div>
+            </div>
+            <div class="chart-item">
+              <div class="chart-bar repaid" [style.width.%]="(selectedLoan.totalAmountRepaid / selectedLoan.totalAmount) * 100">
+                <span>Repaid</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,228 @@
+<div class="thirteenth-month-container">
+  <div class="thirteenth-month-content">
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">🎁 Thirteenth Month Pay</h1>
+        <p class="page-description">View and manage your thirteenth month pay calculations and history.</p>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-section">
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="card-icon">💰</div>
+          <div class="card-content">
+            <h3>Current Year ({{ selectedYear }})</h3>
+            <div class="amount">{{ formatCurrency(currentCalculation.thirteenthMonthPay) }}</div>
+            <div class="status" [style.background-color]="getStatusBgColor(currentYearData?.status || 'Pending')" [style.color]="getStatusColor(currentYearData?.status || 'Pending')">
+              {{ currentYearData?.status || 'Pending' }}
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-icon">📊</div>
+          <div class="card-content">
+            <h3>Total Earnings</h3>
+            <div class="amount">{{ formatCurrency(currentCalculation.totalEarnings) }}</div>
+            <div class="subtitle">For {{ selectedYear }}</div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-icon">💸</div>
+          <div class="card-content">
+            <h3>Net Amount</h3>
+            <div class="amount">{{ formatCurrency(currentCalculation.netThirteenthMonthPay) }}</div>
+            <div class="subtitle">After tax withholding</div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-icon">📅</div>
+          <div class="card-content">
+            <h3>Release Date</h3>
+            <div class="amount">{{ currentYearData && currentYearData.releaseDate ? formatDate(currentYearData.releaseDate) : 'TBD' }}</div>
+            <div class="subtitle">Expected release</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calculation Breakdown -->
+    <div class="calculation-section">
+      <h2 class="section-title">Calculation Breakdown</h2>
+      <div class="calculation-grid">
+        <div class="calculation-item">
+          <label>Total Basic Salary</label>
+          <span>{{ formatCurrency(currentCalculation.totalBasicSalary) }}</span>
+        </div>
+        <div class="calculation-item">
+          <label>Total Allowances</label>
+          <span>{{ formatCurrency(currentCalculation.totalAllowances) }}</span>
+        </div>
+        <div class="calculation-item">
+          <label>Total Overtime</label>
+          <span>{{ formatCurrency(currentCalculation.totalOvertime) }}</span>
+        </div>
+        <div class="calculation-item">
+          <label>Total Bonuses</label>
+          <span>{{ formatCurrency(currentCalculation.totalBonuses) }}</span>
+        </div>
+        <div class="calculation-item">
+          <label>Total Deductions</label>
+          <span>{{ formatCurrency(currentCalculation.totalDeductions) }}</span>
+        </div>
+        <div class="calculation-item total">
+          <label>Thirteenth Month Pay</label>
+          <span>{{ formatCurrency(currentCalculation.thirteenthMonthPay) }}</span>
+        </div>
+        <div class="calculation-item deduction">
+          <label>Tax Withholding (10%)</label>
+          <span>-{{ formatCurrency(currentCalculation.taxWithholding) }}</span>
+        </div>
+        <div class="calculation-item net">
+          <label>Net Thirteenth Month Pay</label>
+          <span>{{ formatCurrency(currentCalculation.netThirteenthMonthPay) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Breakdown -->
+    <div class="monthly-section">
+      <h2 class="section-title">Monthly Earnings Breakdown</h2>
+      <div class="table-container">
+        <div class="table-wrapper">
+          <table class="monthly-table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Basic Salary</th>
+                <th>Allowances</th>
+                <th>Overtime</th>
+                <th>Bonuses</th>
+                <th>Deductions</th>
+                <th>Net Pay</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let month of monthlyEarnings">
+                <td>{{ month.month }}</td>
+                <td>{{ formatCurrency(month.basicSalary) }}</td>
+                <td>{{ formatCurrency(month.allowances) }}</td>
+                <td>{{ formatCurrency(month.overtime) }}</td>
+                <td>{{ formatCurrency(month.bonuses) }}</td>
+                <td>{{ formatCurrency(month.deductions) }}</td>
+                <td class="net-pay">{{ formatCurrency(month.netPay) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Section -->
+    <div class="history-section">
+      <h2 class="section-title">Payment History</h2>
+      <div class="table-container">
+        <div class="table-wrapper">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Basic Salary</th>
+                <th>Total Earnings</th>
+                <th>13th Month Pay</th>
+                <th>Status</th>
+                <th>Release Date</th>
+                <th>Payment Method</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of thirteenthMonthPayHistory">
+                <td>{{ item.year }}</td>
+                <td>{{ formatCurrency(item.basicSalary) }}</td>
+                <td>{{ formatCurrency(item.totalEarnings) }}</td>
+                <td>{{ formatCurrency(item.thirteenthMonthPay) }}</td>
+                <td>
+                  <span class="status-badge" [style.background-color]="getStatusBgColor(item.status)" [style.color]="getStatusColor(item.status)">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td>{{ item.releaseDate ? formatDate(item.releaseDate!) : 'TBD' }}</td>
+                <td>{{ item.paymentMethod }}</td>
+                <td>
+                  <button class="view-details-btn" (click)="viewDetails(item)">
+                    <span>View Details</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Section -->
+    <div class="action-section">
+      <button class="download-btn" (click)="downloadReport()">
+        <span>📄 Download Report</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Details Modal -->
+  <div class="modal-overlay" *ngIf="showDetailsModal" (click)="closeDetails()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">{{ selectedThirteenthMonth?.year }} - Thirteenth Month Pay Details</h2>
+        <button class="close-btn" (click)="closeDetails()">
+          <span>&times;</span>
+        </button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedThirteenthMonth">
+        <div class="detail-summary">
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Year</label>
+              <span>{{ selectedThirteenthMonth.year }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Basic Salary</label>
+              <span>{{ formatCurrency(selectedThirteenthMonth.basicSalary) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Total Earnings</label>
+              <span>{{ formatCurrency(selectedThirteenthMonth.totalEarnings) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>13th Month Pay</label>
+              <span class="highlight">{{ formatCurrency(selectedThirteenthMonth.thirteenthMonthPay) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Status</label>
+              <span class="status-badge" [style.background-color]="getStatusBgColor(selectedThirteenthMonth.status)" [style.color]="getStatusColor(selectedThirteenthMonth.status)">
+                {{ selectedThirteenthMonth.status }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <label>Release Date</label>
+              <span>{{ selectedThirteenthMonth.releaseDate ? formatDate(selectedThirteenthMonth.releaseDate!) : 'TBD' }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Payment Method</label>
+              <span>{{ selectedThirteenthMonth.paymentMethod }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Remarks</label>
+              <span>{{ selectedThirteenthMonth.remarks || 'No remarks' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
