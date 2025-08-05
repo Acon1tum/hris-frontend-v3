@@ -35,7 +35,7 @@
         <div class="search-group">
           <label for="search-salary"><span class="material-symbols-outlined icon-green">attach_money</span> Salary Range</label>
           <select id="search-salary" [(ngModel)]="selectedSalaryRange" name="salaryRange" aria-label="Salary Range">
-            <option *ngFor="let range of salaryRanges" [value]="range.value">{{ range.label }}</option>
+            <option *ngFor="let range of salaryRanges" [value]="range.value || range.range">{{ range.label || range.range }}</option>
           </select>
         </div>
         <button class="seek-btn modern-seek-btn" type="submit" aria-label="Search jobs">
@@ -77,7 +77,7 @@
               </div>
               <div>
                 <div class="job-title">{{ job.position_title }}</div>
-                <div class="job-company">{{ job.department.department_name }}</div>
+                <div class="job-company">{{ job.department?.department_name }}</div>
               </div>
               <span class="bookmark material-symbols-outlined icon-pink" title="Save job" aria-label="Save job"
                 [class.favourited]="isFavourite(job)"
@@ -110,7 +110,7 @@
           <div class="job-details-title">{{ selectedJob.position_title }}</div>
           <div class="job-details-company">
             <span class="material-symbols-outlined icon-yellow">apartment</span>
-            {{ selectedJob.department.department_name }}
+            {{ selectedJob.department?.department_name }}
           </div>
           <div class="job-details-badges">
             <span class="badge badge-type">
@@ -272,4 +272,9 @@
       </ng-template>
     </div>
   </section>
-</div> 
+</div>
+<app-application-modal
+  *ngIf="showApplicationModal"
+  [job]="applicationJob"
+  (close)="closeApplicationModal()"
+></app-application-modal> 

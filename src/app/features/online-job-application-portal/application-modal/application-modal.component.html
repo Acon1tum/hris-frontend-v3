@@ -1,0 +1,215 @@
+<div class="modal-backdrop">
+  <div class="modal-content">
+    <!-- Step 1: Basic Application Form -->
+    <div *ngIf="currentStep === 1">
+      <div class="modal-header-gradient">
+        <div class="modal-logo-avatar">
+          <span class="material-symbols-outlined company-logo">work</span>
+        </div>
+        <div class="modal-title-group">
+          <div class="modal-job-title-main">Job Application - Step 1</div>
+          <div class="modal-job-company" *ngIf="job">{{ job.position_title }}</div>
+        </div>
+        <button class="modal-close-btn" (click)="close.emit()" aria-label="Close">
+          <span class="material-symbols-outlined icon-gray">close</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-section">
+          <h3 class="section-title">
+            <span class="material-symbols-outlined icon-blue">person</span>
+            Applicant Information
+          </h3>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Position</label>
+              <input type="text" [value]="job?.position_title + ' (' + (job?.department?.department_name || '') + ')'" readonly />
+            </div>
+            <div class="form-group">
+              <label>Applicant Name</label>
+              <input type="text" [value]="applicant?.first_name + ' ' + (applicant?.middle_name || '') + ' ' + applicant?.last_name" readonly />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" [value]="applicant?.email" readonly />
+            </div>
+            <div class="form-group">
+              <label>Application Date</label>
+              <input type="text" [value]="(currentDate | date:'yyyy-MM-dd HH:mm:ss')" readonly />
+            </div>
+            <div class="form-group">
+              <label>Withdrawn Date</label>
+              <input type="text" value="" readonly placeholder="N/A" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-title">
+            <span class="material-symbols-outlined icon-green">description</span>
+            Application Details
+          </h3>
+          
+          <div class="form-group">
+            <label for="coverLetter">Cover Letter <span class="required">*</span></label>
+            <textarea id="coverLetter" name="cover_letter" [(ngModel)]="coverLetter" rows="6" placeholder="Please write your cover letter explaining why you're interested in this position and how your skills match the requirements..."></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="remarks">Additional Remarks</label>
+            <textarea id="remarks" name="remarks" [(ngModel)]="remarks" rows="4" placeholder="Any additional information you'd like to share..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="next-btn" (click)="nextPage()" [disabled]="!coverLetter.trim()">
+            <span class="material-symbols-outlined">arrow_forward</span>
+            Next Step
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Additional Details -->
+    <div *ngIf="currentStep === 2">
+      <div class="modal-header-gradient">
+        <div class="modal-logo-avatar">
+          <span class="material-symbols-outlined company-logo">folder</span>
+        </div>
+        <div class="modal-title-group">
+          <div class="modal-job-title-main">Job Application - Step 2</div>
+          <div class="modal-job-company" *ngIf="job">{{ job.position_title }}</div>
+        </div>
+        <button class="modal-close-btn" (click)="close.emit()" aria-label="Close">
+          <span class="material-symbols-outlined icon-gray">close</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Application Documents Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <span class="material-symbols-outlined icon-blue">upload_file</span>
+            Application Documents
+          </h3>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Resume/CV</label>
+              <div class="file-upload-area">
+                <input type="file" accept=".pdf,.doc,.docx" />
+                <div class="upload-hint">Upload your resume (PDF, DOC, DOCX)</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Cover Letter Document</label>
+              <div class="file-upload-area">
+                <input type="file" accept=".pdf,.doc,.docx" />
+                <div class="upload-hint">Upload cover letter document (optional)</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Supporting Documents</label>
+              <div class="file-upload-area">
+                <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" multiple />
+                <div class="upload-hint">Upload certificates, portfolio, etc. (optional)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interview Preferences Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <span class="material-symbols-outlined icon-yellow">schedule</span>
+            Interview Preferences
+          </h3>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Preferred Interview Type</label>
+              <select class="form-select">
+                <option value="">Select interview type</option>
+                <option value="Phone">Phone Interview</option>
+                <option value="Video">Video Conference</option>
+                <option value="On_Site">On-Site Interview</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Preferred Interview Location</label>
+              <input type="text" placeholder="Enter preferred location" />
+            </div>
+            <div class="form-group">
+              <label>Available Interview Dates</label>
+              <textarea rows="3" placeholder="Please specify your availability for interviews..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Examination Preferences Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <span class="material-symbols-outlined icon-green">quiz</span>
+            Examination Preferences
+          </h3>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Preferred Exam Type</label>
+              <select class="form-select">
+                <option value="">Select exam type</option>
+                <option value="Written">Written Examination</option>
+                <option value="Practical">Practical Test</option>
+                <option value="Online">Online Assessment</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Preferred Exam Location</label>
+              <input type="text" placeholder="Enter preferred location" />
+            </div>
+            <div class="form-group">
+              <label>Available Exam Dates</label>
+              <textarea rows="3" placeholder="Please specify your availability for examinations..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assessment Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <span class="material-symbols-outlined icon-orange">assessment</span>
+            Assessment Information
+          </h3>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Years of Experience</label>
+              <input type="number" min="0" placeholder="Enter years of experience" />
+            </div>
+            <div class="form-group">
+              <label>Technical Skills</label>
+              <textarea rows="3" placeholder="List your technical skills and competencies..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Relevant Projects</label>
+              <textarea rows="3" placeholder="Describe relevant projects you've worked on..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="prev-btn" (click)="previousPage()">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Previous
+          </button>
+          <button type="button" class="submit-btn" (click)="submitApplication()">
+            <span class="material-symbols-outlined">rocket_launch</span>
+            Submit Application
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

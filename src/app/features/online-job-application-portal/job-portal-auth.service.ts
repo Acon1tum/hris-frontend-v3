@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { AuthService } from 'src/app/services/auth.service';
+import { User } from 'src/app/interfaces/auth.interface';
 
 export interface JobApplicant {
   id: string;
@@ -19,15 +21,13 @@ export interface JobApplicant {
   application_date: string;
 }
 
-export interface JobPortalLoginRequest {
-  email: string;
-  password: string;
-}
-
 export interface JobPortalLoginResponse {
   success: boolean;
   token?: string;
-  data?: JobApplicant;
+  data?: {
+    user: User;
+    applicant: JobApplicant;
+  };
   message?: string;
 }
 
@@ -38,78 +38,135 @@ export class JobPortalAuthService {
   private currentApplicantSubject = new BehaviorSubject<JobApplicant | null>(null);
   public currentApplicant$ = this.currentApplicantSubject.asObservable();
 
-  private readonly TOKEN_KEY = 'job_portal_token';
-  private readonly APPLICANT_KEY = 'job_portal_applicant';
-
-  constructor(private http: HttpClient) {
-    this.loadApplicantFromStorage();
-  }
-
-  private loadApplicantFromStorage(): void {
-    const token = localStorage.getItem(this.TOKEN_KEY);
-    const applicantData = localStorage.getItem(this.APPLICANT_KEY);
-    
-    if (token && applicantData) {
-      try {
-        const applicant = JSON.parse(applicantData);
-        this.currentApplicantSubject.next(applicant);
-      } catch (error) {
-        console.error('Error parsing stored applicant data:', error);
-        this.logout();
-      }
-    }
-  }
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   login(email: string, password: string): Observable<JobApplicant> {
-    const loginData: JobPortalLoginRequest = { email, password };
+    // Generate a unique request ID for tracking
+    const requestId = Math.random().toString(36).substring(2, 15);
+    const startTime = Date.now();
     
-    return this.http.post<JobPortalLoginResponse>(`${environment.apiUrl}/job-portal/login`, loginData)
-      .pipe(
-        map(response => {
-          if (response.success && response.data && response.token) {
-            // Store token and applicant data
-            localStorage.setItem(this.TOKEN_KEY, response.token);
-            localStorage.setItem(this.APPLICANT_KEY, JSON.stringify(response.data));
-            
-            // Update current applicant
-            this.currentApplicantSubject.next(response.data);
-            
-            return response.data;
-          } else {
-            throw new Error(response.message || 'Login failed');
-          }
-        })
-      );
+    // Helper function for consistent logging
+    const log = (message: string, data?: any) => {
+      const timestamp = new Date().toISOString();
+      const logData = data ? JSON.stringify(data, null, 2) : '';
+      console.log(`[${timestamp}] [${requestId}] ${message}`, logData);
+    };
+
+    log('=== Job Portal Login Request ===');
+    log('Email:', email);
+    log('Environment API URL:', environment.apiUrl);
+    
+    // Input validation
+    if (!email?.trim()) {
+      const errorMsg = 'Email is required';
+      log('Validation error:', errorMsg);
+      return throwError(() => new Error(errorMsg));
+    }
+    
+    if (!password) {
+      const errorMsg = 'Password is required';
+      log('Validation error:', errorMsg);
+      return throwError(() => new Error(errorMsg));
+    }
+
+    log('Sending login request to server...');
+    
+    return this.http.post<JobPortalLoginResponse>(`${environment.apiUrl}/job-portal/login`, { 
+      email: email.trim(),
+      password: password 
+    }).pipe(
+      map(response => {
+        log('Login response received:', {
+          success: response?.success,
+          hasToken: !!response?.token,
+          hasUserData: !!response?.data?.user,
+          hasApplicantData: !!response?.data?.applicant,
+          responseTime: `${Date.now() - startTime}ms`
+        });
+
+        if (response && response.success && response.token && response.data) {
+          // Store the authentication data using the main auth service
+          const { user, applicant } = response.data;
+          
+          // Store token in localStorage
+          localStorage.setItem(environment.auth.tokenKey, response.token);
+          localStorage.setItem(environment.auth.userKey, JSON.stringify(user));
+          
+          // Update the main auth service
+          this.authService.setCurrentUser(user);
+          
+          // Update the current applicant subject
+          this.currentApplicantSubject.next(applicant);
+          
+          log('User authenticated successfully', {
+            userId: user?.id,
+            email: user?.email,
+            role: user?.role,
+            applicantId: applicant?.id
+          });
+          
+          return applicant;
+        } else {
+          log('Login response missing required data', response);
+          throw new Error(response?.message || 'Invalid response from server');
+        }
+      }),
+      catchError(error => {
+        log('Login error:', {
+          status: error.status,
+          message: error.message,
+          error: error.error,
+          responseTime: `${Date.now() - startTime}ms`
+        });
+        
+        // Enhance error message based on status code
+        let userFriendlyMessage = 'Login failed. Please try again.';
+        
+        if (error.status === 0) {
+          userFriendlyMessage = 'Cannot connect to server. Please check your internet connection.';
+        } else if (error.status === 400) {
+          userFriendlyMessage = error.error?.message || 'Invalid request. Please check your input.';
+        } else if (error.status === 401) {
+          userFriendlyMessage = 'Invalid email or password. Please try again.';
+        } else if (error.status === 403) {
+          userFriendlyMessage = 'Access denied. This portal is for applicants only.';
+        } else if (error.status === 404) {
+          userFriendlyMessage = 'User not found. Please check your email or register for an account.';
+        } else if (error.status === 500) {
+          userFriendlyMessage = 'A server error occurred. Please try again later.';
+          log('Server error details:', error.error);
+        }
+        
+        return throwError(() => new Error(userFriendlyMessage));
+      })
+    );
   }
 
   logout(): void {
-    // Clear stored data
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.APPLICANT_KEY);
-    
-    // Update current applicant
+    // Use the main auth service to log out
+    this.authService.logout();
+    // Clear any applicant-specific data
     this.currentApplicantSubject.next(null);
+  }
+
+  isAuthenticated(): boolean {
+    // Defer to the main auth service
+    return this.authService.isAuthenticated();
+  }
+
+  getToken(): string | null {
+    // Get token from the main auth service
+    return this.authService.getToken();
   }
 
   getCurrentApplicant(): JobApplicant | null {
     return this.currentApplicantSubject.value;
   }
 
-  isAuthenticated(): boolean {
-    const token = localStorage.getItem(this.TOKEN_KEY);
-    return !!token;
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  // Register new applicant
   register(registrationData: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/job-portal/register`, registrationData);
   }
 
-  // Get applicant profile
   getProfile(applicantId: string): Observable<JobApplicant> {
     return this.http.get<{ success: boolean; data: JobApplicant }>(
       `${environment.apiUrl}/job-portal/profile?applicantId=${applicantId}`
@@ -118,7 +175,6 @@ export class JobPortalAuthService {
     );
   }
 
-  // Update applicant profile
   updateProfile(applicantId: string, updateData: any): Observable<JobApplicant> {
     return this.http.put<{ success: boolean; data: JobApplicant }>(
       `${environment.apiUrl}/job-portal/profile?applicantId=${applicantId}`,
@@ -127,4 +183,4 @@ export class JobPortalAuthService {
       map(response => response.data)
     );
   }
-} 
+}

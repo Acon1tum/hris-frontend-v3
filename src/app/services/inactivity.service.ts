@@ -127,10 +127,23 @@ export class InactivityService {
 
   private performLogout(): void {
     this.stopTimers();
+    
+    // Get current user before logout
+    const currentUser = this.authService.getCurrentUser();
+    const isApplicant = currentUser && currentUser.role === 'Applicant';
+    
     this.authService.logout('session_timeout');
-    this.router.navigate(['/login'], {
-      queryParams: { reason: 'session_timeout' }
-    });
+    
+    // Redirect based on user role
+    if (isApplicant) {
+      this.router.navigate(['/online-job-login'], {
+        queryParams: { reason: 'session_timeout' }
+      });
+    } else {
+      this.router.navigate(['/login'], {
+        queryParams: { reason: 'session_timeout' }
+      });
+    }
   }
 
   private stopTimers(): void {

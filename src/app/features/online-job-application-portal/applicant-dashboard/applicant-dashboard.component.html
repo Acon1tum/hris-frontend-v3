@@ -1,72 +1,84 @@
-<app-header [publicMode]="false" class="dashboard-header"></app-header>
+<app-header *ngIf="publicMode" [publicMode]="publicMode" class="job-portal-header" [class.header-hidden]="!isHeaderVisible"></app-header>
 
 <div class="dashboard-container">
   <!-- Loading State -->
-  <div *ngIf="loading" class="loading-overlay">
+  <div *ngIf="loading" class="loading-overlay" role="status" aria-label="Loading dashboard">
     <div class="loading-spinner">
-      <span class="material-symbols-outlined">refresh</span>
+      <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
       <p>Loading your dashboard...</p>
     </div>
   </div>
 
   <!-- Navigation Tabs -->
-  <div class="dashboard-nav">
+  <nav class="dashboard-nav" role="navigation" aria-label="Dashboard navigation">
     <div class="nav-container">
       <button 
         class="nav-tab" 
         [class.active]="currentView === 'overview'"
         (click)="onViewChange('overview')"
+        [attr.aria-current]="currentView === 'overview' ? 'page' : null"
+        aria-label="Overview dashboard"
       >
-        <span class="material-symbols-outlined">dashboard</span>
+        <span class="material-symbols-outlined" aria-hidden="true">dashboard</span>
         Overview
       </button>
       <button 
         class="nav-tab" 
         [class.active]="currentView === 'applications'"
         (click)="onViewChange('applications')"
+        [attr.aria-current]="currentView === 'applications' ? 'page' : null"
+        aria-label="Applications management"
       >
-        <span class="material-symbols-outlined">work</span>
+        <span class="material-symbols-outlined" aria-hidden="true">work</span>
         Applications
       </button>
       <button 
         class="nav-tab" 
         [class.active]="currentView === 'profile'"
         (click)="onViewChange('profile')"
+        [attr.aria-current]="currentView === 'profile' ? 'page' : null"
+        aria-label="Profile settings"
       >
-        <span class="material-symbols-outlined">person</span>
+        <span class="material-symbols-outlined" aria-hidden="true">person</span>
         Profile
       </button>
       <button 
         class="nav-tab" 
         [class.active]="currentView === 'settings'"
         (click)="onViewChange('settings')"
+        [attr.aria-current]="currentView === 'settings' ? 'page' : null"
+        aria-label="Account settings"
       >
-        <span class="material-symbols-outlined">settings</span>
+        <span class="material-symbols-outlined" aria-hidden="true">settings</span>
         Settings
       </button>
     </div>
-  </div>
+  </nav>
 
   <!-- Main Content -->
-  <div class="dashboard-content">
+  <main class="dashboard-content" role="main">
     <!-- Overview View -->
-    <div *ngIf="currentView === 'overview'" class="overview-view">
+    <section *ngIf="currentView === 'overview'" class="overview-view" aria-label="Dashboard overview">
       <!-- Welcome Section -->
       <div class="welcome-section">
         <div class="welcome-content">
           <h1 class="welcome-title">Welcome back, Applicant!</h1>
           <p class="welcome-subtitle">Track your job applications and stay updated with your progress</p>
+          <div class="success-rate" *ngIf="stats.successRate > 0">
+            <span class="success-label">Success Rate:</span>
+            <span class="success-percentage">{{ stats.successRate }}%</span>
+          </div>
         </div>
-        <button class="browse-jobs-btn" (click)="browseJobs()">
-          <span class="material-symbols-outlined">search</span>
+        <button class="browse-jobs-btn" (click)="browseJobs()" aria-label="Browse more job opportunities">
+          <span class="material-symbols-outlined" aria-hidden="true">search</span>
           Browse More Jobs
         </button>
       </div>
 
       <!-- Statistics Cards -->
-      <div class="stats-grid">
-        <div class="stat-card total">
-          <div class="stat-icon">
+      <div class="stats-grid" role="region" aria-label="Application statistics">
+        <div class="stat-card total" role="article">
+          <div class="stat-icon" aria-hidden="true">
             <span class="material-symbols-outlined">work</span>
           </div>
           <div class="stat-content">
@@ -75,8 +87,8 @@
           </div>
         </div>
 
-        <div class="stat-card pending">
-          <div class="stat-icon">
+        <div class="stat-card pending" role="article">
+          <div class="stat-icon" aria-hidden="true">
             <span class="material-symbols-outlined">schedule</span>
           </div>
           <div class="stat-content">
@@ -85,8 +97,8 @@
           </div>
         </div>
 
-        <div class="stat-card shortlisted">
-          <div class="stat-icon">
+        <div class="stat-card shortlisted" role="article">
+          <div class="stat-icon" aria-hidden="true">
             <span class="material-symbols-outlined">star</span>
           </div>
           <div class="stat-content">
@@ -95,8 +107,8 @@
           </div>
         </div>
 
-        <div class="stat-card interviews" (click)="goToInterviews()" style="cursor:pointer;">
-          <div class="stat-icon">
+        <div class="stat-card interviews" (click)="goToInterviews()" style="cursor:pointer;" role="button" tabindex="0" aria-label="View interview schedule">
+          <div class="stat-icon" aria-hidden="true">
             <span class="material-symbols-outlined">event</span>
           </div>
           <div class="stat-content">
@@ -105,8 +117,8 @@
           </div>
         </div>
 
-        <div class="stat-card accepted">
-          <div class="stat-icon">
+        <div class="stat-card accepted" role="article">
+          <div class="stat-icon" aria-hidden="true">
             <span class="material-symbols-outlined">check_circle</span>
           </div>
           <div class="stat-content">
@@ -115,8 +127,8 @@
           </div>
         </div>
 
-        <div class="stat-card rejected">
-          <div class="stat-icon">
+        <div class="stat-card rejected" role="article">
+          <div class="stat-icon" aria-hidden="true">
             <span class="material-symbols-outlined">cancel</span>
           </div>
           <div class="stat-content">
@@ -129,32 +141,49 @@
       <!-- Recent Applications & Activity -->
       <div class="overview-grid">
         <!-- Recent Applications -->
-        <div class="overview-card applications-card">
+        <div class="overview-card applications-card" role="region" aria-label="Recent applications">
           <div class="card-header">
             <h2 class="card-title">Recent Applications</h2>
-            <button class="view-all-btn" (click)="onViewChange('applications')">
+            <button class="view-all-btn" (click)="onViewChange('applications')" aria-label="View all applications">
               View All
-              <span class="material-symbols-outlined">arrow_forward</span>
+              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
             </button>
           </div>
           <div class="applications-list">
-            <div *ngFor="let app of applications.slice(0, 3)" class="application-item">
+            <div *ngFor="let app of applications.slice(0, 3)" class="application-item" role="article">
               <div class="app-info">
                 <h3 class="app-title">{{ app.jobTitle }}</h3>
                 <p class="app-company">{{ app.company }} • {{ app.department }}</p>
+                <p class="app-location" *ngIf="app.location">
+                  <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+                  {{ app.location }}
+                </p>
                 <p class="app-date">Applied {{ formatDate(app.applicationDate) }}</p>
+                
+                <!-- Progress Bar -->
+                <div class="progress-container" *ngIf="app.status !== 'rejected' && app.status !== 'accepted'">
+                  <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="getApplicationProgress(app)"></div>
+                  </div>
+                  <span class="progress-text">{{ getApplicationProgress(app) | number:'1.0-0' }}% Complete</span>
+                </div>
               </div>
               <div class="app-status">
                 <span 
                   class="status-badge" 
                   [style.background-color]="getStatusColor(app.status)"
+                  [attr.aria-label]="'Status: ' + getStatusLabel(app.status)"
                 >
                   {{ getStatusLabel(app.status) }}
                 </span>
+                <div class="expiry-warning" *ngIf="isApplicationExpired(app)">
+                  <span class="material-symbols-outlined" aria-hidden="true">warning</span>
+                  <span>Expired</span>
+                </div>
               </div>
             </div>
             <div *ngIf="applications.length === 0" class="empty-state">
-              <span class="material-symbols-outlined">work_off</span>
+              <span class="material-symbols-outlined" aria-hidden="true">work_off</span>
               <p>No applications yet</p>
               <button class="browse-btn" (click)="browseJobs()">Browse Jobs</button>
             </div>
@@ -162,13 +191,13 @@
         </div>
 
         <!-- Recent Activity -->
-        <div class="overview-card activity-card">
+        <div class="overview-card activity-card" role="region" aria-label="Recent activity">
           <div class="card-header">
             <h2 class="card-title">Recent Activity</h2>
           </div>
           <div class="activity-list">
-            <div *ngFor="let activity of recentActivities.slice(0, 4)" class="activity-item">
-              <div class="activity-icon" [style.background-color]="getActivityColor(activity.type)">
+            <div *ngFor="let activity of recentActivities.slice(0, 4)" class="activity-item" role="article">
+              <div class="activity-icon" [style.background-color]="getActivityColor(activity.type)" aria-hidden="true">
                 <span class="material-symbols-outlined">{{ getActivityIcon(activity.type) }}</span>
               </div>
               <div class="activity-content">
@@ -178,30 +207,32 @@
               </div>
             </div>
             <div *ngIf="recentActivities.length === 0" class="empty-state">
-              <span class="material-symbols-outlined">notifications_off</span>
+              <span class="material-symbols-outlined" aria-hidden="true">notifications_off</span>
               <p>No recent activity</p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Applications View -->
-    <div *ngIf="currentView === 'applications'" class="applications-view">
+    <section *ngIf="currentView === 'applications'" class="applications-view" aria-label="Applications management">
       <div class="view-header">
         <h1 class="view-title">My Applications</h1>
         <div class="view-actions">
           <div class="search-box">
-            <span class="material-symbols-outlined">search</span>
+            <span class="material-symbols-outlined" aria-hidden="true">search</span>
             <input 
               type="text" 
               [(ngModel)]="searchTerm" 
+              (input)="onSearch()"
               placeholder="Search applications..."
               class="search-input"
+              aria-label="Search applications"
             >
           </div>
           <div class="filter-dropdown">
-            <select [(ngModel)]="selectedFilter" class="filter-select">
+            <select [(ngModel)]="selectedFilter" (change)="onFilterChange(selectedFilter)" class="filter-select" aria-label="Filter by status">
               <option value="all">All Status</option>
               <option value="pending">Pending Review</option>
               <option value="reviewing">Under Review</option>
@@ -214,77 +245,94 @@
         </div>
       </div>
 
-      <div class="applications-table">
-        <div class="table-header">
-          <div class="header-cell">Job Title</div>
-          <div class="header-cell">Company</div>
-          <div class="header-cell">Applied Date</div>
-          <div class="header-cell">Status</div>
-          <div class="header-cell">Last Updated</div>
-          <div class="header-cell">Actions</div>
+      <div class="applications-table" role="table" aria-label="Applications list">
+        <div class="table-header" role="row">
+          <div class="header-cell" role="columnheader">Job Title</div>
+          <div class="header-cell" role="columnheader">Company</div>
+          <div class="header-cell" role="columnheader">Applied Date</div>
+          <div class="header-cell" role="columnheader">Status</div>
+          <div class="header-cell" role="columnheader">Last Updated</div>
+          <div class="header-cell" role="columnheader">Actions</div>
         </div>
 
-        <div *ngFor="let app of filteredApplications" class="table-row">
-          <div class="table-cell job-info">
+        <div *ngFor="let app of filteredApplications" class="table-row" role="row">
+          <div class="table-cell job-info" role="cell">
             <h3 class="job-title">{{ app.jobTitle }}</h3>
             <p class="job-department">{{ app.department }}</p>
-            <p class="job-salary">{{ app.salaryRange }} • {{ app.employmentType }}</p>
+            <p class="job-salary">{{ app.salaryRange }} • {{ getEmploymentTypeLabel(app.employmentType) }}</p>
+            <p class="job-location" *ngIf="app.location">
+              <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+              {{ app.location }}
+            </p>
           </div>
-          <div class="table-cell">
+          <div class="table-cell" role="cell">
             <span class="company-name">{{ app.company }}</span>
           </div>
-          <div class="table-cell">
+          <div class="table-cell" role="cell">
             <span class="date">{{ formatDate(app.applicationDate) }}</span>
           </div>
-          <div class="table-cell">
+          <div class="table-cell" role="cell">
             <span 
               class="status-badge" 
               [style.background-color]="getStatusColor(app.status)"
+              [attr.aria-label]="'Status: ' + getStatusLabel(app.status)"
             >
               {{ getStatusLabel(app.status) }}
             </span>
+            <div class="expiry-warning" *ngIf="isApplicationExpired(app)">
+              <span class="material-symbols-outlined" aria-hidden="true">warning</span>
+              <span>Expired</span>
+            </div>
           </div>
-          <div class="table-cell">
+          <div class="table-cell" role="cell">
             <span class="date">{{ formatDate(app.lastUpdated) }}</span>
           </div>
-          <div class="table-cell actions">
-            <button class="action-btn view-btn" (click)="viewApplication(app)">
-              <span class="material-symbols-outlined">visibility</span>
+          <div class="table-cell actions" role="cell">
+            <button class="action-btn view-btn" (click)="viewApplication(app)" aria-label="View application details">
+              <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
             </button>
-            <button class="action-btn withdraw-btn" (click)="withdrawApplication(app)">
-              <span class="material-symbols-outlined">delete</span>
+            <button class="action-btn withdraw-btn" (click)="withdrawApplication(app)" aria-label="Withdraw application">
+              <span class="material-symbols-outlined" aria-hidden="true">delete</span>
             </button>
           </div>
         </div>
 
         <div *ngIf="filteredApplications.length === 0" class="empty-state">
-          <span class="material-symbols-outlined">search_off</span>
+          <span class="material-symbols-outlined" aria-hidden="true">search_off</span>
           <h3>No applications found</h3>
           <p>Try adjusting your search or filter criteria</p>
           <button class="browse-btn" (click)="browseJobs()">Browse Jobs</button>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Profile View -->
-    <div *ngIf="currentView === 'profile'" class="profile-view">
+    <section *ngIf="currentView === 'profile'" class="profile-view" aria-label="Profile information">
       <div class="profile-header">
         <h1 class="view-title">My Profile</h1>
-        <button class="edit-profile-btn">
-          <span class="material-symbols-outlined">edit</span>
+        <button class="edit-profile-btn" aria-label="Edit profile information">
+          <span class="material-symbols-outlined" aria-hidden="true">edit</span>
           Edit Profile
         </button>
       </div>
       
       <div class="profile-content">
         <div class="profile-card">
-          <div class="profile-avatar">
+          <div class="profile-avatar" aria-hidden="true">
             <span class="material-symbols-outlined">person</span>
           </div>
           <div class="profile-info">
             <h2 class="profile-name">John Doe</h2>
-                         <p class="profile-email">john.doe&#64;email.com</p>
+            <p class="profile-email">john.doe&#64;email.com</p>
             <p class="profile-phone">+63 912 345 6789</p>
+            <div class="profile-stats">
+              <span class="stat-item">
+                <strong>{{ stats.totalApplications }}</strong> Applications
+              </span>
+              <span class="stat-item">
+                <strong>{{ stats.successRate }}%</strong> Success Rate
+              </span>
+            </div>
           </div>
         </div>
 
@@ -304,6 +352,10 @@
                 <label>Address</label>
                 <span>123 Main Street, Quezon City, Metro Manila</span>
               </div>
+              <div class="info-item">
+                <label>Nationality</label>
+                <span>Filipino</span>
+              </div>
             </div>
           </div>
 
@@ -313,6 +365,7 @@
               <h4>Bachelor of Science in Computer Science</h4>
               <p>University of the Philippines</p>
               <p>2010 - 2014</p>
+              <p class="gpa">GPA: 3.8/4.0</p>
             </div>
           </div>
 
@@ -325,14 +378,26 @@
               <span class="skill-tag">React</span>
               <span class="skill-tag">Node.js</span>
               <span class="skill-tag">Python</span>
+              <span class="skill-tag">SQL</span>
+              <span class="skill-tag">Git</span>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <h3 class="section-title">Work Experience</h3>
+            <div class="experience-item">
+              <h4>Senior Software Developer</h4>
+              <p>Tech Solutions Inc.</p>
+              <p>2020 - Present</p>
+              <p>Led development of web applications using modern technologies</p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Settings View -->
-    <div *ngIf="currentView === 'settings'" class="settings-view">
+    <section *ngIf="currentView === 'settings'" class="settings-view" aria-label="Account settings">
       <div class="settings-header">
         <h1 class="view-title">Settings</h1>
       </div>
@@ -346,7 +411,7 @@
               <p>Receive updates about your applications</p>
             </div>
             <label class="toggle-switch">
-              <input type="checkbox" checked>
+              <input type="checkbox" checked aria-label="Enable email notifications">
               <span class="toggle-slider"></span>
             </label>
           </div>
@@ -357,7 +422,18 @@
               <p>Receive SMS updates about interviews</p>
             </div>
             <label class="toggle-switch">
-              <input type="checkbox">
+              <input type="checkbox" aria-label="Enable SMS notifications">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Application Reminders</h4>
+              <p>Get reminders for application deadlines</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked aria-label="Enable application reminders">
               <span class="toggle-slider"></span>
             </label>
           </div>
@@ -371,7 +447,7 @@
               <p>Allow employers to view your profile</p>
             </div>
             <label class="toggle-switch">
-              <input type="checkbox" checked>
+              <input type="checkbox" checked aria-label="Enable profile visibility">
               <span class="toggle-slider"></span>
             </label>
           </div>
@@ -380,23 +456,23 @@
         <div class="settings-section">
           <h3 class="section-title">Account Actions</h3>
           <div class="action-buttons">
-            <button class="action-btn secondary">Change Password</button>
-            <button class="action-btn secondary">Export Data</button>
-            <button class="action-btn danger">Delete Account</button>
+            <button class="action-btn secondary" aria-label="Change password">Change Password</button>
+            <button class="action-btn secondary" aria-label="Export account data">Export Data</button>
+            <button class="action-btn danger" aria-label="Delete account">Delete Account</button>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 </div>
 
 <!-- Application Details Modal -->
-<div *ngIf="showApplicationModal" class="modal-overlay" (click)="closeApplicationModal()">
+<div *ngIf="showApplicationModal" class="modal-overlay" (click)="closeApplicationModal()" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2 class="modal-title">Application Details</h2>
-      <button class="modal-close-btn" (click)="closeApplicationModal()">
-        <span class="material-symbols-outlined">close</span>
+      <h2 id="modal-title" class="modal-title">Application Details</h2>
+      <button class="modal-close-btn" (click)="closeApplicationModal()" aria-label="Close modal">
+        <span class="material-symbols-outlined" aria-hidden="true">close</span>
       </button>
     </div>
     
@@ -407,6 +483,10 @@
           <h3 class="modal-job-title">{{ selectedApplication.jobTitle }}</h3>
           <p class="modal-company">{{ selectedApplication.company }}</p>
           <p class="modal-department">{{ selectedApplication.department }}</p>
+          <p class="modal-location" *ngIf="selectedApplication.location">
+            <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+            {{ selectedApplication.location }}
+          </p>
         </div>
         <div class="status-section">
           <span 
@@ -415,6 +495,10 @@
           >
             {{ getStatusLabel(selectedApplication.status) }}
           </span>
+          <div class="expiry-warning" *ngIf="isApplicationExpired(selectedApplication)">
+            <span class="material-symbols-outlined" aria-hidden="true">warning</span>
+            <span>Application Expired</span>
+          </div>
         </div>
       </div>
 
@@ -438,11 +522,27 @@
         </div>
         <div class="detail-item">
           <label>Employment Type</label>
-          <span>{{ selectedApplication.employmentType }}</span>
+          <span>{{ getEmploymentTypeLabel(selectedApplication.employmentType) }}</span>
         </div>
         <div class="detail-item" *ngIf="selectedApplication.time">
           <label>Interview Time</label>
           <span>{{ selectedApplication.time }}</span>
+        </div>
+      </div>
+
+      <!-- Job Description -->
+      <div class="description-section" *ngIf="selectedApplication.description">
+        <h4 class="section-title">Job Description</h4>
+        <p class="job-description">{{ selectedApplication.description }}</p>
+      </div>
+
+      <!-- Requirements -->
+      <div class="requirements-section" *ngIf="selectedApplication.requirements?.length">
+        <h4 class="section-title">Requirements</h4>
+        <div class="requirements-list">
+          <span *ngFor="let requirement of selectedApplication.requirements" class="requirement-tag">
+            {{ requirement }}
+          </span>
         </div>
       </div>
 
@@ -485,7 +585,7 @@
           (click)="withdrawApplication(selectedApplication); closeApplicationModal()"
           *ngIf="selectedApplication.status !== 'rejected' && selectedApplication.status !== 'accepted'"
         >
-          <span class="material-symbols-outlined">delete</span>
+          <span class="material-symbols-outlined" aria-hidden="true">delete</span>
           Withdraw
         </button>
       </div>

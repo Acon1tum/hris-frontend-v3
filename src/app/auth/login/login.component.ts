@@ -59,6 +59,15 @@ export class LoginComponent implements OnInit {
       next: (user) => {
         console.log('Login successful:', user);
         
+        // Check if user is an Applicant
+        if (user.role === 'Applicant') {
+          // Logout the user since they shouldn't be using this login
+          this.authService.logout();
+          this.errorMessage = 'Applicant accounts should use the Job Portal Login. Please use the link below.';
+          this.isLoading = false;
+          return;
+        }
+        
         // Emit login success event
         this.loginSuccess.emit();
 
@@ -96,6 +105,13 @@ export class LoginComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
+    // Check if trying to login as Applicant
+    if (role.toLowerCase() === 'applicant') {
+      this.errorMessage = 'Applicant accounts should use the Job Portal Login. Please use the link below.';
+      this.isLoading = false;
+      return;
+    }
+
     // Set demo credentials based on seed data
     switch (role.toLowerCase()) {
       case 'admin':
@@ -119,6 +135,15 @@ export class LoginComponent implements OnInit {
     this.authService.demoLogin(role).subscribe({
       next: (user) => {
         console.log('Demo login successful:', user);
+        
+        // Check if user is an Applicant (double-check)
+        if (user.role === 'Applicant') {
+          // Logout the user since they shouldn't be using this login
+          this.authService.logout();
+          this.errorMessage = 'Applicant accounts should use the Job Portal Login. Please use the link below.';
+          this.isLoading = false;
+          return;
+        }
         
         // Emit login success event
         this.loginSuccess.emit();
@@ -147,6 +172,10 @@ export class LoginComponent implements OnInit {
     // Set a flag to indicate public job portal mode
     localStorage.setItem('jobPortalPublicMode', 'true');
     this.router.navigate(['/online-job-application-portal']);
+  }
+
+  goToJobPortalLogin() {
+    this.router.navigate(['/online-job-login']);
   }
 
   onResetRateLimit() {

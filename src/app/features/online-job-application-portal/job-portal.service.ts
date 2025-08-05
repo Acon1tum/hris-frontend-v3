@@ -1,30 +1,33 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { map } from 'rxjs/operators';
 
 export interface JobPosting {
   id: string;
   position_title: string;
-  department: { department_name: string };
+  department_id: string;
+  department?: {
+    department_name: string;
+  };
   job_description: string;
   qualifications: string;
+  technical_competencies: string;
   salary_range: string;
   employment_type: string;
+  num_vacancies: number;
   application_deadline: string;
   posting_status: string;
-  // Add other fields as needed
-  logoUrl?: string; // Optional logo URL for UI/UX
-  technical_competencies?: string;
-  num_vacancies?: number;
-  created_at?: string;
-  created_by?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface SalaryRange {
-  value: string;
-  label: string;
+  range: string;
+  count: number;
+  value?: string; // For backward compatibility
+  label?: string; // For backward compatibility
 }
 
 export interface JobFilters {
@@ -33,43 +36,93 @@ export interface JobFilters {
   salary_range?: string;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class JobPortalService {
-  private apiUrl = `${environment.apiUrl}/job-portal`;
+  private currentApplicantSubject = new BehaviorSubject<any>(null);
+  public currentApplicant$ = this.currentApplicantSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
-  getJobPostings(filters?: JobFilters): Observable<JobPosting[]> {
-    let params = new URLSearchParams();
+  // Get all published job postings
+  getJobs(filters?: JobFilters): Observable<JobPosting[]> {
+    let url = `${environment.apiUrl}/job-portal/jobs`;
     
     if (filters) {
+      const params = new URLSearchParams();
       if (filters.keywords) params.append('keywords', filters.keywords);
       if (filters.department) params.append('department', filters.department);
       if (filters.salary_range) params.append('salary_range', filters.salary_range);
+      
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
     }
-    
-    const url = filters ? `${this.apiUrl}/jobs?${params.toString()}` : `${this.apiUrl}/jobs`;
-    
-    return this.http.get<{ success: boolean; data: JobPosting[] }>(url).pipe(
-      map(res => res.data)
-    );
+
+    return this.http.get<{ success: boolean; data: JobPosting[] }>(url)
+      .pipe(
+        map(response => response.data || [])
+      );
   }
 
-  getSalaryRanges(): Observable<SalaryRange[]> {
-    return this.http.get<{ success: boolean; data: string[] }>(`${this.apiUrl}/salary-ranges`).pipe(
-      map(res => {
-        const ranges = res.data || [];
-        return [
-          { value: '', label: 'All salary ranges' },
-          ...ranges.map(range => ({ value: range, label: range }))
-        ];
-      })
-    );
+  // Get a specific job posting
+  getJob(id: string): Observable<JobPosting> {
+    return this.http.get<{ success: boolean; data: JobPosting }>(`${environment.apiUrl}/job-portal/jobs/${id}`)
+      .pipe(
+        map(response => response.data)
+      );
   }
 
+  // Get salary ranges
+  getSalaryRanges(): Observable<string[]> {
+    return this.http.get<{ success: boolean; data: string[] }>(`${environment.apiUrl}/job-portal/salary-ranges`)
+      .pipe(
+        map(response => response.data || [])
+      );
+  }
+
+  // Get departments
   getDepartments(): Observable<string[]> {
-    return this.http.get<{ success: boolean; data: string[] }>(`${this.apiUrl}/departments`).pipe(
-      map(res => res.data || [])
-    );
+    return this.http.get<{ success: boolean; data: string[] }>(`${environment.apiUrl}/job-portal/departments`)
+      .pipe(
+        map(response => response.data || [])
+      );
+  }
+
+  // Apply to a job
+  applyToJob(jobId: string, applicationData: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/job-portal/applications`, {
+      position_id: jobId,
+      ...applicationData
+    });
+  }
+
+  // Get current applicant
+  getCurrentApplicant(): any {
+    return this.currentApplicantSubject.value;
+  }
+
+  // Set current applicant
+  setCurrentApplicant(applicant: any): void {
+    this.currentApplicantSubject.next(applicant);
+  }
+
+  // Check if user is authenticated
+  isAuthenticated(): boolean {
+    const token = localStorage.getItem('hris_token');
+    return !!token;
+  }
+
+  // Get authentication token
+  getToken(): string | null {
+    return localStorage.getItem('hris_token');
+  }
+
+  // Logout
+  logout(): void {
+    localStorage.removeItem('hris_token');
+    localStorage.removeItem('hris_user');
+    this.currentApplicantSubject.next(null);
   }
 } 

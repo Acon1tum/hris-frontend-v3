@@ -5,11 +5,12 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { JobPortalService, JobPosting, SalaryRange, JobFilters } from './job-portal.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ApplicationModalComponent } from './application-modal/application-modal.component';
 
 @Component({
   selector: 'app-online-job-application-portal',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, HttpClientModule, FormsModule],
+  imports: [CommonModule, HeaderComponent, HttpClientModule, FormsModule, ApplicationModalComponent],
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss']
 })
@@ -29,6 +30,8 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   modalJob: JobPosting | null = null;
   showFavourites = false;
   favourites: string[] = [];
+  showApplicationModal = false;
+  applicationJob: JobPosting | null = null;
 
   // Header scroll animation properties
   isHeaderVisible = true;
@@ -136,40 +139,45 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
 
   fetchJobs() {
     this.loading = true;
-    this.jobPortalService.getJobPostings().subscribe({
-      next: (jobs) => {
+    this.error = null;
+    
+    this.jobPortalService.getJobs().subscribe({
+      next: (jobs: JobPosting[]) => {
         this.jobs = jobs;
         this.filteredJobs = jobs;
         this.loading = false;
-        if (jobs.length > 0) {
-          this.selectedJob = jobs[0]; // Optionally select the first job by default
-        }
       },
-      error: (err) => {
-        this.error = 'Failed to load jobs';
+      error: (err: any) => {
+        this.error = 'Failed to load jobs. Please try again.';
         this.loading = false;
+        console.error('Error fetching jobs:', err);
       }
     });
   }
 
   fetchSalaryRanges() {
     this.jobPortalService.getSalaryRanges().subscribe({
-      next: (ranges) => {
-        this.salaryRanges = ranges;
+      next: (ranges: string[]) => {
+        this.salaryRanges = ranges.map(range => ({ 
+          range, 
+          count: 0,
+          value: range, // For template compatibility
+          label: range  // For template compatibility
+        }));
       },
-      error: (err) => {
-        console.error('Failed to load salary ranges:', err);
+      error: (err: any) => {
+        console.error('Error fetching salary ranges:', err);
       }
     });
   }
 
   fetchDepartments() {
     this.jobPortalService.getDepartments().subscribe({
-      next: (departments) => {
+      next: (departments: string[]) => {
         this.departments = departments;
       },
-      error: (err) => {
-        console.error('Failed to load departments:', err);
+      error: (err: any) => {
+        console.error('Error fetching departments:', err);
       }
     });
   }
@@ -190,12 +198,12 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
     }
     if (this.selectedSalaryRange && this.selectedSalaryRange !== '') {
       filters.salary_range = this.selectedSalaryRange;
-      const rangeLabel = this.salaryRanges.find(r => r.value === this.selectedSalaryRange)?.label || this.selectedSalaryRange;
+      const rangeLabel = this.salaryRanges.find(r => (r.value || r.range) === this.selectedSalaryRange)?.label || this.selectedSalaryRange;
       this.activeFilters.push({ key: 'salary_range', label: `Salary: ${rangeLabel}` });
     }
 
-    this.jobPortalService.getJobPostings(filters).subscribe({
-      next: (jobs) => {
+    this.jobPortalService.getJobs(filters).subscribe({
+      next: (jobs: JobPosting[]) => {
         this.jobs = jobs;
         this.filteredJobs = jobs;
         this.loading = false;
@@ -205,7 +213,7 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
           this.selectedJob = this.filteredJobs[0];
         }
       },
-      error: (err) => {
+      error: (err: any) => {
         this.error = 'Failed to search jobs';
         this.loading = false;
         console.error('Search error:', err);
@@ -248,7 +256,13 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   }
 
   applyToJob(job: JobPosting) {
-    this.router.navigate(['/online-job-login']);
+    this.applicationJob = job;
+    this.showApplicationModal = true;
+  }
+
+  closeApplicationModal() {
+    this.showApplicationModal = false;
+    this.applicationJob = null;
   }
 
   get isMobile(): boolean {
