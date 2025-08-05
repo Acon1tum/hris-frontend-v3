@@ -30,6 +30,8 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   modalJob: JobPosting | null = null;
   showFavourites = false;
   favourites: string[] = [];
+  
+  // Application modal properties
   showApplicationModal = false;
   applicationJob: JobPosting | null = null;
 
@@ -139,18 +141,18 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
 
   fetchJobs() {
     this.loading = true;
-    this.error = null;
-    
     this.jobPortalService.getJobs().subscribe({
       next: (jobs: JobPosting[]) => {
         this.jobs = jobs;
         this.filteredJobs = jobs;
         this.loading = false;
+        if (jobs.length > 0) {
+          this.selectedJob = jobs[0]; // Optionally select the first job by default
+        }
       },
       error: (err: any) => {
-        this.error = 'Failed to load jobs. Please try again.';
+        this.error = 'Failed to load jobs';
         this.loading = false;
-        console.error('Error fetching jobs:', err);
       }
     });
   }
@@ -158,15 +160,16 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   fetchSalaryRanges() {
     this.jobPortalService.getSalaryRanges().subscribe({
       next: (ranges: string[]) => {
-        this.salaryRanges = ranges.map(range => ({ 
-          range, 
+        // Convert string array to SalaryRange array for compatibility
+        this.salaryRanges = ranges.map((range, index) => ({
+          range: range,
           count: 0,
-          value: range, // For template compatibility
-          label: range  // For template compatibility
+          value: range,
+          label: range
         }));
       },
       error: (err: any) => {
-        console.error('Error fetching salary ranges:', err);
+        console.error('Failed to load salary ranges:', err);
       }
     });
   }
@@ -177,7 +180,7 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
         this.departments = departments;
       },
       error: (err: any) => {
-        console.error('Error fetching departments:', err);
+        console.error('Failed to load departments:', err);
       }
     });
   }
@@ -198,7 +201,7 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
     }
     if (this.selectedSalaryRange && this.selectedSalaryRange !== '') {
       filters.salary_range = this.selectedSalaryRange;
-      const rangeLabel = this.salaryRanges.find(r => (r.value || r.range) === this.selectedSalaryRange)?.label || this.selectedSalaryRange;
+      const rangeLabel = this.salaryRanges.find(r => r.value === this.selectedSalaryRange)?.label || this.selectedSalaryRange;
       this.activeFilters.push({ key: 'salary_range', label: `Salary: ${rangeLabel}` });
     }
 
@@ -347,4 +350,4 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
     document.body.removeChild(textarea);
   }
 }
- 
+  
