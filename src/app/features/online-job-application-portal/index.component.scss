@@ -201,11 +201,12 @@ html {
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  &:hover, &.selected {
-    border: 1.5px solid #223b6a;
-    box-shadow: 0 6px 24px rgba(34,59,106,0.13);
-    background: #f5f8fd;
-  }
+}
+
+.job-card:hover, .job-card.selected {
+  border: 1.5px solid #223b6a;
+  box-shadow: 0 6px 24px rgba(34,59,106,0.13);
+  background: #f5f8fd;
 }
 
 .job-card-accent {

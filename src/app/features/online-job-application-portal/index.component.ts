@@ -5,11 +5,12 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { JobPortalService, JobPosting, SalaryRange, JobFilters } from './job-portal.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ApplicationModalComponent } from './application-modal/application-modal.component';
 
 @Component({
   selector: 'app-online-job-application-portal',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, HttpClientModule, FormsModule],
+  imports: [CommonModule, HeaderComponent, HttpClientModule, FormsModule, ApplicationModalComponent],
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss']
 })
@@ -29,6 +30,8 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   modalJob: JobPosting | null = null;
   showFavourites = false;
   favourites: string[] = [];
+  showApplicationModal = false;
+  applicationJob: JobPosting | null = null;
 
   // Header scroll animation properties
   isHeaderVisible = true;
@@ -253,7 +256,13 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   }
 
   applyToJob(job: JobPosting) {
-    this.router.navigate(['/online-job-login']);
+    this.applicationJob = job;
+    this.showApplicationModal = true;
+  }
+
+  closeApplicationModal() {
+    this.showApplicationModal = false;
+    this.applicationJob = null;
   }
 
   get isMobile(): boolean {
