@@ -288,7 +288,49 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   }
 
   isFavourite(job: JobPosting): boolean {
-    return this.favourites.includes(job.id);
+    return this.favourites.includes(job.id!);
+  }
+
+  shareJob(job: JobPosting) {
+    const jobData = {
+      title: job.position_title,
+      company: job.department?.department_name,
+      description: job.job_description,
+      url: window.location.href
+    };
+
+    if (navigator.share) {
+      // Use native sharing if available
+      navigator.share({
+        title: `${jobData.title} at ${jobData.company}`,
+        text: `Check out this job opportunity: ${jobData.title} at ${jobData.company}`,
+        url: jobData.url
+      }).catch((error) => {
+        console.log('Error sharing:', error);
+        this.fallbackShare(jobData);
+      });
+    } else {
+      // Fallback for browsers that don't support native sharing
+      this.fallbackShare(jobData);
+    }
+  }
+
+  private fallbackShare(jobData: any) {
+    // Create a temporary textarea to copy the job details
+    const textarea = document.createElement('textarea');
+    textarea.value = `Job: ${jobData.title}\nCompany: ${jobData.company}\nDescription: ${jobData.description}\nURL: ${jobData.url}`;
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+      document.execCommand('copy');
+      alert('Job details copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+      alert('Failed to copy job details. Please copy manually.');
+    }
+    
+    document.body.removeChild(textarea);
   }
 }
  
