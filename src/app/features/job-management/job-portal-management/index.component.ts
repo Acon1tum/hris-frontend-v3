@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { JobPortalManagementService, JobPosting, Department, SalaryRange, ApiResponse } from './job-portal-management.service';
@@ -10,7 +10,7 @@ import { JobPortalManagementService, JobPosting, Department, SalaryRange, ApiRes
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss']
 })
-export class JobPortalManagementComponent implements OnInit {
+export class JobPortalManagementComponent implements OnInit, OnDestroy {
   // ===== COMPONENT STATE =====
   showForm = false;
   isEdit = false;
@@ -42,6 +42,10 @@ export class JobPortalManagementComponent implements OnInit {
     this.fetchAllJobsUnlimited();
     this.fetchDepartments();
     this.fetchSalaryRanges();
+  }
+
+  ngOnDestroy(): void {
+    this.setModalActive(false);
   }
 
   // ===== INITIALIZATION METHODS =====
@@ -190,6 +194,7 @@ export class JobPortalManagementComponent implements OnInit {
     this.editJobId = null;
     this.jobPosting = this.getEmptyJobPosting();
     this.clearMessages();
+    this.setModalActive(true);
     
     // If departments or salary ranges are empty, try to fetch them again
     if (this.departments.length === 0) {
@@ -226,6 +231,7 @@ export class JobPortalManagementComponent implements OnInit {
     this.isEdit = true;
     this.editJobId = job.id || null;
     this.clearMessages();
+    this.setModalActive(true);
   }
 
   onDeleteJob(job: JobPosting) {
@@ -960,6 +966,7 @@ export class JobPortalManagementComponent implements OnInit {
     this.editJobId = null;
     this.jobPosting = this.getEmptyJobPosting();
     this.loading = false;
+    this.setModalActive(false);
   }
 
   clearMessages() {
@@ -1065,5 +1072,14 @@ export class JobPortalManagementComponent implements OnInit {
         card.classList.remove('success-animation');
       }, 600);
     });
+  }
+
+  setModalActive(active: boolean) {
+    const body = document.body;
+    if (active) {
+      body.classList.add('modal-active');
+    } else {
+      body.classList.remove('modal-active');
+    }
   }
 } 

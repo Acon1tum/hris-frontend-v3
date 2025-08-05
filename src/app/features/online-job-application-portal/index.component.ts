@@ -5,12 +5,12 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { JobPortalService, JobPosting, SalaryRange, JobFilters } from './job-portal.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { ApplicationModalComponent } from './application-modal/application-modal.component';
+
 
 @Component({
   selector: 'app-online-job-application-portal',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, HttpClientModule, FormsModule, ApplicationModalComponent],
+  imports: [CommonModule, HeaderComponent, HttpClientModule, FormsModule],
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss']
 })
