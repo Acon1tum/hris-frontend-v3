@@ -1,13 +1,47 @@
 <div class="loans-container">
   <div class="loans-content">
     <div class="loans-header">
-      <div class="header-content">
-        <h1 class="page-title">💳 Loans</h1>
-        <p class="page-description">Manage your current loans and apply for new ones.</p>
+      <div class="header-content-flex">
+        <div>
+          <h1 class="page-title">💳 Loans</h1>
+          <p class="page-description">Manage your current loans and apply for new ones.</p>
+        </div>
+        <button class="apply-loan-btn" (click)="applyForLoan()">
+          <span>+ Apply for Loan</span>
+        </button>
+      </div>
+      
+      <!-- Navigation Tabs -->
+      <div class="navigation-tabs">
+        <button 
+          class="nav-tab" 
+          [class.active]="activeTab === 'current'"
+          (click)="setActiveTab('current')"
+        >
+          <span class="tab-icon">📋</span>
+          <span class="tab-text">Current Loans</span>
+        </button>
+        <button 
+          class="nav-tab" 
+          [class.active]="activeTab === 'applications'"
+          (click)="setActiveTab('applications')"
+        >
+          <span class="tab-icon">📝</span>
+          <span class="tab-text">Loan Applications</span>
+        </button>
+        <button 
+          class="nav-tab" 
+          [class.active]="activeTab === 'history'"
+          (click)="setActiveTab('history')"
+        >
+          <span class="tab-icon">📊</span>
+          <span class="tab-text">Repayment History</span>
+        </button>
       </div>
     </div>
     
-    <div class="loans-section">
+    <!-- Current Loans Section -->
+    <div class="loans-section" *ngIf="activeTab === 'current'">
       <h2 class="section-title">Current Loan List</h2>
       <div class="table-container">
         <div class="table-wrapper">
@@ -53,8 +87,48 @@
         </div>
       </div>
     </div>
-    
-    <div class="loans-section">
+
+    <!-- Loan Applications Section -->
+    <div class="loans-section" *ngIf="activeTab === 'applications'">
+      <h2 class="section-title">My Loan Applications</h2>
+      <div class="table-container">
+        <div class="table-wrapper">
+          <table class="loans-table">
+            <thead>
+              <tr>
+                <th>Application Date</th>
+                <th>Loan Type</th>
+                <th>Amount</th>
+                <th>Term</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let application of loanApplications">
+                <td>{{ formatDate(application.applicationDate) }}</td>
+                <td>{{ application.loanType }}</td>
+                <td>{{ formatCurrency(application.amount) }}</td>
+                <td>{{ application.term }} months</td>
+                <td>
+                  <button class="status-badge" [class]="'status-' + application.status.toLowerCase()">
+                    <span>{{ application.status }}</span>
+                  </button>
+                </td>
+                <td>
+                  <button class="view-details-btn" (click)="viewApplicationDetails(application)">
+                    <span>View Details</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Repayment History Section -->
+    <div class="loans-section" *ngIf="activeTab === 'history'">
       <h2 class="section-title">Repayment History</h2>
       <div class="table-container">
         <div class="table-wrapper">
@@ -169,6 +243,218 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loan Application Modal -->
+  <div class="modal-overlay" *ngIf="showLoanApplication" (click)="closeLoanApplication()">
+    <div class="modal-content application-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">📝 Apply for Loan</h2>
+        <button class="close-btn" (click)="closeLoanApplication()">
+          <span>&times;</span>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <form class="loan-application-form" (ngSubmit)="submitLoanApplication()" #loanForm="ngForm">
+          <div class="form-section">
+            <h3 class="section-title">Loan Information</h3>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="loanType">Loan Type *</label>
+                <select id="loanType" name="loanType" [(ngModel)]="loanApplication.loanType" required>
+                  <option value="">Select loan type</option>
+                  <option value="Personal">Personal Loan</option>
+                  <option value="Car">Car Loan</option>
+                  <option value="Home">Home Loan</option>
+                  <option value="Business">Business Loan</option>
+                  <option value="Education">Education Loan</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="loanAmount">Loan Amount (₱) *</label>
+                <input 
+                  type="number" 
+                  id="loanAmount" 
+                  name="loanAmount" 
+                  [(ngModel)]="loanApplication.loanAmount" 
+                  placeholder="Enter amount"
+                  min="10000"
+                  max="1000000"
+                  required
+                >
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="loanTerm">Loan Term (months) *</label>
+                <select id="loanTerm" name="loanTerm" [(ngModel)]="loanApplication.loanTerm" required>
+                  <option value="">Select term</option>
+                  <option value="12">12 months</option>
+                  <option value="24">24 months</option>
+                  <option value="36">36 months</option>
+                  <option value="48">48 months</option>
+                  <option value="60">60 months</option>
+                  <option value="120">120 months</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="loanPurpose">Purpose *</label>
+                <input 
+                  type="text" 
+                  id="loanPurpose" 
+                  name="loanPurpose" 
+                  [(ngModel)]="loanApplication.loanPurpose" 
+                  placeholder="e.g., Home renovation, Car purchase"
+                  required
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">Personal Information</h3>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="monthlyIncome">Monthly Income (₱) *</label>
+                <input 
+                  type="number" 
+                  id="monthlyIncome" 
+                  name="monthlyIncome" 
+                  [(ngModel)]="loanApplication.monthlyIncome" 
+                  placeholder="Enter monthly income"
+                  required
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="existingLoans">Existing Loans (₱)</label>
+                <input 
+                  type="number" 
+                  id="existingLoans" 
+                  name="existingLoans" 
+                  [(ngModel)]="loanApplication.existingLoans" 
+                  placeholder="Total existing loans"
+                  value="0"
+                >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="collateral">Collateral/Security</label>
+              <textarea 
+                id="collateral" 
+                name="collateral" 
+                [(ngModel)]="loanApplication.collateral" 
+                placeholder="Describe any collateral or security for the loan"
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">Loan Summary</h3>
+            <div class="loan-summary-preview" *ngIf="loanApplication.loanAmount && loanApplication.loanTerm">
+              <div class="summary-item">
+                <label>Monthly Payment (Estimated)</label>
+                <span class="amount">{{ calculateMonthlyPayment() | currency:'PHP':'symbol':'1.0-0' }}</span>
+              </div>
+              <div class="summary-item">
+                <label>Total Interest (Estimated)</label>
+                <span class="amount">{{ calculateTotalInterest() | currency:'PHP':'symbol':'1.0-0' }}</span>
+              </div>
+              <div class="summary-item">
+                <label>Total Amount (Estimated)</label>
+                <span class="amount total">{{ calculateTotalAmount() | currency:'PHP':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="cancel-btn" (click)="closeLoanApplication()">
+              Cancel
+            </button>
+            <button type="submit" class="submit-btn" [disabled]="!loanForm.valid || isSubmitting">
+              <span *ngIf="!isSubmitting">Submit Application</span>
+              <span *ngIf="isSubmitting">Submitting...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Details Modal -->
+  <div class="modal-overlay" *ngIf="showApplicationDetails" (click)="closeApplicationDetails()">
+    <div class="modal-content application-details-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">📋 Application Details</h2>
+        <button class="close-btn" (click)="closeApplicationDetails()">
+          <span>&times;</span>
+        </button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedApplication">
+        <div class="application-summary">
+          <div class="summary-grid">
+            <div class="summary-item">
+              <label>Application Date</label>
+              <span class="date">{{ formatDate(selectedApplication.applicationDate) }}</span>
+            </div>
+            <div class="summary-item">
+              <label>Loan Type</label>
+              <span class="type">{{ selectedApplication.loanType }}</span>
+            </div>
+            <div class="summary-item">
+              <label>Amount Requested</label>
+              <span class="amount">{{ formatCurrency(selectedApplication.amount) }}</span>
+            </div>
+            <div class="summary-item">
+              <label>Loan Term</label>
+              <span class="term">{{ selectedApplication.term }} months</span>
+            </div>
+            <div class="summary-item">
+              <label>Status</label>
+              <span class="status" [class]="'status-' + selectedApplication.status.toLowerCase()">
+                {{ selectedApplication.status }}
+              </span>
+            </div>
+            <div class="summary-item">
+              <label>Monthly Income</label>
+              <span class="income">{{ formatCurrency(selectedApplication.monthlyIncome) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="application-details">
+          <div class="detail-section">
+            <h3>Purpose</h3>
+            <p>{{ selectedApplication.purpose }}</p>
+          </div>
+          
+          <div class="detail-section" *ngIf="selectedApplication.existingLoans > 0">
+            <h3>Existing Loans</h3>
+            <p>{{ formatCurrency(selectedApplication.existingLoans) }}</p>
+          </div>
+          
+          <div class="detail-section" *ngIf="selectedApplication.collateral">
+            <h3>Collateral/Security</h3>
+            <p>{{ selectedApplication.collateral }}</p>
+          </div>
+        </div>
+
+        <div class="application-actions" *ngIf="selectedApplication.status === 'Pending'">
+          <button class="cancel-application-btn" (click)="cancelApplication(selectedApplication)">
+            Cancel Application
+          </button>
         </div>
       </div>
     </div>
