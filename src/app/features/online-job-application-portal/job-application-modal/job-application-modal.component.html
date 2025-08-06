@@ -329,7 +329,7 @@
             <div *ngIf="uploadedDocuments.length > 0; else emptyState" class="space-y-3 max-h-80 overflow-y-auto pr-1">
               <div
                 *ngFor="let doc of uploadedDocuments"
-                class="flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-lg p-3 shadow-sm"
+                class="flex items-center gap-4 bg-gray-50 border max-w-2xl rounded-lg p-3 shadow-sm"
               >
                 <div class="flex-shrink-0">
                   <div class="w-12 h-12 flex items-center justify-center bg-white border rounded-md">
