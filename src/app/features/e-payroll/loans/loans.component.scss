@@ -1,0 +1,1040 @@
+// Import Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900&display=swap');
+
+// Component styles
+:host {
+  display: block;
+  font-family: 'Inter', 'Noto Sans', sans-serif;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.loans-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 0.25rem;
+  background-color: #f8fafc;
+  position: relative;
+}
+
+.loans-content {
+  width: 100%;
+  max-width: 1200px;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.loans-header {
+  padding: 0.75rem 0.75rem 0.25rem;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.header-content {
+  text-align: center;
+}
+
+.header-content-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.apply-loan-btn {
+  background-color: #059669;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.07);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.apply-loan-btn:hover {
+  background-color: #047857;
+  transform: translateY(-1px) scale(1.03);
+}
+
+// Navigation Tabs Styles
+.navigation-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.navigation-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-tab {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.nav-tab:hover {
+  color: #3b82f6;
+  background-color: #f1f5f9;
+}
+
+.nav-tab.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.tab-icon {
+  font-size: 0.9rem;
+}
+
+.tab-text {
+  font-size: 0.75rem;
+}
+
+// Status badge variations for loan applications
+.status-badge.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.status-approved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.status-rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge.status-processing {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.page-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.15rem 0;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.page-description {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.loans-section {
+  padding: 0.5rem;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.35rem 0;
+  line-height: 1.3;
+}
+
+.table-container {
+  margin-bottom: 0.75rem;
+}
+
+.table-wrapper {
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.loans-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.loans-table th {
+  background-color: #f8fafc;
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  font-weight: 600;
+  color: #1e293b;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.loans-table td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+  vertical-align: middle;
+}
+
+.loans-table tr:last-child td {
+  border-bottom: none;
+}
+
+.loans-table tr:hover {
+  background-color: #f8fafc;
+}
+
+.status-badge {
+  background-color: #e7edf4;
+  color: #1e293b;
+  border: none;
+  border-radius: 12px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 45px;
+  text-align: center;
+}
+
+.status-badge:hover {
+  background-color: #d1d5db;
+  transform: translateY(-1px);
+}
+
+.view-details-btn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 60px;
+}
+
+.view-details-btn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.progress-bar {
+  width: 50px;
+  height: 3px;
+  background-color: #e2e8f0;
+  border-radius: 1.5px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #3b82f6;
+  border-radius: 1.5px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #1e293b;
+  min-width: 20px;
+}
+
+.action-section {
+  padding: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  text-align: right;
+}
+
+.download-btn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.download-btn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.download-btn:active {
+  transform: translateY(0);
+}
+
+// Modal Styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 0.25rem;
+  margin-left: 0;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 650px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease-out;
+  position: relative;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  transform: translateX(0);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.modal-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.125rem;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.2rem;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  background-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.modal-body {
+  padding: 0.75rem;
+}
+
+.loan-summary {
+  margin-bottom: 1rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.summary-item {
+  background-color: #f8fafc;
+  padding: 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.summary-item label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 0.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-item .amount {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.summary-item .amount.total {
+  color: #059669;
+}
+
+.summary-item .amount.repaid {
+  color: #3b82f6;
+}
+
+.summary-item .amount.remaining {
+  color: #dc2626;
+}
+
+.summary-item .rate {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #7c3aed;
+}
+
+.summary-item .progress {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+.loan-dates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.date-item {
+  background-color: #f8fafc;
+  padding: 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.date-item label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 0.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.date-item span {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.loan-breakdown {
+  margin-top: 1rem;
+}
+
+.loan-breakdown h3 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.breakdown-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.chart-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chart-bar {
+  height: 16px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 500;
+  min-width: 40px;
+  transition: width 0.3s ease;
+}
+
+.chart-bar.principal {
+  background-color: #3b82f6;
+}
+
+.chart-bar.interest {
+  background-color: #f59e0b;
+}
+
+.chart-bar.repaid {
+  background-color: #10b981;
+}
+
+// Responsive design
+@media (max-width: 1024px) {
+  .loans-content {
+    max-width: 100%;
+    margin: 0;
+  }
+  
+  .modal-content {
+    max-width: 80vw;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .loans-container {
+    padding: 0.15rem;
+  }
+  
+  .loans-header {
+    padding: 0.5rem 0.5rem 0.25rem;
+  }
+  
+  .page-title {
+    font-size: 1.125rem;
+  }
+  
+  .loans-section {
+    padding: 0.35rem;
+  }
+  
+  .section-title {
+    font-size: 0.9rem;
+  }
+  
+  .table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .loans-table {
+    min-width: 600px;
+  }
+  
+  .loans-table th,
+  .loans-table td {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+  }
+  
+  .progress-container {
+    gap: 0.3rem;
+  }
+  
+  .progress-bar {
+    width: 45px;
+  }
+  
+  .action-section {
+    padding: 0.35rem;
+  }
+  
+  .modal-overlay {
+    padding: 0.15rem;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    max-width: 92vw;
+    margin: 0 auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .modal-header {
+    padding: 0.5rem;
+  }
+  
+  .modal-body {
+    padding: 0.5rem;
+  }
+  
+  .summary-grid {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+  
+  .loan-dates {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .loans-container {
+    padding: 0;
+  }
+  
+  .loans-content {
+    border-radius: 0;
+    box-shadow: none;
+  }
+  
+  .loans-header {
+    padding: 0.4rem 0.4rem 0.2rem;
+  }
+  
+  .page-title {
+    font-size: 1rem;
+  }
+  
+  .loans-section {
+    padding: 0.3rem;
+  }
+  
+  .section-title {
+    font-size: 0.85rem;
+  }
+  
+  .loans-table th,
+  .loans-table td {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.65rem;
+  }
+  
+  .status-badge {
+    padding: 0.1rem 0.3rem;
+    font-size: 0.6rem;
+    min-width: 40px;
+  }
+  
+  .view-details-btn {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.6rem;
+    min-width: 55px;
+  }
+  
+  .progress-bar {
+    width: 35px;
+    height: 2px;
+  }
+  
+  .progress-text {
+    font-size: 0.6rem;
+  }
+  
+  .action-section {
+    padding: 0.3rem;
+  }
+  
+  .download-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+    min-width: 90px;
+  }
+  
+  .modal-overlay {
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+    margin: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .modal-header {
+    padding: 0.4rem;
+  }
+  
+  .modal-body {
+    padding: 0.4rem;
+  }
+  
+  .summary-item,
+  .date-item {
+    padding: 0.4rem;
+  }
+  
+  .summary-item .amount,
+  .summary-item .rate,
+  .summary-item .progress {
+    font-size: 0.8rem;
+  }
+}
+
+// Loan Application Modal Styles
+.application-modal {
+  max-width: 700px;
+  max-height: 85vh;
+}
+
+.loan-application-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-section {
+  background-color: #f8fafc;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.form-section .section-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #374151;
+  margin: 0;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  background-color: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.loan-summary-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.loan-summary-preview .summary-item {
+  background-color: white;
+  padding: 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.loan-summary-preview .summary-item label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.loan-summary-preview .summary-item .amount {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.loan-summary-preview .summary-item .amount.total {
+  color: #059669;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 1rem;
+}
+
+.cancel-btn {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.submit-btn {
+  background-color: #059669;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.submit-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+// Responsive design for loan application modal
+@media (max-width: 768px) {
+  .application-modal {
+    max-width: 95vw;
+    max-height: 90vh;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+  
+  .loan-summary-preview {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  
+  .submit-btn,
+  .cancel-btn {
+    width: 100%;
+    padding: 0.7rem 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .application-modal {
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .form-section {
+    padding: 0.8rem;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.8rem;
+  }
+}
+
+// Application Details Modal Styles
+.application-details-modal {
+  max-width: 600px;
+}
+
+.application-summary {
+  margin-bottom: 1.5rem;
+}
+
+.application-summary .summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.8rem;
+}
+
+.application-summary .summary-item {
+  background-color: #f8fafc;
+  padding: 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.application-summary .summary-item label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.application-summary .summary-item .date,
+.application-summary .summary-item .type,
+.application-summary .summary-item .amount,
+.application-summary .summary-item .term,
+.application-summary .summary-item .income {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.application-summary .summary-item .status {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.application-details {
+  margin-bottom: 1.5rem;
+}
+
+.detail-section {
+  margin-bottom: 1rem;
+}
+
+.detail-section h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-section p {
+  font-size: 0.85rem;
+  color: #475569;
+  margin: 0;
+  line-height: 1.5;
+  background-color: #f8fafc;
+  padding: 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.application-actions {
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.cancel-application-btn {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-application-btn:hover {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

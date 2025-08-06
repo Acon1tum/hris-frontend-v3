@@ -209,6 +209,42 @@ export const routes: Routes = [
     data: { roles: ['Admin', 'HR', 'Employee', 'Manager'] }
   },
   {
+    path: 'e-payroll',
+    loadComponent: () => import('./features/e-payroll/e-payroll.component').then(m => m.EPayrollComponent),
+    canActivate: [PermissionGuard],
+    data: { roles: ['Employee'] }
+  },
+  {
+    path: 'e-payroll/payslips',
+    loadComponent: () => import('./features/e-payroll/payslips/payslips.component').then(m => m.PayslipsComponent),
+    canActivate: [PermissionGuard],
+    data: { roles: ['Employee'] }
+  },
+  {
+    path: 'e-payroll/contributions',
+    loadComponent: () => import('./features/e-payroll/contributions/contributions.component').then(m => m.ContributionsComponent),
+    canActivate: [PermissionGuard],
+    data: { roles: ['Employee'] }
+  },
+  {
+    path: 'e-payroll/loans',
+    loadComponent: () => import('./features/e-payroll/loans/loans.component').then(m => m.LoansComponent),
+    canActivate: [PermissionGuard],
+    data: { roles: ['Employee'] }
+  },
+  {
+    path: 'e-payroll/thirteenth-month-pay',
+    loadComponent: () => import('./features/e-payroll/thirteenth-month-pay/thirteenth-month-pay.component').then(m => m.ThirteenthMonthPayComponent),
+    canActivate: [PermissionGuard],
+    data: { roles: ['Employee'] }
+  },
+  {
+    path: 'e-payroll/final-pay',
+    loadComponent: () => import('./features/e-payroll/final-pay/final-pay.component').then(m => m.FinalPayComponent),
+    canActivate: [PermissionGuard],
+    data: { roles: ['Employee'] }
+  },
+  {
     path: 'report-generation',
     loadComponent: () => import('./features/report-generation/index.component').then(m => m.ReportGenerationComponent),
     canActivate: [PermissionGuard],

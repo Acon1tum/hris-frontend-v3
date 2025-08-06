@@ -138,6 +138,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
       { name: 'My Reports', icon: 'report', path: '/employee-self-service/my-reports' },
       { name: 'Employee Attendance', icon: 'person', path: '/timekeeping-attendance/employee-attendance' },
       { name: 'Leave Employee', icon: 'event', path: '/leave-management/leave-employee' },
+      { name: 'E-Payroll', icon: 'payments', path: '/e-payroll', children: [
+        { name: 'Payslips', icon: 'payments', path: '/e-payroll/payslips' },
+        { name: 'Contributions', icon: 'payments', path: '/e-payroll/contributions' },
+        { name: 'Loans', icon: 'payments', path: '/e-payroll/loans' },
+        { name: 'Thirteen Month Pay', icon: 'payments', path: '/e-payroll/thirteenth-month-pay' },
+        { name: 'Final Pay', icon: 'payments', path: '/e-payroll/final-pay' }
+      ] },
       { name: 'Performance Management', icon: 'trending_up', path: '/performance-management' },
       { name: 'Health & Wellness', icon: 'health_and_safety', path: 'https://quanby-health-care.vercel.app/', external: true, target: '_blank' }
     ],
