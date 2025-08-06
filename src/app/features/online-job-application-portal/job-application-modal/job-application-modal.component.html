@@ -479,11 +479,15 @@
               </div>
             </div>
 
-            <div class="confirmation-checkbox">
-              <label class="checkbox-label">
-                <input type="checkbox" (change)="onConfirmationCheckboxChange($event)">
-                <span class="checkmark"></span>
-                I confirm that all information provided is accurate and complete
+            <div class="mt-6 flex items-start gap-3">
+              <input
+                id="confirmation"
+                type="checkbox"
+                (change)="onConfirmationCheckboxChange($event)"
+                class="h-5 w-5 shrink-0 rounded border border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-150"
+              />
+              <label for="confirmation" class="text-sm text-gray-700 leading-5 cursor-pointer select-none">
+                I confirm that all information provided is <span class="font-semibold text-gray-900">accurate</span> and <span class="font-semibold text-gray-900">complete</span>.
               </label>
             </div>
           </div>

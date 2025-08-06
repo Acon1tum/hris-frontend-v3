@@ -273,6 +273,45 @@
     </div>
   </section>
 </div>
+<!-- Login Prompt Modal for Public Mode -->
+<div class="login-prompt-overlay" *ngIf="showLoginPromptModal" (click)="closeLoginPromptModal()">
+  <div class="login-prompt-container" (click)="$event.stopPropagation()">
+    <div class="login-prompt-header">
+      <h3 class="login-prompt-title">Login Required</h3>
+      <p class="login-prompt-subtitle">Please log in to apply for this position</p>
+    </div>
+    
+    <div class="login-prompt-content">
+      <div class="job-summary" *ngIf="loginPromptJob">
+        <div class="job-summary-header">
+          <span class="material-symbols-outlined">work</span>
+          <span class="job-title">{{ loginPromptJob.position_title }}</span>
+        </div>
+        <div class="job-summary-details">
+          <span class="department">{{ loginPromptJob.department?.department_name }}</span>
+          <span class="employment-type">{{ loginPromptJob.employment_type }}</span>
+        </div>
+      </div>
+      
+      <div class="login-prompt-message">
+        <p>To apply for this position, you need to be logged in as a job applicant.</p>
+        <p>If you don't have an account, you can register for free.</p>
+      </div>
+    </div>
+    
+    <div class="login-prompt-actions">
+      <button class="btn btn-secondary" (click)="closeLoginPromptModal()">
+        <span class="material-symbols-outlined">close</span>
+        Cancel
+      </button>
+      <button class="btn btn-primary" (click)="navigateToLogin()">
+        <span class="material-symbols-outlined">login</span>
+        Continue to Login
+      </button>
+    </div>
+  </div>
+</div>
+
 <app-job-application-modal
   *ngIf="showApplicationModal"
   [job]="applicationJob"

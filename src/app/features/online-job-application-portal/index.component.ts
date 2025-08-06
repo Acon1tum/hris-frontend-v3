@@ -295,6 +295,12 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
     // The login prompt modal will handle navigation to login page
   }
 
+  navigateToLogin() {
+    this.closeLoginPromptModal();
+    // Navigate to the job portal login page
+    this.router.navigate(['/online-job-login']);
+  }
+
   onApplicationSubmitted(applicationData: JobApplicationForm) {
     console.log('Application submitted:', applicationData);
     // Here you would typically send the data to your backend API

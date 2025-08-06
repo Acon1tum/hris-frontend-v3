@@ -28,7 +28,7 @@ html {
 
 // Add top padding to account for fixed header
 .job-portal-title-area-with-img {
-  padding-top: 80px; // Adjust based on your header height
+  padding-top: 0px; // Adjust based on your header height
 }
 
 .jobstreet-portal-bg {
@@ -1442,4 +1442,213 @@ html {
 }
 .theme-default {
   background: linear-gradient(90deg, #0a2558 0%, #b0b7c3 100%) !important;
+}
+
+// Login Prompt Modal Styles
+.login-prompt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1003;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.login-prompt-container {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease-out;
+}
+
+.login-prompt-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px 32px;
+  text-align: center;
+
+  .login-prompt-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+
+    .material-symbols-outlined {
+      font-size: 48px;
+      color: white;
+    }
+  }
+
+  .login-prompt-title {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .login-prompt-subtitle {
+    margin: 0;
+    font-size: 16px;
+    opacity: 0.9;
+  }
+}
+
+.login-prompt-content {
+  padding: 24px 32px;
+  flex: 1;
+
+  .job-summary {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+
+    .job-summary-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+
+      .material-symbols-outlined {
+        color: #667eea;
+        font-size: 20px;
+      }
+
+      .job-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+    }
+
+    .job-summary-details {
+      display: flex;
+      gap: 16px;
+      font-size: 14px;
+      color: #6c757d;
+
+      .department {
+        color: #667eea;
+        font-weight: 500;
+      }
+
+      .employment-type {
+        color: #28a745;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .login-prompt-message {
+    text-align: center;
+    color: #6c757d;
+    line-height: 1.6;
+
+    p {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.login-prompt-actions {
+  padding: 24px 32px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  border-top: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+
+    .material-symbols-outlined {
+      font-size: 18px;
+    }
+
+    &.btn-secondary {
+      background-color: #6c757d;
+      color: white;
+
+      &:hover {
+        background-color: #5a6268;
+        transform: translateY(-1px);
+      }
+    }
+
+    &.btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+    }
+  }
+}
+
+// Responsive styles for login prompt
+@media (max-width: 600px) {
+  .login-prompt-container {
+    width: 95%;
+    max-width: none;
+    margin: 20px;
+  }
+
+  .login-prompt-header {
+    padding: 20px 24px;
+
+    .login-prompt-icon .material-symbols-outlined {
+      font-size: 40px;
+    }
+
+    .login-prompt-title {
+      font-size: 20px;
+    }
+
+    .login-prompt-subtitle {
+      font-size: 14px;
+    }
+  }
+
+  .login-prompt-content {
+    padding: 20px 24px;
+  }
+
+  .login-prompt-actions {
+    padding: 20px 24px;
+    flex-direction: column;
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 } 
