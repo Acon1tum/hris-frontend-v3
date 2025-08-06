@@ -5,12 +5,14 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { JobPortalService, JobPosting, SalaryRange, JobFilters } from './job-portal.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { ApplicationModalComponent } from './application-modal/application-modal.component';
+import { JobApplicationModalComponent, JobApplicationForm } from './job-application-modal/job-application-modal.component';
+import { LoginPromptModalComponent } from './job-application-modal/login-prompt-modal.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-online-job-application-portal',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, HttpClientModule, FormsModule, ApplicationModalComponent],
+  imports: [CommonModule, HeaderComponent, HttpClientModule, FormsModule, JobApplicationModalComponent, LoginPromptModalComponent],
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss']
 })
@@ -31,9 +33,13 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   showFavourites = false;
   favourites: string[] = [];
   
-  // Application modal properties
+  // Job application modal properties
   showApplicationModal = false;
   applicationJob: JobPosting | null = null;
+  
+  // Login prompt modal properties
+  showLoginPromptModal = false;
+  loginPromptJob: JobPosting | null = null;
 
   // Header scroll animation properties
   isHeaderVisible = true;
@@ -46,7 +52,11 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
 
   @ViewChild('modalCloseBtn') modalCloseBtn!: ElementRef<HTMLButtonElement>;
 
-  constructor(private jobPortalService: JobPortalService, private router: Router) {}
+  constructor(
+    private jobPortalService: JobPortalService, 
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     // Clear favourites on page refresh
@@ -141,18 +151,18 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
 
   fetchJobs() {
     this.loading = true;
+    this.error = null;
+    
     this.jobPortalService.getJobs().subscribe({
       next: (jobs: JobPosting[]) => {
         this.jobs = jobs;
         this.filteredJobs = jobs;
         this.loading = false;
-        if (jobs.length > 0) {
-          this.selectedJob = jobs[0]; // Optionally select the first job by default
-        }
       },
       error: (err: any) => {
-        this.error = 'Failed to load jobs';
+        this.error = 'Failed to load jobs. Please try again.';
         this.loading = false;
+        console.error('Error fetching jobs:', err);
       }
     });
   }
@@ -160,16 +170,15 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   fetchSalaryRanges() {
     this.jobPortalService.getSalaryRanges().subscribe({
       next: (ranges: string[]) => {
-        // Convert string array to SalaryRange array for compatibility
-        this.salaryRanges = ranges.map((range, index) => ({
-          range: range,
+        this.salaryRanges = ranges.map(range => ({ 
+          range, 
           count: 0,
-          value: range,
-          label: range
+          value: range, // For template compatibility
+          label: range  // For template compatibility
         }));
       },
       error: (err: any) => {
-        console.error('Failed to load salary ranges:', err);
+        console.error('Error fetching salary ranges:', err);
       }
     });
   }
@@ -180,7 +189,7 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
         this.departments = departments;
       },
       error: (err: any) => {
-        console.error('Failed to load departments:', err);
+        console.error('Error fetching departments:', err);
       }
     });
   }
@@ -201,7 +210,7 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
     }
     if (this.selectedSalaryRange && this.selectedSalaryRange !== '') {
       filters.salary_range = this.selectedSalaryRange;
-      const rangeLabel = this.salaryRanges.find(r => r.value === this.selectedSalaryRange)?.label || this.selectedSalaryRange;
+      const rangeLabel = this.salaryRanges.find(r => (r.value || r.range) === this.selectedSalaryRange)?.label || this.selectedSalaryRange;
       this.activeFilters.push({ key: 'salary_range', label: `Salary: ${rangeLabel}` });
     }
 
@@ -259,13 +268,57 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   }
 
   applyToJob(job: JobPosting) {
-    this.applicationJob = job;
-    this.showApplicationModal = true;
+    // Check if user is authenticated and has Applicant role
+    if (this.authService.isAuthenticated() && this.authService.hasRole('Applicant')) {
+      // User is logged in as Applicant - show application modal
+      this.applicationJob = job;
+      this.showApplicationModal = true;
+    } else {
+      // User is not authenticated or not an Applicant - show login prompt
+      this.loginPromptJob = job;
+      this.showLoginPromptModal = true;
+    }
   }
 
   closeApplicationModal() {
     this.showApplicationModal = false;
     this.applicationJob = null;
+  }
+
+  closeLoginPromptModal() {
+    this.showLoginPromptModal = false;
+    this.loginPromptJob = null;
+  }
+
+  onLoginPromptContinue() {
+    this.closeLoginPromptModal();
+    // The login prompt modal will handle navigation to login page
+  }
+
+  onApplicationSubmitted(applicationData: JobApplicationForm) {
+    console.log('Application submitted:', applicationData);
+    // Here you would typically send the data to your backend API
+    // For now, just close the modal
+    this.closeApplicationModal();
+  }
+
+  shareJob(job: JobPosting) {
+    // Implement share functionality
+    console.log('Sharing job:', job);
+    // You can implement actual sharing logic here
+    if (navigator.share) {
+      navigator.share({
+        title: job.position_title,
+        text: `Check out this job opportunity: ${job.position_title}`,
+        url: window.location.href
+      });
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        alert('Job link copied to clipboard!');
+      });
+    }
   }
 
   get isMobile(): boolean {
@@ -305,49 +358,7 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   }
 
   isFavourite(job: JobPosting): boolean {
-    return this.favourites.includes(job.id!);
-  }
-
-  shareJob(job: JobPosting) {
-    const jobData = {
-      title: job.position_title,
-      company: job.department?.department_name,
-      description: job.job_description,
-      url: window.location.href
-    };
-
-    if (navigator.share) {
-      // Use native sharing if available
-      navigator.share({
-        title: `${jobData.title} at ${jobData.company}`,
-        text: `Check out this job opportunity: ${jobData.title} at ${jobData.company}`,
-        url: jobData.url
-      }).catch((error) => {
-        console.log('Error sharing:', error);
-        this.fallbackShare(jobData);
-      });
-    } else {
-      // Fallback for browsers that don't support native sharing
-      this.fallbackShare(jobData);
-    }
-  }
-
-  private fallbackShare(jobData: any) {
-    // Create a temporary textarea to copy the job details
-    const textarea = document.createElement('textarea');
-    textarea.value = `Job: ${jobData.title}\nCompany: ${jobData.company}\nDescription: ${jobData.description}\nURL: ${jobData.url}`;
-    document.body.appendChild(textarea);
-    textarea.select();
-    
-    try {
-      document.execCommand('copy');
-      alert('Job details copied to clipboard!');
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-      alert('Failed to copy job details. Please copy manually.');
-    }
-    
-    document.body.removeChild(textarea);
+    return this.favourites.includes(job.id);
   }
 }
-  
+ 

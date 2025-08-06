@@ -273,8 +273,18 @@
     </div>
   </section>
 </div>
-<app-application-modal
+<app-job-application-modal
   *ngIf="showApplicationModal"
+  [showModal]="showApplicationModal"
   [job]="applicationJob"
   (close)="closeApplicationModal()"
-></app-application-modal> 
+  (applicationSubmitted)="onApplicationSubmitted($event)"
+></app-job-application-modal>
+
+<app-login-prompt-modal
+  *ngIf="showLoginPromptModal"
+  [showModal]="showLoginPromptModal"
+  [job]="loginPromptJob"
+  (close)="closeLoginPromptModal()"
+  (continueToLogin)="onLoginPromptContinue()"
+></app-login-prompt-modal> 
