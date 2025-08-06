@@ -25,7 +25,7 @@ export class OnlineJobLoginComponent implements OnInit, AfterViewInit {
   showPassword = false;
   errorMessage: string | null = null;
   sessionTimeoutMessage: string | null = null;
-  animationState = 'in';
+  animationState = 'fade-up-enter';
   successMessage: string | null = null;
 
   constructor(
@@ -35,6 +35,10 @@ export class OnlineJobLoginComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
+    setTimeout(() => {
+      this.animationState = '';
+    }, 500); // Remove 
+    // class after animation
     this.activatedRoute.queryParams.subscribe(params => {
       if (params['reason'] === 'session_timeout') {
         this.sessionTimeoutMessage = 'Your session has expired. Please log in again.';
