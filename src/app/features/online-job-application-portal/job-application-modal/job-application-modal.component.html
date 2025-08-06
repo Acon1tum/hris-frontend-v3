@@ -254,69 +254,25 @@
                 Application Documents
               </h3>
               <p class="text-sm text-gray-500 mt-1">Upload required documents for your application</p>
+              <div class="text-xs text-gray-400">
+                <p>Supported: PDF, Word, JPEG, PNG</p>
+                <p>Max size: 10MB / file</p>
+              </div>
             </div>
           </div>
-          <div class="text-sm text-gray-600">
-            {{ uploadedDocuments.length }} / 10 files
-          </div>
+          <ul class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs text-gray-600 list-disc list-inside">
+            <li>Resume/CV</li>
+            <li>Cover Letter</li>
+            <li>Certificates</li>
+            <li>Valid ID</li>
+            <li>Portfolio</li>
+            <li>Other Documents</li>
+          </ul>
         </div>
 
         <!-- Upload + List Container -->
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col lg:flex-row">
-          <!-- Upload Area -->
-          <div
-            class="flex-1 flex flex-col items-center justify-center p-6 border-b lg:border-b-0 lg:border-r border-gray-200 relative cursor-pointer group"
-            (click)="fileInput.click()"
-            (dragover)="onDragOver($event)"
-            (dragleave)="onDragLeave($event)"
-            (drop)="onDrop($event)"
-            aria-label="Upload documents"
-          >
-            <input
-              type="file"
-              #fileInput
-              multiple
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-              (change)="onFileSelected($event)"
-              class="hidden"
-            />
-            <div class="flex flex-col items-center text-center gap-3 pointer-events-none">
-              <div class="p-4 bg-blue-50 rounded-full">
-                <span class="material-symbols-outlined text-blue-500 text-4xl">cloud_upload</span>
-              </div>
-              <h4 class="text-lg font-medium text-gray-800">Upload Documents</h4>
-              <p class="text-sm text-gray-500">
-                Drag & drop or <span class="text-blue-600 underline">browse files</span>
-              </p>
-              <div class="text-xs text-gray-400 space-y-1">
-                <p>Supported: PDF, Word, JPEG, PNG</p>
-                <p>Max size: 10MB / file</p>
-              </div>
-              <ul class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs text-gray-600 list-disc list-inside">
-                <li>Resume/CV</li>
-                <li>Cover Letter</li>
-                <li>Certificates</li>
-                <li>Valid ID</li>
-                <li>Portfolio</li>
-                <li>Other Documents</li>
-              </ul>
-              <div class="mt-4">
-                <button
-                  type="button"
-                  class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-                  (click)="fileInput.click(); $event.stopPropagation()"
-                >
-                  <span class="material-symbols-outlined">upload_file</span>
-                  Choose Files
-                </button>
-              </div>
-            </div>
-            <div
-              *ngIf="isDragOver"
-              class="absolute inset-0 bg-blue-50/70 border-2 border-dashed border-blue-400 rounded-xl pointer-events-none"
-            ></div>
-          </div>
-
+  
           <!-- Uploaded Documents -->
           <div class="flex-1 p-6">
             <div class="flex items-center justify-between mb-4">
@@ -325,10 +281,48 @@
                 <h4 class="text-lg font-semibold text-gray-800 mb-0">
                   Uploaded
                 </h4>
+                <div class="text-sm text-gray-600">
+                  {{ uploadedDocuments.length }} files
+                </div>
               </div>
               <div class="flex items-center gap-1 text-sm text-gray-600">
-                <span class="material-symbols-outlined">info</span>
-                <span>Total: <span class="font-medium">{{ uploadedDocuments.length }}</span> files</span>
+                <!-- Upload Button Component -->
+                <div
+                (click)="fileInput.click()"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event)"
+                role="button"
+                tabindex="0"
+                (keydown.enter)="fileInput.click()"
+                aria-label="Upload documents"
+                >
+                <input
+                  type="file"
+                  #fileInput
+                  multiple
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  (change)="onFileSelected($event)"
+                  class="hidden"
+                />
+                <div class="flex flex-col items-center text-center gap-3 pointer-events-none">
+                  <div>
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 transition"
+                      (click)="fileInput.click(); $event.stopPropagation()"
+                    >
+                      <span class="material-symbols-outlined text-white">upload_file</span>
+                      Choose Files
+                    </button>
+                  </div>
+                </div>
+                <!-- Drag Overlay -->
+                <div
+                  *ngIf="isDragOver"
+                  class="absolute inset-0 bg-blue-50/70 border-2 border-dashed border-blue-400 rounded-xl pointer-events-none"
+                ></div>
+                </div>
               </div>
             </div>
 
