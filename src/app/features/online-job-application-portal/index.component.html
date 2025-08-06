@@ -273,8 +273,10 @@
     </div>
   </section>
 </div>
-<app-application-modal
+<app-job-application-modal
   *ngIf="showApplicationModal"
   [job]="applicationJob"
+  [showModal]="showApplicationModal"
   (close)="closeApplicationModal()"
-></app-application-modal> 
+  (applicationSubmitted)="onApplicationSubmitted($event)"
+></app-job-application-modal> 
