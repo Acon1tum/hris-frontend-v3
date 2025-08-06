@@ -32,7 +32,7 @@
 .modal-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 24px 32px;
+  padding: 18px 32px;
   position: relative;
 
   .header-content {
@@ -90,7 +90,7 @@
 
 // Progress Container
 .progress-container {
-  padding: 20px 32px;
+  padding: 10px 32px;
   background-color: #f8f9fa;
   border-bottom: 1px solid #e9ecef;
 
@@ -120,7 +120,7 @@
       flex-direction: column;
       align-items: center;
       gap: 8px;
-      padding: 12px;
+      padding: 5px;
       border-radius: 8px;
       transition: all 0.3s ease;
       position: relative;
@@ -190,6 +190,19 @@
 
         .step-label {
           color: #28a745;
+        }
+      }
+
+      &.next-active {
+        .step-number {
+          background-color: #ffc107;
+          color: #212529;
+          box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+        }
+
+        .step-label {
+          color: #ffc107;
+          font-weight: 600;
         }
       }
     }
@@ -954,7 +967,7 @@
 
 // Modal Footer
 .modal-footer {
-  padding: 24px 32px;
+  padding: 14px 32px;
   background-color: #f8f9fa;
   border-top: 1px solid #e9ecef;
 

@@ -6,8 +6,10 @@
       <div class="header-content">
         <div class="job-info">
           <h2 class="modal-title">Job Application</h2>
-          <p class="job-position" *ngIf="job">{{ job.position_title }}</p>
-          <p class="job-department" *ngIf="job">{{ job.department?.department_name }}</p>
+          <p class="job-position" *ngIf="job">
+            {{ job.position_title }}
+            (<span class="text-yellow-300 font-medium">{{ job.department?.department_name }}</span>)
+          </p>
         </div>
         <button class="close-btn" (click)="closeModal()" aria-label="Close modal">
           <span class="material-symbols-outlined">close</span>
@@ -26,6 +28,7 @@
           class="step-indicator"
           [class.active]="currentStep === step"
           [class.completed]="isStepCompleted(step)"
+          [class.next-active]="isNextActiveStep(step)"
           [class.clickable]="canClickStep(step)"
           (click)="canClickStep(step) ? goToStep(step) : null"
         >
@@ -36,7 +39,7 @@
     </div>
 
     <!-- Modal Body -->
-    <div class="modal-body">
+    <div class="modal-body" #modalBody>
       
       <!-- Step 1: Personal Information -->
       <div *ngIf="currentStep === 1" class="step-content">

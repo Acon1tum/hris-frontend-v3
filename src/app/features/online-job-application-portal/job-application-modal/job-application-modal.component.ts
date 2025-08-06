@@ -37,11 +37,26 @@ export class JobApplicationModalComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
   @Output() applicationSubmitted = new EventEmitter<JobApplicationForm>();
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('modalBody') modalBody!: ElementRef<HTMLDivElement>;
 
   applicant: JobApplicant | null = null;
   applicationForm: FormGroup;
-  currentStep = 1;
+  private _currentStep = 1;
   totalSteps = 4; // Updated to 4 steps
+
+  get currentStep(): number {
+    return this._currentStep;
+  }
+
+  set currentStep(value: number) {
+    if (this._currentStep !== value) {
+      this._currentStep = value;
+      // Scroll to top when step changes
+      setTimeout(() => {
+        this.scrollToTop();
+      }, 0);
+    }
+  }
   isLoading = false;
   submitted = false;
   confirmationChecked = false; // Track confirmation checkbox state
@@ -94,6 +109,8 @@ export class JobApplicationModalComponent implements OnInit {
     // Fetch user details from database
     this.fetchUserDetailsFromDatabase();
   }
+
+
 
   fetchUserDetailsFromDatabase(): void {
     this.isLoading = true;
@@ -163,6 +180,12 @@ export class JobApplicationModalComponent implements OnInit {
     }
   }
 
+  scrollToTop(): void {
+    if (this.modalBody && this.modalBody.nativeElement) {
+      this.modalBody.nativeElement.scrollTop = 0;
+    }
+  }
+
   nextStep(): void {
     if (this.currentStep < this.totalSteps) {
       this.currentStep++;
@@ -219,6 +242,20 @@ export class JobApplicationModalComponent implements OnInit {
     // For other steps, check if the previous step is completed
     const previousStep = step - 1;
     return this.isStepCompleted(previousStep);
+  }
+
+  isNextActiveStep(step: number): boolean {
+    // A step is next active if:
+    // 1. It's not the current step
+    // 2. It's not completed
+    // 3. The previous step is completed
+    // 4. It's the next step after the current step
+    if (step === this.currentStep || this.isStepCompleted(step)) {
+      return false;
+    }
+    
+    const previousStep = step - 1;
+    return this.isStepCompleted(previousStep) && step === this.currentStep + 1;
   }
 
   submitApplication(): void {
