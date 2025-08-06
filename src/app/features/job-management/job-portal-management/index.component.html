@@ -1,7 +1,7 @@
 <div class="job-portal-management-flex">
   <div class="job-portal-management-container sticky-left-panel">
     <div class="header-section">
-      <h1>Job Portal Management</h1>
+    <h1>Job Portal Management</h1>
       <p>Manage job postings for the public application portal</p>
     </div>
     
@@ -27,13 +27,13 @@
     <div class="search-filters">
       <div class="search-box">
         <span class="material-symbols-outlined search-icon">search</span>
-        <input 
-          type="text" 
-          [(ngModel)]="searchTerm" 
-          placeholder="Search jobs..."
-          (keyup.enter)="onSearch()"
-          class="search-input"
-        />
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        placeholder="Search jobs..."
+        (keyup.enter)="onSearch()"
+        class="search-input"
+      />
         <button (click)="onSearch()" class="search-btn" title="Search">
           <span class="material-symbols-outlined">search</span>
         </button>
@@ -98,7 +98,7 @@
           <div class="job-salary" *ngIf="job.salary_range">
             <span class="material-symbols-outlined">payments</span>
             {{ getSalaryRangeDisplay(job.salary_range) }}
-          </div>
+        </div>
         </div>
         
         <div class="job-actions">
@@ -116,11 +116,11 @@
           
           <div class="action-buttons">
             <button class="action-btn edit" (click)="onEditJob(job)" title="Edit job" [disabled]="loading">
-              <span class="material-symbols-outlined">edit</span>
-            </button>
+            <span class="material-symbols-outlined">edit</span>
+          </button>
             <button class="action-btn delete" (click)="onDeleteJob(job)" title="Delete job" [disabled]="loading">
-              <span class="material-symbols-outlined">delete</span>
-            </button>
+            <span class="material-symbols-outlined">delete</span>
+          </button>
           </div>
         </div>
       </div>
@@ -152,12 +152,12 @@
       </button>
       
       <div class="page-numbers">
-        <span *ngFor="let page of getPageNumbers()" 
-              (click)="onPageChange(page)"
-              [class.active]="page === currentPage"
-              class="page-number">
-          {{ page }}
-        </span>
+      <span *ngFor="let page of getPageNumbers()" 
+            (click)="onPageChange(page)"
+            [class.active]="page === currentPage"
+            class="page-number">
+        {{ page }}
+      </span>
       </div>
       
       <button 
@@ -201,70 +201,70 @@
         <div class="form-section">
           <div class="section-header">
             <span class="material-symbols-outlined">work</span>
-            <h3>Job Details</h3>
+          <h3>Job Details</h3>
           </div>
           
           <div class="form-grid">
             <div class="form-field">
-              <label for="position_title">Position Title *</label>
-              <input 
-                id="position_title" 
-                type="text" 
-                [(ngModel)]="jobPosting.position_title" 
-                name="position_title" 
-                required 
-                placeholder="e.g. Software Engineer"
-                [disabled]="loading"
-              />
-            </div>
+            <label for="position_title">Position Title *</label>
+            <input 
+              id="position_title" 
+              type="text" 
+              [(ngModel)]="jobPosting.position_title" 
+              name="position_title" 
+              required 
+              placeholder="e.g. Software Engineer"
+              [disabled]="loading"
+            />
+          </div>
             
             <div class="form-field">
-              <label for="department_id">Department *</label>
-              <select 
-                id="department_id" 
-                [(ngModel)]="jobPosting.department_id" 
-                name="department_id" 
-                required
-                [disabled]="loading"
-              >
-                <option value="" disabled selected>Select department</option>
-                <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.department_name }}</option>
-              </select>
-            </div>
+            <label for="department_id">Department *</label>
+            <select 
+              id="department_id" 
+              [(ngModel)]="jobPosting.department_id" 
+              name="department_id" 
+              required
+              [disabled]="loading"
+            >
+              <option value="" disabled selected>Select department</option>
+              <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.department_name }}</option>
+            </select>
+          </div>
             
             <div class="form-field">
-              <label for="employment_type">Employment Type *</label>
-              <select 
-                id="employment_type" 
-                [(ngModel)]="jobPosting.employment_type" 
-                name="employment_type" 
-                required
-                [disabled]="loading"
-              >
-                <option value="" disabled selected>Select type</option>
-                <option value="Full_Time">Full Time</option>
-                <option value="Part_time">Part Time</option>
-                <option value="Contractual">Contractual</option>
-                <option value="Consultant">Consultant</option>
-                <option value="Intern">Intern</option>
-                <option value="Probationary">Probationary</option>
-                <option value="OJT">OJT</option>
-              </select>
-            </div>
+            <label for="employment_type">Employment Type *</label>
+            <select 
+              id="employment_type" 
+              [(ngModel)]="jobPosting.employment_type" 
+              name="employment_type" 
+              required
+              [disabled]="loading"
+            >
+              <option value="" disabled selected>Select type</option>
+              <option value="Full_Time">Full Time</option>
+              <option value="Part_time">Part Time</option>
+              <option value="Contractual">Contractual</option>
+              <option value="Consultant">Consultant</option>
+              <option value="Intern">Intern</option>
+              <option value="Probationary">Probationary</option>
+              <option value="OJT">OJT</option>
+            </select>
+          </div>
             
             <div class="form-field">
-              <label for="num_vacancies">Number of Vacancies *</label>
-              <input 
-                id="num_vacancies" 
-                type="number" 
-                [(ngModel)]="jobPosting.num_vacancies" 
-                name="num_vacancies" 
-                min="1" 
-                required 
-                placeholder="e.g. 3"
-                [disabled]="loading"
-              />
-            </div>
+            <label for="num_vacancies">Number of Vacancies *</label>
+            <input 
+              id="num_vacancies" 
+              type="number" 
+              [(ngModel)]="jobPosting.num_vacancies" 
+              name="num_vacancies" 
+              min="1" 
+              required 
+              placeholder="e.g. 3"
+              [disabled]="loading"
+            />
+          </div>
             
             <div class="form-field">
               <label for="salary_range">Salary Range</label>
@@ -280,16 +280,16 @@
             </div>
             
             <div class="form-field">
-              <label for="application_deadline">Application Deadline *</label>
-              <input 
-                id="application_deadline" 
-                type="date" 
-                [(ngModel)]="jobPosting.application_deadline" 
-                name="application_deadline" 
-                required
-                [disabled]="loading"
-              />
-            </div>
+            <label for="application_deadline">Application Deadline *</label>
+            <input 
+              id="application_deadline" 
+              type="date" 
+              [(ngModel)]="jobPosting.application_deadline" 
+              name="application_deadline" 
+              required
+              [disabled]="loading"
+            />
+          </div>
             
             <div class="form-field full-width">
               <label for="job_description">Job Description *</label>
@@ -330,22 +330,22 @@
             </div>
             
             <div class="form-field">
-              <label for="posting_status">Posting Status *</label>
-              <select 
-                id="posting_status" 
-                [(ngModel)]="jobPosting.posting_status" 
-                name="posting_status" 
-                required
-                [disabled]="loading"
-              >
-                <option value="Draft">Draft</option>
-                <option value="Published">Published</option>
-                <option value="Closed">Closed</option>
-                <option value="Filled">Filled</option>
-              </select>
-            </div>
+            <label for="posting_status">Posting Status *</label>
+            <select 
+              id="posting_status" 
+              [(ngModel)]="jobPosting.posting_status" 
+              name="posting_status" 
+              required
+              [disabled]="loading"
+            >
+              <option value="Draft">Draft</option>
+              <option value="Published">Published</option>
+              <option value="Closed">Closed</option>
+              <option value="Filled">Filled</option>
+            </select>
           </div>
         </div>
+      </div>
       </div>
       
       <div class="form-actions">
