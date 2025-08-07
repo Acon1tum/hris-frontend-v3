@@ -552,7 +552,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1002; // Increased to be higher than sidebar (1001)
   padding: 1rem;
 }
 
@@ -564,6 +564,8 @@
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
+  position: relative;
+  z-index: 1003; // Ensure modal content is above backdrop
 }
 
 .modal-header {

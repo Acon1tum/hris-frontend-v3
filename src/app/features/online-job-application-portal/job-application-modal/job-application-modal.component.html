@@ -1,0 +1,534 @@
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="job-info">
+          <h2 class="modal-title">Job Application</h2>
+          <p class="job-position" *ngIf="job">
+            {{ job.position_title }}
+            (<span class="text-yellow-300 font-medium">{{ job.department?.department_name }}</span>)
+          </p>
+        </div>
+        <button class="close-btn" (click)="closeModal()" aria-label="Close modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getStepProgress()"></div>
+      </div>
+      <div class="step-indicators">
+        <div 
+          *ngFor="let step of [1, 2, 3, 4]; let i = index" 
+          class="step-indicator"
+          [class.active]="currentStep === step"
+          [class.completed]="isStepCompleted(step)"
+          [class.next-active]="isNextActiveStep(step)"
+          [class.clickable]="canClickStep(step)"
+          (click)="canClickStep(step) ? goToStep(step) : null"
+        >
+          <div class="step-number">{{ step }}</div>
+          <div class="step-label">{{ getStepTitle(step) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body" #modalBody>
+      
+      <!-- Step 1: Personal Information -->
+      <div *ngIf="currentStep === 1" class="step-content">
+        <div class="step-header">
+          <h3 class="step-title">
+            <span class="material-symbols-outlined">person</span>
+            Personal Information
+          </h3>
+          <p class="step-description">Verify your personal information</p>
+        </div>
+
+        <div class="form-section">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input 
+                type="text" 
+                id="firstName" 
+                [value]="firstName"  
+                class="form-control"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="middleName">Middle Name</label>
+              <input 
+                type="text" 
+                id="middleName" 
+                [value]="middleName" 
+                class="form-control"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input 
+                type="text" 
+                id="lastName" 
+                [value]="lastName" 
+                class="form-control"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input 
+                type="email" 
+                id="email" 
+                [value]="email" 
+                class="form-control"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="contact">Contact Number</label>
+              <input 
+                type="tel" 
+                id="contact" 
+                [value]="contact" 
+                class="form-control"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="applicationDate">Application Date</label>
+              <input 
+                type="date" 
+                id="applicationDate" 
+                [value]="applicationForm.get('application_date')?.value | date:'yyyy-MM-dd'" 
+                readonly 
+                class="form-control readonly"
+              >
+            </div>
+          </div>
+
+          <div class="info-note">
+            <span class="material-symbols-outlined">info</span>
+            <p>Your personal information is automatically filled from your profile. Please verify all details are correct.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Cover Letter with Position and Applicant Details -->
+      <div *ngIf="currentStep === 2" class="step-content">
+        <div class="step-header">
+          <h3 class="step-title">
+            <span class="material-symbols-outlined">description</span>
+            Cover Letter & Position Details
+          </h3>
+          <p class="step-description">Write a compelling cover letter and confirm position details</p>
+        </div>
+
+        <div class="form-section" [formGroup]="applicationForm">
+          <!-- Position Information -->
+          <div class="position-info-section">
+            <h4 class="section-title">
+              <span class="material-symbols-outlined">work</span>
+              Position Information
+            </h4>
+            <div class="position-details" *ngIf="job">
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="label">Position Title:</span>
+                  <span class="value">{{ job.position_title }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Department:</span>
+                  <span class="value">{{ job.department?.department_name }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Employment Type:</span>
+                  <span class="value">{{ job.employment_type }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Salary Range:</span>
+                  <span class="value">{{ job.salary_range }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Vacancies:</span>
+                  <span class="value">{{ job.num_vacancies }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Application Deadline:</span>
+                  <span class="value">{{ job.application_deadline | date:'mediumDate' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Applicant Information -->
+          <div class="applicant-info-section">
+            <h4 class="section-title">
+              <span class="material-symbols-outlined">person</span>
+              Applicant Information
+            </h4>
+            <div class="applicant-details">
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="label">Full Name:</span>
+                  <span class="value">{{ firstName }} {{ middleName }} {{ lastName }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Email:</span>
+                  <span class="value">{{ email }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Contact:</span>
+                  <span class="value">{{ contact }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Application Date:</span>
+                  <span class="value">{{ applicationForm.get('application_date')?.value | date:'mediumDate' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cover Letter -->
+          <div class="cover-letter-section">
+            <h4 class="section-title">
+              <span class="material-symbols-outlined">edit</span>
+              Cover Letter
+            </h4>
+            <div class="form-group">
+              <label for="coverLetter">Cover Letter <span class="required">*</span></label>
+              <textarea 
+                id="coverLetter"
+                formControlName="cover_letter"
+                rows="8"
+                placeholder="Please write your cover letter explaining why you're interested in this position, your relevant experience, and how your skills match the job requirements..."
+                class="form-control"
+                [class.invalid]="submitted && applicationForm.get('cover_letter')?.invalid"
+              ></textarea>
+              <div class="error-message" *ngIf="submitted && applicationForm.get('cover_letter')?.errors?.['required']">
+                Cover letter is required
+              </div>
+              <div class="error-message" *ngIf="submitted && applicationForm.get('cover_letter')?.errors?.['minlength']">
+                Cover letter must be at least 100 characters long
+              </div>
+              <div class="char-count">
+                {{ getCoverLetterLength() }} characters<p style="font-size: 8.5px; color: #666;">Atleast 100 characters</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="remarks">Additional Remarks (Optional)</label>
+              <textarea 
+                id="remarks"
+                formControlName="remarks"
+                rows="4"
+                placeholder="Any additional information you'd like to share..."
+                class="form-control"
+              ></textarea>
+              <div class="char-count">
+                {{ getRemarksLength() }}/500 characters
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Application Documents -->
+      <div *ngIf="currentStep === 3" class="step-content space-y-6">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <div class="rounded-full bg-blue-100 p-2">
+              <span class="material-symbols-outlined text-blue-600 text-2xl">folder</span>
+            </div>
+            <div>
+              <h3 class="text-lg sm:text-xl font-semibold text-gray-800 flex items-center gap-2">
+                Application Documents
+              </h3>
+              <p class="text-sm text-gray-500 mt-1">Upload required documents for your application</p>
+              <div class="text-xs text-gray-400">
+                <p>Supported: PDF, Word, JPEG, PNG</p>
+                <p>Max size: 10MB / file</p>
+              </div>
+            </div>
+          </div>
+          <ul class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs text-gray-600 list-disc list-inside">
+            <li>Resume/CV</li>
+            <li>Cover Letter</li>
+            <li>Certificates</li>
+            <li>Valid ID</li>
+            <li>Portfolio</li>
+            <li>Other Documents</li>
+          </ul>
+        </div>
+
+        <!-- Upload + List Container -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col lg:flex-row">
+  
+          <!-- Uploaded Documents -->
+          <div class="flex-1 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-blue-500">description</span>
+                <h4 class="text-lg font-semibold text-gray-800 mb-0">
+                  Uploaded
+                </h4>
+                <div class="text-sm text-gray-600">
+                  {{ uploadedDocuments.length }} files
+                </div>
+              </div>
+              <div class="flex items-center gap-1 text-sm text-gray-600">
+                <!-- Upload Button Component -->
+                <div
+                (click)="fileInput.click()"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event)"
+                role="button"
+                tabindex="0"
+                (keydown.enter)="fileInput.click()"
+                aria-label="Upload documents"
+                >
+                <input
+                  type="file"
+                  #fileInput
+                  multiple
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  (change)="onFileSelected($event)"
+                  class="hidden"
+                />
+                <div class="flex flex-col items-center text-center gap-3 pointer-events-none">
+                  <div>
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 transition"
+                      (click)="fileInput.click(); $event.stopPropagation()"
+                    >
+                      <span class="material-symbols-outlined text-white">upload_file</span>
+                      Choose Files
+                    </button>
+                  </div>
+                </div>
+                <!-- Drag Overlay -->
+                <div
+                  *ngIf="isDragOver"
+                  class="absolute inset-0 bg-blue-50/70 border-2 border-dashed border-blue-400 rounded-xl pointer-events-none"
+                ></div>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="uploadedDocuments.length > 0; else emptyState" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+              <div
+                *ngFor="let doc of uploadedDocuments"
+                class="flex items-center gap-4 bg-gray-50 border max-w-2xl rounded-lg p-3 shadow-sm"
+              >
+                <div class="flex-shrink-0">
+                  <div class="w-12 h-12 flex items-center justify-center bg-white border rounded-md">
+                    <span class="material-symbols-outlined text-xl text-gray-600">
+                      {{ getFileIcon(doc.type) }}
+                    </span>
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between">
+                    <p class="font-medium text-gray-800 truncate">{{ doc.name }}</p>
+                    <div class="flex gap-2 items-center text-xs text-gray-500">
+                      <span>{{ formatFileSize(doc.size) }}</span>
+                      <span>·</span>
+                      <span>{{ doc.uploadDate | date: 'short' }}</span>
+                    </div>
+                  </div>
+                  <div class="mt-1 flex gap-2">
+                    <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Ready</span>
+                  </div>
+                </div>
+                <button
+                  aria-label="Remove file"
+                  class="flex-shrink-0 p-2 rounded-full hover:bg-red-50 text-red-600 transition"
+                  (click)="removeFile(doc.id)"
+                  title="Remove file"
+                >
+                  <span class="material-symbols-outlined">delete</span>
+                </button>
+              </div>
+            </div>
+
+            <ng-template #emptyState>
+              <div class="flex flex-col items-center justify-center py-12 border border-dashed border-gray-300 rounded-lg">
+                <span class="material-symbols-outlined text-4xl text-gray-300 mb-2">upload</span>
+                <p class="text-sm text-gray-500">No documents uploaded yet.</p>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Assessments & Review -->
+      <div *ngIf="currentStep === 4" class="step-content">
+        <div class="step-header">
+          <h3 class="step-title">
+            <span class="material-symbols-outlined">assessment</span>
+            Assessments & Review
+          </h3>
+          <p class="step-description">Complete assessments and review your application</p>
+        </div>
+
+        <div class="form-section">
+          <div class="assessment-section">
+            <div class="assessment-info">
+              <h4>Application Summary</h4>
+              <p>Please review your application details before final submission.</p>
+            </div>
+            
+            <div class="review-cards">
+              <div class="review-card">
+                <h4 class="review-title">Personal Information</h4>
+                <div class="review-grid">
+                  <div class="review-item">
+                    <span class="label">Name:</span>
+                    <span class="value">{{ firstName }} {{ middleName }} {{ lastName }}</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="label">Email:</span>
+                    <span class="value">{{ email }}</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="label">Contact:</span>
+                    <span class="value">{{ contact }}</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="label">Application Date:</span>
+                    <span class="value">{{ applicationForm.get('application_date')?.value | date:'mediumDate' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-card">
+                <h4 class="review-title">Position Details</h4>
+                <div class="review-grid" *ngIf="job">
+                  <div class="review-item">
+                    <span class="label">Position:</span>
+                    <span class="value">{{ job.position_title }}</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="label">Department:</span>
+                    <span class="value">{{ job.department?.department_name }}</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="label">Type:</span>
+                    <span class="value">{{ job.employment_type }}</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="label">Salary:</span>
+                    <span class="value">{{ job.salary_range }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="review-card">
+                <h4 class="review-title">Cover Letter</h4>
+                <div class="cover-letter-preview">
+                  <p>{{ applicationForm.get('cover_letter')?.value || 'No cover letter provided' }}</p>
+                </div>
+              </div>
+
+              <div class="review-card" *ngIf="applicationForm.get('remarks')?.value">
+                <h4 class="review-title">Additional Remarks</h4>
+                <div class="remarks-preview">
+                  <p>{{ applicationForm.get('remarks')?.value }}</p>
+                </div>
+              </div>
+
+              <div class="review-card" *ngIf="uploadedDocuments.length > 0">
+                <h4 class="review-title">Uploaded Documents</h4>
+                <div class="documents-preview">
+                  <div class="document-list">
+                    <div 
+                      *ngFor="let doc of uploadedDocuments" 
+                      class="document-item"
+                    >
+                      <div class="document-info">
+                        <div class="document-icon">
+                          <span class="material-symbols-outlined">
+                            {{ getFileIcon(doc.type) }}
+                          </span>
+                        </div>
+                        <div class="document-details">
+                          <span class="document-name">{{ doc.name }}</span>
+                          <span class="document-size">{{ formatFileSize(doc.size) }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="document-summary">
+                    <span class="document-count">{{ uploadedDocuments.length }} document(s) uploaded</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 flex items-start gap-3">
+              <input
+                id="confirmation"
+                type="checkbox"
+                (change)="onConfirmationCheckboxChange($event)"
+                class="h-5 w-5 shrink-0 rounded border border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-150"
+              />
+              <label for="confirmation" class="text-sm text-gray-700 leading-5 cursor-pointer select-none">
+                I confirm that all information provided is <span class="font-semibold text-gray-900">accurate</span> and <span class="font-semibold text-gray-900">complete</span>.
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <div class="footer-actions">
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="previousStep()" 
+          *ngIf="currentStep > 1"
+        >
+          <span class="material-symbols-outlined">arrow_back</span>
+          Previous
+        </button>
+
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="nextStep()" 
+          *ngIf="currentStep < totalSteps"
+          [disabled]="!isStepValid()"
+        >
+          Next
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+
+        <button 
+          type="button" 
+          class="btn btn-success" 
+          (click)="submitApplication()" 
+          *ngIf="currentStep === totalSteps"
+          [disabled]="!applicationForm.valid || isLoading || !confirmationChecked"
+        >
+          <span class="material-symbols-outlined" *ngIf="!isLoading">send</span>
+          <span class="spinner" *ngIf="isLoading"></span>
+          {{ isLoading ? 'Submitting...' : 'Submit Application' }}
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div> 

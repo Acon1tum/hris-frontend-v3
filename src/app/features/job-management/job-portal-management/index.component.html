@@ -1,117 +1,345 @@
 <div class="job-portal-management-flex">
   <div class="job-portal-management-container sticky-left-panel">
+    <div class="header-section">
     <h1>Job Portal Management</h1>
-    <p>Admins can add, edit, or remove job cards for the public job application portal.</p>
-    <div class="job-management-actions">
-      <button class="add-job-btn" (click)="onAddNewJob()">+ Add New Job</button>
+      <p>Manage job postings for the public application portal</p>
     </div>
-    <div class="job-total-count">Total Jobs: {{ jobs.length }}</div>
-    <div class="job-status-counts">
-      <span>Open: {{ postingStatusCounts['Open'] || 0 }}</span>
-      <span class="divider">|</span>
-      <span>Closed: {{ postingStatusCounts['Closed'] || 0 }}</span>
+    
+    <!-- Status Messages -->
+    <div *ngIf="errorMessage" class="status-message error">
+      <span class="material-symbols-outlined">error</span>
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="status-message success">
+      <span class="material-symbols-outlined">check_circle</span>
+      {{ successMessage }}
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button class="primary-btn" (click)="onAddNewJob()" [disabled]="loading">
+        <span class="material-symbols-outlined">add</span>
+        Add New Job
+      </button>
+    </div>
+    
+    <!-- Search & Filters -->
+    <div class="search-filters">
+      <div class="search-box">
+        <span class="material-symbols-outlined search-icon">search</span>
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        placeholder="Search jobs..."
+        (keyup.enter)="onSearch()"
+        class="search-input"
+      />
+        <button (click)="onSearch()" class="search-btn" title="Search">
+          <span class="material-symbols-outlined">search</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Statistics -->
+    <div class="statistics">
+      <div class="stat-item">
+        <span class="stat-number">{{ totalJobs }}</span>
+        <span class="stat-label">Total Jobs</span>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-badge draft">
+          <span class="stat-count">{{ postingStatusCounts['Draft'] || 0 }}</span>
+          <span class="stat-text">Draft</span>
+        </div>
+        <div class="stat-badge published">
+          <span class="stat-count">{{ postingStatusCounts['Published'] || 0 }}</span>
+          <span class="stat-text">Published</span>
+        </div>
+        <div class="stat-badge closed">
+          <span class="stat-count">{{ postingStatusCounts['Closed'] || 0 }}</span>
+          <span class="stat-text">Closed</span>
+        </div>
+        <div class="stat-badge filled">
+          <span class="stat-count">{{ postingStatusCounts['Filled'] || 0 }}</span>
+          <span class="stat-text">Filled</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="job-cards-panel">
-    <ng-container *ngIf="filteredJobs.length > 0; else noJobs">
+  <div class="job-cards-panel" [class.loading]="loading">
+    <!-- Loading State -->
+    <div *ngIf="loading && jobs.length === 0" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading job postings...</p>
+    </div>
+    
+    <!-- Job Cards -->
+    <ng-container *ngIf="!loading && filteredJobs.length > 0; else noJobs">
       <div class="job-card-admin" *ngFor="let job of filteredJobs; let i = index">
-        <div class="job-card-header-admin">
-          <div class="job-title-admin">{{ job.position_title }}</div>
-          <span class="job-status-admin" [ngClass]="{'open': job.posting_status === 'Open', 'closed': job.posting_status === 'Closed'}">{{ job.posting_status }}</span>
+        <div class="job-card-header">
+          <div class="job-info">
+            <h3 class="job-title">{{ job.position_title }}</h3>
+            <div class="job-meta">
+              <span class="department">{{ getDepartmentName(job.department_id) }}</span>
+              <span class="separator">•</span>
+              <span class="type">{{ job.employment_type }}</span>
+              <span class="separator">•</span>
+              <span class="vacancies">
+                {{ job.num_vacancies }} {{ job.num_vacancies === 1 ? 'vacancy' : 'vacancies' }}
+              </span>              
+            </div>
+          </div>
+          <div class="job-status" [ngClass]="job.posting_status.toLowerCase()">
+            {{ job.posting_status }}
+          </div>
         </div>
-        <div class="job-meta-admin">
-          <span><b>Department:</b> {{ job.department }}</span>
-          <span><b>Type:</b> {{ job.employment_type }}</span>
-          <span><b>Vacancies:</b> {{ job.num_vacancies }}</span>
+        
+        <div class="job-details">
+          <p class="job-description">{{ job.job_description | slice:0:100 }}{{ job.job_description.length > 100 ? '...' : '' }}</p>
+          <div class="job-salary" *ngIf="job.salary_range">
+            <span class="material-symbols-outlined">payments</span>
+            {{ getSalaryRangeDisplay(job.salary_range) }}
         </div>
-        <div class="job-desc-admin">
-          <b>Description:</b> {{ job.job_description }}
         </div>
-        <div class="job-actions-admin">
-          <button class="edit-btn" (click)="onEditJob(i)" aria-label="Edit job">
+        
+        <div class="job-actions">
+          <select 
+            [value]="job.posting_status" 
+            (change)="onStatusChange(job, $event)"
+            class="status-select"
+            [disabled]="loading"
+          >
+            <option value="Draft">Draft</option>
+            <option value="Published">Published</option>
+            <option value="Closed">Closed</option>
+            <option value="Filled">Filled</option>
+          </select>
+          
+          <div class="action-buttons">
+            <button class="action-btn edit" (click)="onEditJob(job)" title="Edit job" [disabled]="loading">
             <span class="material-symbols-outlined">edit</span>
           </button>
-          <button class="delete-btn" (click)="onDeleteJob(i)" aria-label="Delete job">
+            <button class="action-btn delete" (click)="onDeleteJob(job)" title="Delete job" [disabled]="loading">
             <span class="material-symbols-outlined">delete</span>
           </button>
+          </div>
         </div>
       </div>
     </ng-container>
+    
     <ng-template #noJobs>
-      <p class="job-cards-panel-placeholder">Created job cards will appear here.</p>
+      <div class="no-jobs-state">
+        <div class="empty-state">
+          <span class="material-symbols-outlined">work_off</span>
+          <h3>No job postings found</h3>
+          <p>Create your first job posting to get started</p>
+          <button class="primary-btn" (click)="onAddNewJob()">
+            <span class="material-symbols-outlined">add</span>
+            Create Job Posting
+          </button>
+        </div>
+      </div>
     </ng-template>
+    
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="pagination">
+      <button 
+        (click)="onPageChange(currentPage - 1)" 
+        [disabled]="currentPage === 1 || loading"
+        class="pagination-btn"
+      >
+        <span class="material-symbols-outlined">chevron_left</span>
+        Previous
+      </button>
+      
+      <div class="page-numbers">
+      <span *ngFor="let page of getPageNumbers()" 
+            (click)="onPageChange(page)"
+            [class.active]="page === currentPage"
+            class="page-number">
+        {{ page }}
+      </span>
+      </div>
+      
+      <button 
+        (click)="onPageChange(currentPage + 1)" 
+        [disabled]="currentPage === totalPages || loading"
+        class="pagination-btn"
+      >
+        Next
+        <span class="material-symbols-outlined">chevron_right</span>
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- Place modal here, outside the main flex container -->
+<!-- Job Form Modal -->
 <div *ngIf="showForm" class="job-form-modal-overlay" tabindex="-1" aria-modal="true" role="dialog" aria-labelledby="jobFormTitle">
   <div class="job-form-modal-card" tabindex="0">
     <form (ngSubmit)="onSubmitJob()" #jobForm="ngForm" class="job-form">
-      <div class="modal-header sticky-header-bar">
-        <div>
-          <h2 id="jobFormTitle">{{ isEdit ? 'Edit Job Posting' : 'Add New Job Posting' }}</h2>
-          <div class="modal-subtitle">Fill out the details below to {{ isEdit ? 'update' : 'create' }} a job posting.</div>
+      <div class="modal-header">
+        <div class="modal-title">
+          <h2 id="jobFormTitle">{{ isEdit ? 'Edit Job Posting' : 'Create New Job Posting' }}</h2>
+          <p class="modal-subtitle">{{ isEdit ? 'Update the job posting details below' : 'Fill out the details to create a new job posting' }}</p>
         </div>
-        <button type="button" class="close-modal-btn" aria-label="Close" (click)="onCancel()">
+        <button type="button" class="close-btn" aria-label="Close" (click)="onCancel()" [disabled]="loading">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <div class="job-form-fields">
+      
+      <!-- Form Messages -->
+      <div *ngIf="errorMessage" class="form-message error">
+        <span class="material-symbols-outlined">error</span>
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="form-message success">
+        <span class="material-symbols-outlined">check_circle</span>
+        {{ successMessage }}
+      </div>
+      
+      <div class="form-content">
+        <!-- Job Details Section -->
         <div class="form-section">
+          <div class="section-header">
+            <span class="material-symbols-outlined">work</span>
           <h3>Job Details</h3>
-          <div class="form-row">
-            <label for="position_title">Position Title</label>
-            <input id="position_title" type="text" [(ngModel)]="jobPosting.position_title" name="position_title" required placeholder="e.g. Software Engineer" />
           </div>
-          <div class="form-row">
-            <label for="department_id">Department</label>
-            <select id="department_id" [(ngModel)]="jobPosting.department_id" name="department_id" required>
+          
+          <div class="form-grid">
+            <div class="form-field">
+            <label for="position_title">Position Title *</label>
+            <input 
+              id="position_title" 
+              type="text" 
+              [(ngModel)]="jobPosting.position_title" 
+              name="position_title" 
+              required 
+              placeholder="e.g. Software Engineer"
+              [disabled]="loading"
+            />
+          </div>
+            
+            <div class="form-field">
+            <label for="department_id">Department *</label>
+            <select 
+              id="department_id" 
+              [(ngModel)]="jobPosting.department_id" 
+              name="department_id" 
+              required
+              [disabled]="loading"
+            >
               <option value="" disabled selected>Select department</option>
-              <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
+              <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.department_name }}</option>
             </select>
           </div>
-          <div class="form-row">
-            <label for="job_description">Job Description</label>
-            <textarea id="job_description" [(ngModel)]="jobPosting.job_description" name="job_description" required placeholder="Describe the job responsibilities..."></textarea>
-          </div>
-          <div class="form-row">
-            <label for="qualifications">Qualifications</label>
-            <textarea id="qualifications" [(ngModel)]="jobPosting.qualifications" name="qualifications" required placeholder="List required qualifications..."></textarea>
-          </div>
-          <div class="form-row">
-            <label for="technical_competencies">Technical Competencies</label>
-            <textarea id="technical_competencies" [(ngModel)]="jobPosting.technical_competencies" name="technical_competencies" placeholder="List technical skills..."></textarea>
-          </div>
-        </div>
-        <div class="form-section">
-          <h3>Job Settings</h3>
-          <div class="form-row">
-            <label for="salary_range">Salary Range</label>
-            <input id="salary_range" type="text" [(ngModel)]="jobPosting.salary_range" name="salary_range" placeholder="e.g. 30,000 - 50,000" />
-          </div>
-          <div class="form-row">
-            <label for="employment_type">Employment Type</label>
-            <select id="employment_type" [(ngModel)]="jobPosting.employment_type" name="employment_type" required>
+            
+            <div class="form-field">
+            <label for="employment_type">Employment Type *</label>
+            <select 
+              id="employment_type" 
+              [(ngModel)]="jobPosting.employment_type" 
+              name="employment_type" 
+              required
+              [disabled]="loading"
+            >
               <option value="" disabled selected>Select type</option>
-              <option value="Regular">Regular</option>
+              <option value="Full_Time">Full Time</option>
+              <option value="Part_time">Part Time</option>
               <option value="Contractual">Contractual</option>
-              <option value="Part_time">Part-time</option>
-              <option value="Temporary">Temporary</option>
               <option value="Consultant">Consultant</option>
+              <option value="Intern">Intern</option>
+              <option value="Probationary">Probationary</option>
+              <option value="OJT">OJT</option>
             </select>
           </div>
-          <div class="form-row">
-            <label for="num_vacancies">Number of Vacancies</label>
-            <input id="num_vacancies" type="number" [(ngModel)]="jobPosting.num_vacancies" name="num_vacancies" min="1" required placeholder="e.g. 3" />
+            
+            <div class="form-field">
+            <label for="num_vacancies">Number of Vacancies *</label>
+            <input 
+              id="num_vacancies" 
+              type="number" 
+              [(ngModel)]="jobPosting.num_vacancies" 
+              name="num_vacancies" 
+              min="1" 
+              required 
+              placeholder="e.g. 3"
+              [disabled]="loading"
+            />
           </div>
-          <div class="form-row">
-            <label for="application_deadline">Application Deadline</label>
-            <input id="application_deadline" type="date" [(ngModel)]="jobPosting.application_deadline" name="application_deadline" required />
+            
+            <div class="form-field">
+              <label for="salary_range">Salary Range</label>
+              <select 
+                id="salary_range" 
+                [(ngModel)]="jobPosting.salary_range" 
+                name="salary_range"
+                [disabled]="loading"
+              >
+                <option value="" selected>Select salary range</option>
+                <option *ngFor="let range of salaryRanges" [value]="range.id">{{ range.range }}</option>
+              </select>
+            </div>
+            
+            <div class="form-field">
+            <label for="application_deadline">Application Deadline *</label>
+            <input 
+              id="application_deadline" 
+              type="date" 
+              [(ngModel)]="jobPosting.application_deadline" 
+              name="application_deadline" 
+              required
+              [disabled]="loading"
+            />
           </div>
-          <div class="form-row">
-            <label for="posting_status">Posting Status</label>
-            <select id="posting_status" [(ngModel)]="jobPosting.posting_status" name="posting_status" required>
+            
+            <div class="form-field full-width">
+              <label for="job_description">Job Description *</label>
+              <textarea 
+                id="job_description" 
+                [(ngModel)]="jobPosting.job_description" 
+                name="job_description" 
+                required 
+                placeholder="Describe the job responsibilities, duties, and expectations..."
+                rows="3"
+                [disabled]="loading"
+              ></textarea>
+            </div>
+            
+            <div class="form-field full-width">
+              <label for="qualifications">Qualifications *</label>
+              <textarea 
+                id="qualifications" 
+                [(ngModel)]="jobPosting.qualifications" 
+                name="qualifications" 
+                required 
+                placeholder="List required qualifications, education, and experience..."
+                rows="3"
+                [disabled]="loading"
+              ></textarea>
+            </div>
+            
+            <div class="form-field full-width">
+              <label for="technical_competencies">Technical Competencies</label>
+              <textarea 
+                id="technical_competencies" 
+                [(ngModel)]="jobPosting.technical_competencies" 
+                name="technical_competencies" 
+                placeholder="List technical skills, tools, and technologies..."
+                rows="2"
+                [disabled]="loading"
+              ></textarea>
+            </div>
+            
+            <div class="form-field">
+            <label for="posting_status">Posting Status *</label>
+            <select 
+              id="posting_status" 
+              [(ngModel)]="jobPosting.posting_status" 
+              name="posting_status" 
+              required
+              [disabled]="loading"
+            >
               <option value="Draft">Draft</option>
               <option value="Published">Published</option>
               <option value="Closed">Closed</option>
@@ -119,20 +347,28 @@
             </select>
           </div>
         </div>
-        <div class="form-section">
-          <h3>Admin Info</h3>
-          <div class="form-row">
-            <label for="created_by">Created By</label>
-            <select id="created_by" [(ngModel)]="jobPosting.created_by" name="created_by" required>
-              <option value="" disabled selected>Select user</option>
-              <option *ngFor="let user of users" [value]="user.id">{{ user.name }}</option>
-            </select>
-          </div>
-        </div>
       </div>
-      <div class="form-actions sticky-action-bar">
-        <button type="submit" class="save-btn" [disabled]="!jobForm.form.valid">Save</button>
-        <button type="button" class="cancel-btn" (click)="onCancel()">Cancel</button>
+      </div>
+      
+      <div class="form-actions">
+        <button 
+          type="button" 
+          class="secondary-btn" 
+          (click)="onCancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          class="primary-btn" 
+          [class.loading]="loading"
+          [disabled]="!jobForm.form.valid || loading"
+        >
+          <span *ngIf="loading" class="loading-spinner"></span>
+          <span class="material-symbols-outlined">{{ isEdit ? 'save' : 'add' }}</span>
+          {{ isEdit ? 'Update' : 'Create' }} Job Posting
+        </button>
       </div>
     </form>
   </div>

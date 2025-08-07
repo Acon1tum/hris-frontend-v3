@@ -107,41 +107,43 @@
     <div class="job-details-panel">
       <ng-container *ngIf="selectedJob; else placeholder">
         <div class="job-card job-details-card enhanced-details-card">
-          <div class="job-details-title">{{ selectedJob.position_title }}</div>
-          <div class="job-details-company">
-            <span class="material-symbols-outlined icon-yellow">apartment</span>
-            {{ selectedJob.department?.department_name }}
-          </div>
-          <div class="job-details-badges">
-            <span class="badge badge-type">
-              <span class="material-symbols-outlined icon-green">work</span>
-              {{ selectedJob.employment_type }}
-            </span>
-            <span class="badge badge-salary">
-              <span class="material-symbols-outlined icon-green">attach_money</span>
-              {{ selectedJob.salary_range }}
-            </span>
-          </div>
-          <div class="job-details-divider"></div>
-          <div class="job-details-meta">
-            <span class="material-symbols-outlined icon-yellow">calendar_month</span>
-            <span>Deadline: {{ selectedJob.application_deadline | date }}</span>
-          </div>
-          <div class="job-details-divider"></div>
-          <div class="job-details-qualifications">
-            <span class="material-symbols-outlined icon-yellow">checklist</span>
-            <span><strong>Qualifications:</strong> {{ selectedJob.qualifications }}</span>
-          </div>
-          <div class="job-details-divider"></div>
-          <div class="job-details-description">
-            <span class="material-symbols-outlined icon-blue">description</span>
-            <div>
-              <strong>Description:</strong>
-              <div>{{ selectedJob.job_description }}</div>
+          <div class="job-details-content">
+            <div class="job-details-title">{{ selectedJob.position_title }}</div>
+            <div class="job-details-company">
+              <span class="material-symbols-outlined icon-yellow">apartment</span>
+              {{ selectedJob.department?.department_name }}
             </div>
+            <div class="job-details-badges">
+              <span class="badge badge-type">
+                <span class="material-symbols-outlined icon-green">work</span>
+                {{ selectedJob.employment_type }}
+              </span>
+              <span class="badge badge-salary">
+                <span class="material-symbols-outlined icon-green">attach_money</span>
+                {{ selectedJob.salary_range }}
+              </span>
+            </div>
+            <div class="job-details-divider"></div>
+            <div class="job-details-meta">
+              <span class="material-symbols-outlined icon-yellow">calendar_month</span>
+              <span>Deadline: {{ selectedJob.application_deadline | date }}</span>
+            </div>
+            <div class="job-details-divider"></div>
+            <div class="job-details-qualifications">
+              <span class="material-symbols-outlined icon-yellow">checklist</span>
+              <span><strong>Qualifications:</strong> {{ selectedJob.qualifications }}</span>
+            </div>
+            <div class="job-details-divider"></div>
+            <div class="job-details-description">
+              <span class="material-symbols-outlined icon-blue">description</span>
+              <div>
+                <strong>Description:</strong>
+                <div>{{ selectedJob.job_description }}</div>
+              </div>
+            </div>
+            <div class="job-details-divider"></div>
           </div>
-          <div class="job-details-divider"></div>
-          <div class="job-details-apply-area" style="display: flex; justify-content: flex-end; gap: 0.7rem;">
+          <div class="job-details-apply-area">
             <button class="apply-btn enhanced-apply-btn" (click)="applyToJob(selectedJob)" aria-label="Apply to this job">
               Apply Now
             </button>
@@ -164,51 +166,109 @@
               <div class="modal-job-company">{{ modalJob?.department?.department_name }}</div>
             </div>
             <div class="modal-header-actions">
-              <button class="modal-action-btn" title="Save job" aria-label="Save job">
-                <span class="material-symbols-outlined">bookmark</span>
+              <button 
+                class="modal-action-btn" 
+                title="Save job" 
+                aria-label="Save job"
+                (click)="toggleFavourite(modalJob!)"
+                [class.favourited]="isFavourite(modalJob!)"
+              >
+                <span class="material-symbols-outlined">
+                  {{ isFavourite(modalJob!) ? 'bookmark_added' : 'bookmark' }}
+                </span>
               </button>
-              <button class="modal-action-btn" title="Share job" aria-label="Share job">
+              <button 
+                class="modal-action-btn" 
+                title="Share job" 
+                aria-label="Share job"
+                (click)="shareJob(modalJob!)"
+              >
                 <span class="material-symbols-outlined">share</span>
               </button>
-              <button #modalCloseBtn class="modal-close-btn" (click)="closeViewModal()" aria-label="Close job details">
+              <button 
+                #modalCloseBtn 
+                class="modal-close-btn" 
+                (click)="closeViewModal()" 
+                aria-label="Close job details"
+                title="Close"
+              >
                 <span class="material-symbols-outlined icon-gray">close</span>
               </button>
             </div>
           </div>
           <div class="job-modal-content">
             <div id="job-modal-desc">
-              <div class="modal-section modal-section-title">
-                <span class="material-symbols-outlined icon-blue">work</span>
-                <span class="modal-job-title">{{ modalJob?.position_title }}</span>
+              <!-- Key Information Grid -->
+              <div class="modal-info-grid">
+                <div class="info-item">
+                  <span class="info-icon material-symbols-outlined">apartment</span>
+                  <div class="info-content">
+                    <span class="info-label">Department</span>
+                    <span class="info-value">{{ modalJob?.department?.department_name }}</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="info-icon material-symbols-outlined">work</span>
+                  <div class="info-content">
+                    <span class="info-label">Employment Type</span>
+                    <span class="info-value">{{ modalJob?.employment_type }}</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="info-icon material-symbols-outlined">attach_money</span>
+                  <div class="info-content">
+                    <span class="info-label">Salary Range</span>
+                    <span class="info-value">{{ modalJob?.salary_range }}</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="info-icon material-symbols-outlined">calendar_month</span>
+                  <div class="info-content">
+                    <span class="info-label">Application Deadline</span>
+                    <span class="info-value">{{ modalJob?.application_deadline | date }}</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="info-icon material-symbols-outlined">group</span>
+                  <div class="info-content">
+                    <span class="info-label">Vacancies</span>
+                    <span class="info-value">{{ modalJob?.num_vacancies || 0 }} vacancy{{ (modalJob?.num_vacancies || 0) > 1 ? 'ies' : 'y' }}</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="info-icon material-symbols-outlined">flag</span>
+                  <div class="info-content">
+                    <span class="info-label">Status</span>
+                    <span class="info-value status-badge" [ngClass]="modalJob?.posting_status?.toLowerCase()">{{ modalJob?.posting_status }}</span>
+                  </div>
+                </div>
               </div>
-              <div class="modal-divider"></div>
-              <div class="modal-section">
-                <span class="modal-label"><span class="material-symbols-outlined icon-yellow">apartment</span> Department:</span>
-                <span class="modal-value">{{ modalJob?.department?.department_name }}</span>
+
+              <!-- Job Description Section -->
+              <div class="modal-section-group">
+                <div class="section-header">
+                  <span class="material-symbols-outlined section-icon">description</span>
+                  <span class="section-title">Job Description</span>
+                </div>
+                <div class="section-content">{{ modalJob?.job_description }}</div>
               </div>
-              <div class="modal-section">
-                <span class="modal-label"><span class="material-symbols-outlined icon-green">work</span> Employment Type:</span>
-                <span class="modal-value">{{ modalJob?.employment_type }}</span>
+
+              <!-- Qualifications Section -->
+              <div class="modal-section-group" *ngIf="modalJob?.qualifications">
+                <div class="section-header">
+                  <span class="material-symbols-outlined section-icon">checklist</span>
+                  <span class="section-title">Qualifications</span>
+                </div>
+                <div class="section-content">{{ modalJob?.qualifications }}</div>
               </div>
-              <div class="modal-section">
-                <span class="modal-label"><span class="material-symbols-outlined icon-green">attach_money</span> Salary Range:</span>
-                <span class="modal-value">{{ modalJob?.salary_range }}</span>
-              </div>
-              <div class="modal-section">
-                <span class="modal-label"><span class="material-symbols-outlined icon-yellow">calendar_month</span> Deadline:</span>
-                <span class="modal-value">{{ modalJob?.application_deadline | date }}</span>
-              </div>
-              <div class="modal-section">
-                <span class="modal-label"><span class="material-symbols-outlined icon-blue">list_alt</span> Technical Competencies:</span>
-                <span class="modal-value">{{ modalJob?.technical_competencies || 'N/A' }}</span>
-              </div>
-              <div class="modal-section">
-                <span class="modal-label"><span class="material-symbols-outlined icon-yellow">checklist</span> Qualifications:</span>
-                <span class="modal-value">{{ modalJob?.qualifications }}</span>
-              </div>
-              <div class="modal-section">
-                <span class="modal-label"><span class="material-symbols-outlined icon-blue">description</span> Description:</span>
-                <span class="modal-value">{{ modalJob?.job_description }}</span>
+
+              <!-- Technical Competencies Section -->
+              <div class="modal-section-group" *ngIf="modalJob?.technical_competencies">
+                <div class="section-header">
+                  <span class="material-symbols-outlined section-icon">list_alt</span>
+                  <span class="section-title">Technical Competencies</span>
+                </div>
+                <div class="section-content">{{ modalJob?.technical_competencies }}</div>
               </div>
             </div>
             <div class="modal-footer">
@@ -228,4 +288,50 @@
       </ng-template>
     </div>
   </section>
-</div> 
+</div>
+<!-- Login Prompt Modal for Public Mode -->
+<div class="login-prompt-overlay" *ngIf="showLoginPromptModal" (click)="closeLoginPromptModal()">
+  <div class="login-prompt-container" (click)="$event.stopPropagation()">
+    <div class="login-prompt-header">
+      <h3 class="login-prompt-title">Login Required</h3>
+      <p class="login-prompt-subtitle">Please log in to apply for this position</p>
+    </div>
+    
+    <div class="login-prompt-content">
+      <div class="job-summary" *ngIf="loginPromptJob">
+        <div class="job-summary-header">
+          <span class="material-symbols-outlined">work</span>
+          <span class="job-title">{{ loginPromptJob.position_title }}</span>
+        </div>
+        <div class="job-summary-details">
+          <span class="department">{{ loginPromptJob.department?.department_name }}</span>
+          <span class="employment-type">{{ loginPromptJob.employment_type }}</span>
+        </div>
+      </div>
+      
+      <div class="login-prompt-message">
+        <p>To apply for this position, you need to be logged in as a job applicant.</p>
+        <p>If you don't have an account, you can register for free.</p>
+      </div>
+    </div>
+    
+    <div class="login-prompt-actions">
+      <button class="btn btn-secondary" (click)="closeLoginPromptModal()">
+        <span class="material-symbols-outlined">close</span>
+        Cancel
+      </button>
+      <button class="btn btn-primary" (click)="navigateToLogin()">
+        <span class="material-symbols-outlined">login</span>
+        Continue to Login
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-job-application-modal
+  *ngIf="showApplicationModal"
+  [job]="applicationJob"
+  [showModal]="showApplicationModal"
+  (close)="closeApplicationModal()"
+  (applicationSubmitted)="onApplicationSubmitted($event)"
+></app-job-application-modal> 

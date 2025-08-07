@@ -5,11 +5,14 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { JobPortalService, JobPosting, SalaryRange, JobFilters } from './job-portal.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { JobApplicationModalComponent } from './job-application-modal/job-application-modal.component';
+import { AuthService } from '../../services/auth.service';
+import { JobApplicationForm } from './job-application-modal/job-application-modal.component';
 
 @Component({
   selector: 'app-online-job-application-portal',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, HttpClientModule, FormsModule],
+  imports: [CommonModule, HeaderComponent, HttpClientModule, FormsModule, JobApplicationModalComponent],
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss']
 })
@@ -29,6 +32,14 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   modalJob: JobPosting | null = null;
   showFavourites = false;
   favourites: string[] = [];
+  
+  // Job application modal properties
+  showApplicationModal = false;
+  applicationJob: JobPosting | null = null;
+  
+  // Login prompt modal properties
+  showLoginPromptModal = false;
+  loginPromptJob: JobPosting | null = null;
 
   // Header scroll animation properties
   isHeaderVisible = true;
@@ -41,7 +52,11 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
 
   @ViewChild('modalCloseBtn') modalCloseBtn!: ElementRef<HTMLButtonElement>;
 
-  constructor(private jobPortalService: JobPortalService, private router: Router) {}
+  constructor(
+    private jobPortalService: JobPortalService, 
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     // Clear favourites on page refresh
@@ -253,7 +268,63 @@ export class OnlineJobApplicationPortalComponent implements OnInit, AfterViewIni
   }
 
   applyToJob(job: JobPosting) {
+    // Check if user is authenticated and has Applicant role
+    if (this.authService.isAuthenticated() && this.authService.hasRole('Applicant')) {
+      // User is logged in as Applicant - show application modal
+      this.applicationJob = job;
+      this.showApplicationModal = true;
+    } else {
+      // User is not authenticated or not an Applicant - show login prompt
+      this.loginPromptJob = job;
+      this.showLoginPromptModal = true;
+    }
+  }
+
+  closeApplicationModal() {
+    this.showApplicationModal = false;
+    this.applicationJob = null;
+  }
+
+  closeLoginPromptModal() {
+    this.showLoginPromptModal = false;
+    this.loginPromptJob = null;
+  }
+
+  onLoginPromptContinue() {
+    this.closeLoginPromptModal();
+    // The login prompt modal will handle navigation to login page
+  }
+
+  navigateToLogin() {
+    this.closeLoginPromptModal();
+    // Navigate to the job portal login page
     this.router.navigate(['/online-job-login']);
+  }
+
+  onApplicationSubmitted(applicationData: JobApplicationForm) {
+    console.log('Application submitted:', applicationData);
+    // Here you would typically send the data to your backend API
+    // For now, just close the modal
+    this.closeApplicationModal();
+  }
+
+  shareJob(job: JobPosting) {
+    // Implement share functionality
+    console.log('Sharing job:', job);
+    // You can implement actual sharing logic here
+    if (navigator.share) {
+      navigator.share({
+        title: job.position_title,
+        text: `Check out this job opportunity: ${job.position_title}`,
+        url: window.location.href
+      });
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      const url = window.location.href;
+      navigator.clipboard.writeText(url).then(() => {
+        alert('Job link copied to clipboard!');
+      });
+    }
   }
 
   get isMobile(): boolean {

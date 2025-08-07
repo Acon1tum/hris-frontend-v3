@@ -41,7 +41,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.92);
+  background: rgb(255, 255, 255);
   z-index: 2;
   box-shadow: 0 0 32px 0 rgba(22,34,51,0.06);
   border-radius: 2rem 0 0 2rem;
@@ -244,8 +244,4 @@
   }
 }
 
-// Material Symbols font
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
-
-// Inter and Roboto fonts
-@import url('https://fonts.googleapis.com/css2?display=swap&family=Inter%3Awght%40400%3B500%3B600%3B700&family=Roboto%3Awght%40400%3B500%3B700&display=swap');
+// Remove font imports from SCSS - these should be in HTML head section

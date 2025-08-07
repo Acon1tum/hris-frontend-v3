@@ -163,6 +163,14 @@ export class JobPortalAuthService {
     return this.currentApplicantSubject.value;
   }
 
+  getCurrentApplicantProfile(): Observable<JobApplicant> {
+    return this.http.get<{ success: boolean; data: JobApplicant }>(
+      `${environment.apiUrl}/job-portal/current-profile`
+    ).pipe(
+      map(response => response.data)
+    );
+  }
+
   register(registrationData: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/job-portal/register`, registrationData);
   }
