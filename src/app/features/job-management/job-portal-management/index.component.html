@@ -85,7 +85,9 @@
               <span class="separator">•</span>
               <span class="type">{{ job.employment_type }}</span>
               <span class="separator">•</span>
-              <span class="vacancies">{{ job.num_vacancies }} vacancy{{ job.num_vacancies > 1 ? 'ies' : '' }}</span>
+              <span class="vacancies">
+                {{ job.num_vacancies }} {{ job.num_vacancies === 1 ? 'vacancy' : 'vacancies' }}
+              </span>              
             </div>
           </div>
           <div class="job-status" [ngClass]="job.posting_status.toLowerCase()">

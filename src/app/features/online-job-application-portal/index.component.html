@@ -107,41 +107,43 @@
     <div class="job-details-panel">
       <ng-container *ngIf="selectedJob; else placeholder">
         <div class="job-card job-details-card enhanced-details-card">
-          <div class="job-details-title">{{ selectedJob.position_title }}</div>
-          <div class="job-details-company">
-            <span class="material-symbols-outlined icon-yellow">apartment</span>
-            {{ selectedJob.department?.department_name }}
-          </div>
-          <div class="job-details-badges">
-            <span class="badge badge-type">
-              <span class="material-symbols-outlined icon-green">work</span>
-              {{ selectedJob.employment_type }}
-            </span>
-            <span class="badge badge-salary">
-              <span class="material-symbols-outlined icon-green">attach_money</span>
-              {{ selectedJob.salary_range }}
-            </span>
-          </div>
-          <div class="job-details-divider"></div>
-          <div class="job-details-meta">
-            <span class="material-symbols-outlined icon-yellow">calendar_month</span>
-            <span>Deadline: {{ selectedJob.application_deadline | date }}</span>
-          </div>
-          <div class="job-details-divider"></div>
-          <div class="job-details-qualifications">
-            <span class="material-symbols-outlined icon-yellow">checklist</span>
-            <span><strong>Qualifications:</strong> {{ selectedJob.qualifications }}</span>
-          </div>
-          <div class="job-details-divider"></div>
-          <div class="job-details-description">
-            <span class="material-symbols-outlined icon-blue">description</span>
-            <div>
-              <strong>Description:</strong>
-              <div>{{ selectedJob.job_description }}</div>
+          <div class="job-details-content">
+            <div class="job-details-title">{{ selectedJob.position_title }}</div>
+            <div class="job-details-company">
+              <span class="material-symbols-outlined icon-yellow">apartment</span>
+              {{ selectedJob.department?.department_name }}
             </div>
+            <div class="job-details-badges">
+              <span class="badge badge-type">
+                <span class="material-symbols-outlined icon-green">work</span>
+                {{ selectedJob.employment_type }}
+              </span>
+              <span class="badge badge-salary">
+                <span class="material-symbols-outlined icon-green">attach_money</span>
+                {{ selectedJob.salary_range }}
+              </span>
+            </div>
+            <div class="job-details-divider"></div>
+            <div class="job-details-meta">
+              <span class="material-symbols-outlined icon-yellow">calendar_month</span>
+              <span>Deadline: {{ selectedJob.application_deadline | date }}</span>
+            </div>
+            <div class="job-details-divider"></div>
+            <div class="job-details-qualifications">
+              <span class="material-symbols-outlined icon-yellow">checklist</span>
+              <span><strong>Qualifications:</strong> {{ selectedJob.qualifications }}</span>
+            </div>
+            <div class="job-details-divider"></div>
+            <div class="job-details-description">
+              <span class="material-symbols-outlined icon-blue">description</span>
+              <div>
+                <strong>Description:</strong>
+                <div>{{ selectedJob.job_description }}</div>
+              </div>
+            </div>
+            <div class="job-details-divider"></div>
           </div>
-          <div class="job-details-divider"></div>
-          <div class="job-details-apply-area" style="display: flex; justify-content: flex-end; gap: 0.7rem;">
+          <div class="job-details-apply-area">
             <button class="apply-btn enhanced-apply-btn" (click)="applyToJob(selectedJob)" aria-label="Apply to this job">
               Apply Now
             </button>
@@ -224,6 +226,20 @@
                   <div class="info-content">
                     <span class="info-label">Application Deadline</span>
                     <span class="info-value">{{ modalJob?.application_deadline | date }}</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="info-icon material-symbols-outlined">group</span>
+                  <div class="info-content">
+                    <span class="info-label">Vacancies</span>
+                    <span class="info-value">{{ modalJob?.num_vacancies || 0 }} vacancy{{ (modalJob?.num_vacancies || 0) > 1 ? 'ies' : 'y' }}</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <span class="info-icon material-symbols-outlined">flag</span>
+                  <div class="info-content">
+                    <span class="info-label">Status</span>
+                    <span class="info-value status-badge" [ngClass]="modalJob?.posting_status?.toLowerCase()">{{ modalJob?.posting_status }}</span>
                   </div>
                 </div>
               </div>

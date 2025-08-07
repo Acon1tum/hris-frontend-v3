@@ -316,6 +316,7 @@ html {
   padding: 2rem 1.5rem;
   height: 100%;
   overflow: hidden;
+  position: relative;
 }
 
 .job-details-card {
@@ -329,6 +330,8 @@ html {
   display: flex;
   flex-direction: column;
   gap: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 .job-details-placeholder {
@@ -548,13 +551,57 @@ html {
   position: sticky;
   top: 2rem;
   max-height: 80vh;
-  overflow-y: auto;
+  overflow: hidden;
   box-shadow: 0 8px 32px rgba(10,37,88,0.13);
   border: 2px solid #0a2558;
   background: #fff;
   padding: 2.5rem 2rem 2rem 2rem;
   border-radius: 1.5rem;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.job-details-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.job-details-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.job-details-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.job-details-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.job-details-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.job-details-apply-area {
+  background: none;
+  padding: 0;
+  border-radius: 0.5rem;
+  margin-top: auto;
+  text-align: center;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding-top: 1rem;
+  border-top: 1px solid #e6eaf3;
+  z-index: 3;
 }
 
 .job-details-header {
@@ -726,11 +773,17 @@ html {
   background: none;
   padding: 0;
   border-radius: 0.5rem;
-  margin-top: 1.1rem;
+  margin-top: auto;
   text-align: center;
   display: flex;
   justify-content: flex-end;
   gap: 0.7rem;
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding-top: 1rem;
+  border-top: 1px solid #e6eaf3;
+  z-index: 3;
 }
 
 .view-btn {
@@ -1274,6 +1327,36 @@ html {
   color: #1e293b;
   line-height: 1.4;
   word-break: break-word;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &.draft {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  
+  &.published {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  
+  &.closed {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  
+  &.filled {
+    background: #dbeafe;
+    color: #1e40af;
+  }
 }
 
 /* Section Groups */
