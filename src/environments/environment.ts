@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
-  //apiUrl: 'https://hris-backend-gxu3.onrender.com/api',
-  apiUrl: 'http://localhost:3000/api',
+  apiUrl: 'https://hris-backend-v4.onrender.com/api',
+  //apiUrl: 'http://localhost:3000/api',
   appName: 'HRIS System',
   version: '1.0.0',
   features: {
