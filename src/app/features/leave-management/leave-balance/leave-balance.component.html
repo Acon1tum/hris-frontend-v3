@@ -86,6 +86,15 @@
           <span class="material-symbols-outlined">add_circle</span>
           Adjust Credits
         </button>
+        
+        <button 
+          class="btn-success flex items-center gap-2" 
+          (click)="bulkInitializeCredits()"
+          [disabled]="isBulkInitializing"
+        >
+          <span class="material-symbols-outlined" [class.animate-spin]="isBulkInitializing">auto_fix_high</span>
+          {{ isBulkInitializing ? 'Loading Preview...' : 'Auto Create Credits' }}
+        </button>
       </div>
     </div>
 
@@ -318,8 +327,8 @@
               (change)="onEmployeeSelectionChange()"
             >
               <option value="">Select Employee</option>
-              <option *ngFor="let employee of employees" [value]="employee.id">
-                {{ employee.name }} - {{ employee.department }}
+              <option *ngFor="let personnel of allPersonnel" [value]="personnel.id">
+                {{ personnel.firstName }} {{ personnel.lastName }} - {{ personnel.department }}
               </option>
             </select>
             <div *ngIf="adjustmentForm.get('personnel_id')?.invalid && adjustmentForm.get('personnel_id')?.touched" class="text-red-500 text-sm mt-1">
@@ -336,7 +345,7 @@
               [class.border-red-500]="adjustmentForm.get('leave_type_id')?.invalid && adjustmentForm.get('leave_type_id')?.touched"
             >
               <option value="">Select Leave Type</option>
-              <option *ngFor="let leaveType of getAvailableLeaveTypes()" [value]="leaveType.id">
+              <option *ngFor="let leaveType of leaveTypes" [value]="leaveType.id">
                 {{ leaveType.leave_type_name }}
               </option>
             </select>
@@ -377,7 +386,14 @@
             <span class="font-medium">Current Balance Information</span>
           </div>
           <div class="text-sm">
-            <div><strong>Current Balance:</strong> {{ getCurrentBalance() }} credits</div>
+            <div *ngIf="getCurrentBalance() > 0; else noBalance">
+              <strong>Current Balance:</strong> {{ getCurrentBalance() }} credits
+            </div>
+            <ng-template #noBalance>
+              <div class="text-orange-600">
+                <strong>No balance found.</strong> This employee may not have leave balance initialized for this leave type and year yet.
+              </div>
+            </ng-template>
           </div>
         </div>
         
@@ -508,6 +524,163 @@
       
       <div class="flex justify-end mt-6">
         <button class="btn-secondary" (click)="closeAdjustmentHistory()">Close</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bulk Initialize Confirmation Modal -->
+  <div *ngIf="showBulkInitializeModal" class="employee-adjust-modal">
+    <div class="employee-adjust-modal-backdrop" (click)="closeBulkInitializeModal()"></div>
+    <div class="modal-content max-w-2xl">
+      <button class="modal-close-btn" (click)="closeBulkInitializeModal()" aria-label="Close">&times;</button>
+      <h3 class="text-xl font-bold mb-4">Auto Create Leave Credits</h3>
+      
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div class="flex items-center mb-2">
+          <span class="material-symbols-outlined text-blue-600 mr-2">info</span>
+          <span class="font-medium">What this will do:</span>
+        </div>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Create leave credits for all active personnel who don't have any yet</li>
+          <li>• Use default credit amounts based on leave type</li>
+          <li>• Only create credits for the selected year: <strong>{{ selectedYear }}</strong></li>
+          <li>• Skip personnel who already have leave balances</li>
+        </ul>
+      </div>
+      
+      <!-- Personnel Lists -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        <!-- Personnel who will receive credits -->
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div class="flex items-center mb-3">
+            <span class="material-symbols-outlined text-green-600 mr-2">person_add</span>
+            <span class="font-medium text-green-800">Will Receive Credits</span>
+            <span class="ml-auto bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
+              {{ personnelToReceiveCredits.length }}
+            </span>
+          </div>
+          <div class="max-h-40 overflow-y-auto">
+            <div *ngIf="personnelToReceiveCredits.length === 0" class="text-sm text-green-700 italic">
+              No personnel will receive new credits (all have existing balances)
+            </div>
+            <div *ngFor="let person of personnelToReceiveCredits" class="text-sm text-green-700 mb-1">
+              • {{ person.name }} - {{ person.department }}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Personnel with existing credits -->
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center mb-3">
+            <span class="material-symbols-outlined text-gray-600 mr-2">person</span>
+            <span class="font-medium text-gray-800">Already Have Credits</span>
+            <span class="ml-auto bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">
+              {{ personnelWithExistingCredits.length }}
+            </span>
+          </div>
+          <div class="max-h-40 overflow-y-auto">
+            <div *ngIf="personnelWithExistingCredits.length === 0" class="text-sm text-gray-700 italic">
+              No personnel have existing credits
+            </div>
+            <div *ngFor="let person of personnelWithExistingCredits" class="text-sm text-gray-700 mb-1">
+              • {{ person.name }} - {{ person.department }} ({{ person.existingCreditsCount }} types)
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Default Credit Amounts -->
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+        <div class="flex items-center mb-2">
+          <span class="material-symbols-outlined text-yellow-600 mr-2">warning</span>
+          <span class="font-medium">Default Credit Amounts:</span>
+        </div>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Vacation Leave: 15 credits</li>
+          <li>• Sick Leave: 15 credits</li>
+          <li>• Maternity Leave: 105 credits</li>
+          <li>• Paternity Leave: 7 credits</li>
+          <li>• Personal Leave: 3 credits</li>
+        </ul>
+      </div>
+      
+      <div class="flex justify-end gap-2">
+        <button 
+          type="button" 
+          class="btn-secondary" 
+          (click)="closeBulkInitializeModal()"
+          [disabled]="isBulkInitializing"
+        >
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          class="btn-success"
+          (click)="confirmBulkInitialize()"
+          [disabled]="isBulkInitializing"
+        >
+          <span *ngIf="isBulkInitializing" class="material-symbols-outlined animate-spin mr-2">refresh</span>
+          {{ isBulkInitializing ? 'Creating Credits...' : 'Create Credits' }}
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bulk Initialize Success Modal -->
+  <div *ngIf="showBulkInitializeSuccessModal" class="employee-adjust-modal">
+    <div class="employee-adjust-modal-backdrop" (click)="closeBulkInitializeSuccessModal()"></div>
+    <div class="modal-content max-w-2xl">
+      <button class="modal-close-btn" (click)="closeBulkInitializeSuccessModal()" aria-label="Close">&times;</button>
+      
+      <div class="text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+          <span class="material-symbols-outlined text-green-600 text-2xl">check_circle</span>
+        </div>
+        <h3 class="text-xl font-bold mb-4 text-green-800">Leave Credits Created Successfully!</h3>
+      </div>
+      
+      <div *ngIf="bulkInitializeResult" class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <span class="font-medium text-green-800">Year:</span>
+            <span class="ml-2 text-green-700">{{ bulkInitializeResult.year }}</span>
+          </div>
+          <div>
+            <span class="font-medium text-green-800">Personnel Count:</span>
+            <span class="ml-2 text-green-700">{{ bulkInitializeResult.personnelCount }}</span>
+          </div>
+          <div>
+            <span class="font-medium text-green-800">Leave Types:</span>
+            <span class="ml-2 text-green-700">{{ bulkInitializeResult.leaveTypeCount }}</span>
+          </div>
+          <div>
+            <span class="font-medium text-green-800">Credits Created:</span>
+            <span class="ml-2 text-green-700">{{ bulkInitializeResult.initializedCount }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div class="flex items-center mb-2">
+          <span class="material-symbols-outlined text-blue-600 mr-2">info</span>
+          <span class="font-medium">What was created:</span>
+        </div>
+        <ul class="text-sm text-gray-700 space-y-1">
+          <li>• Leave credit records for personnel without existing balances</li>
+          <li>• Default credit amounts based on leave type policies</li>
+          <li>• Only for the selected year: <strong>{{ bulkInitializeResult?.year }}</strong></li>
+          <li>• Existing balances were preserved and not modified</li>
+        </ul>
+      </div>
+      
+      <div class="flex justify-end">
+        <button 
+          type="button" 
+          class="btn-primary"
+          (click)="closeBulkInitializeSuccessModal()"
+        >
+          Close
+        </button>
       </div>
     </div>
   </div>

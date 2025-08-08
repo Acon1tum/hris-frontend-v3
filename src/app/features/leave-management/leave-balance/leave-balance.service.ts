@@ -50,6 +50,13 @@ export interface Department {
   department_name: string;
 }
 
+export interface LeaveType {
+  id: string;
+  leave_type_name: string;
+  description?: string;
+  max_days?: number;
+}
+
 export interface LeaveAdjustment {
   id: string;
   personnel_id: string;
@@ -106,17 +113,22 @@ export class LeaveBalanceService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Get leave balance report for all employees
+   * Get leave balance report with filters
    */
   getLeaveBalanceReport(filters: LeaveBalanceFilter = {}): Observable<EmployeeLeaveBalance[]> {
     let params = new HttpParams();
     
-    Object.keys(filters).forEach(key => {
-      const value = filters[key as keyof LeaveBalanceFilter];
-      if (value !== undefined && value !== null && value !== '') {
-        params = params.set(key, value.toString());
-      }
-    });
+    if (filters.department_id) {
+      params = params.set('department_id', filters.department_id);
+    }
+    
+    if (filters.year) {
+      params = params.set('year', filters.year);
+    }
+
+    // Add pagination parameters
+    params = params.set('page', '1');
+    params = params.set('limit', '1000'); // Get all records for now, pagination will be handled in frontend
 
     return this.http.get<ApiResponse<LeaveBalance[]>>(`${this.apiUrl}/reports/balance`, { params })
       .pipe(
@@ -174,17 +186,61 @@ export class LeaveBalanceService {
    * Initialize leave balances
    */
   initializeLeaveBalance(personnelId: string): Observable<any> {
-    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/balance/initialize`, { personnel_id: personnelId })
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/balance/initialize`, {
+      personnel_id: personnelId,
+      year: new Date().getFullYear().toString(),
+      leave_type_id: '', // This will be set by the backend
+      total_credits: 0 // This will be set by the backend
+    }).pipe(
+      map(response => {
+        if (response.success) {
+          return response.data;
+        } else {
+          throw new Error(response.message || 'Failed to initialize leave balance');
+        }
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Preview bulk initialize leave balances for all personnel without credits
+   */
+  previewBulkInitializeLeaveBalances(year?: string): Observable<any> {
+    const currentYear = year || new Date().getFullYear().toString();
+    const params = new HttpParams().set('year', currentYear);
+    
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/balance/bulk-initialize-preview`, { params })
       .pipe(
         map(response => {
           if (response.success) {
             return response.data;
           } else {
-            throw new Error(response.message || 'Failed to initialize leave balance');
+            throw new Error(response.message || 'Failed to preview bulk initialize leave balances');
           }
         }),
         catchError(this.handleError)
       );
+  }
+
+  /**
+   * Bulk initialize leave balances for all personnel without credits
+   */
+  bulkInitializeLeaveBalances(year?: string): Observable<any> {
+    const currentYear = year || new Date().getFullYear().toString();
+    
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/balance/bulk-initialize`, {
+      year: currentYear
+    }).pipe(
+      map(response => {
+        if (response.success) {
+          return response.data;
+        } else {
+          throw new Error(response.message || 'Failed to bulk initialize leave balances');
+        }
+      }),
+      catchError(this.handleError)
+    );
   }
 
   /**
@@ -269,6 +325,23 @@ export class LeaveBalanceService {
             return response.data;
           } else {
             throw new Error(response.message || 'Failed to fetch departments');
+          }
+        }),
+        catchError(this.handleError)
+      );
+  }
+
+  /**
+   * Get leave types
+   */
+  getLeaveTypes(): Observable<LeaveType[]> {
+    return this.http.get<ApiResponse<LeaveType[]>>(`${this.apiUrl}/types`)
+      .pipe(
+        map(response => {
+          if (response.success) {
+            return response.data;
+          } else {
+            throw new Error(response.message || 'Failed to fetch leave types');
           }
         }),
         catchError(this.handleError)

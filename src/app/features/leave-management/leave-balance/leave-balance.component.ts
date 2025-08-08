@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-import { LeaveBalanceService, EmployeeLeaveBalance, Department, LeaveBalanceFilter, LeaveAdjustmentRequest, LeaveAdjustment } from './leave-balance.service';
+import { LeaveBalanceService, EmployeeLeaveBalance, Department, LeaveBalanceFilter, LeaveAdjustmentRequest, LeaveAdjustment, LeaveType } from './leave-balance.service';
+import { PersonnelService, Employee } from '../../personnel-information-management/personnel.service';
 
 @Component({
   selector: 'app-leave-balance',
@@ -22,10 +23,13 @@ export class LeaveBalanceComponent implements OnInit, OnDestroy {
   employees: EmployeeLeaveBalance[] = [];
   filteredEmployees: EmployeeLeaveBalance[] = [];
   departments: Department[] = [];
+  allPersonnel: Employee[] = []; // For employee dropdown in adjust modal
+  leaveTypes: LeaveType[] = []; // For leave type dropdown in adjust modal
   
   // UI state
   isLoading = false;
   isExporting = false;
+  isBulkInitializing = false;
   error = '';
   
   // Filters
@@ -42,6 +46,8 @@ export class LeaveBalanceComponent implements OnInit, OnDestroy {
   // Modal states
   showEmployeeModal = false;
   showEmployeeAdjustModal = false;
+  showBulkInitializeModal = false;
+  showBulkInitializeSuccessModal = false;
   selectedEmployee: EmployeeLeaveBalance | null = null;
   selectedEmployeeForAdjust: EmployeeLeaveBalance | null = null;
   
@@ -54,9 +60,15 @@ export class LeaveBalanceComponent implements OnInit, OnDestroy {
   adjustmentHistory: LeaveAdjustment[] = [];
   showAdjustmentHistory = false;
   isLoadingHistory = false;
+  
+  // Bulk initialization result
+  bulkInitializeResult: any = null;
+  personnelToReceiveCredits: any[] = [];
+  personnelWithExistingCredits: any[] = [];
 
   constructor(
     private leaveBalanceService: LeaveBalanceService,
+    private personnelService: PersonnelService,
     private formBuilder: FormBuilder
   ) {
     this.adjustmentForm = this.formBuilder.group({
@@ -85,7 +97,9 @@ export class LeaveBalanceComponent implements OnInit, OnDestroy {
     try {
       await Promise.all([
         this.loadDepartments(),
-        this.loadLeaveBalances()
+        this.loadLeaveBalances(),
+        this.loadAllPersonnel(),
+        this.loadLeaveTypes() // Load leave types here
       ]);
     } catch (error) {
       console.error('Error initializing data:', error);
@@ -145,6 +159,46 @@ export class LeaveBalanceComponent implements OnInit, OnDestroy {
             this.filteredEmployees = [];
             this.isLoading = false;
             reject(error);
+          }
+        });
+    });
+  }
+
+  /**
+   * Load all personnel for employee dropdown
+   */
+  private loadAllPersonnel(): Promise<void> {
+    return new Promise((resolve) => {
+      this.personnelService.getPersonnel(1, 1000, '') // Get all personnel (1000 limit should be enough)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            this.allPersonnel = response.data;
+            resolve();
+          },
+          error: (error) => {
+            console.error('Error loading personnel:', error);
+            resolve();
+          }
+        });
+    });
+  }
+
+  /**
+   * Load leave types for the adjustment modal
+   */
+  private loadLeaveTypes(): Promise<void> {
+    return new Promise((resolve) => {
+      this.leaveBalanceService.getLeaveTypes()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (leaveTypes) => {
+            this.leaveTypes = leaveTypes;
+            resolve();
+          },
+          error: (error) => {
+            console.error('Error loading leave types:', error);
+            resolve(); // Don't fail the whole initialization
           }
         });
     });
@@ -357,6 +411,77 @@ export class LeaveBalanceComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Bulk initialize leave credits for all personnel without credits
+   */
+  bulkInitializeCredits(): void {
+    this.isBulkInitializing = true;
+    this.error = '';
+
+    // First, get the preview data to show what will be created
+    this.leaveBalanceService.previewBulkInitializeLeaveBalances(this.selectedYear)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (result) => {
+          this.isBulkInitializing = false;
+          this.personnelToReceiveCredits = result.personnelToReceiveCredits || [];
+          this.personnelWithExistingCredits = result.personnelWithExistingCredits || [];
+          this.showBulkInitializeModal = true;
+        },
+        error: (error) => {
+          this.isBulkInitializing = false;
+          this.error = error.message || 'An error occurred while loading personnel data';
+          console.error('Error loading personnel data:', error);
+          alert('Error: ' + this.error);
+        }
+      });
+  }
+
+  /**
+   * Close bulk initialize modal
+   */
+  closeBulkInitializeModal(): void {
+    this.showBulkInitializeModal = false;
+  }
+
+  /**
+   * Confirm bulk initialize leave credits
+   */
+  confirmBulkInitialize(): void {
+    this.isBulkInitializing = true;
+    this.error = '';
+
+    this.leaveBalanceService.bulkInitializeLeaveBalances(this.selectedYear)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (result) => {
+          this.isBulkInitializing = false;
+          this.refreshData();
+          this.closeBulkInitializeModal();
+          this.showBulkInitializeSuccessModal = true;
+          this.bulkInitializeResult = result; // Store result for display
+          this.personnelToReceiveCredits = result.personnel_to_receive_credits || [];
+          this.personnelWithExistingCredits = result.personnel_with_existing_credits || [];
+        },
+        error: (error) => {
+          this.isBulkInitializing = false;
+          this.error = error.message || 'An error occurred while bulk initializing leave credits';
+          console.error('Error bulk initializing leave credits:', error);
+          alert('Error: ' + this.error);
+        }
+      });
+  }
+
+  /**
+   * Close bulk initialize success modal
+   */
+  closeBulkInitializeSuccessModal(): void {
+    this.showBulkInitializeSuccessModal = false;
+    this.bulkInitializeResult = null;
+    this.personnelToReceiveCredits = [];
+    this.personnelWithExistingCredits = [];
+  }
+
+  /**
    * Get leave balance by type name
    */
   getLeaveBalanceByType(employee: EmployeeLeaveBalance, leaveTypeName: string): number {
@@ -497,14 +622,8 @@ export class LeaveBalanceComponent implements OnInit, OnDestroy {
   /**
    * Get available leave types for selected employee
    */
-  getAvailableLeaveTypes(): any[] {
-    const personnelId = this.adjustmentForm.get('personnel_id')?.value;
-    if (!personnelId) return [];
-    
-    const employee = this.employees.find(emp => emp.id === personnelId);
-    if (!employee) return [];
-    
-    return employee.leave_balances.map(balance => balance.leave_type);
+  getAvailableLeaveTypes(): LeaveType[] {
+    return this.leaveTypes;
   }
 
   /**
@@ -517,7 +636,10 @@ export class LeaveBalanceComponent implements OnInit, OnDestroy {
     if (!personnelId || !leaveTypeId) return 0;
     
     const employee = this.employees.find(emp => emp.id === personnelId);
-    if (!employee) return 0;
+    if (!employee) {
+      // If employee not found in leave balance data, return 0 (no balance yet)
+      return 0;
+    }
     
     const balance = employee.leave_balances.find(bal => bal.leave_type.id === leaveTypeId);
     return balance ? balance.total_credits : 0;
