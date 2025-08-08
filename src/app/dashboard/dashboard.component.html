@@ -1,51 +1,32 @@
+<!-- Test message to verify component loading -->
+<div style="background: blue; color: white; padding: 20px; margin: 20px;">
+  DASHBOARD COMPONENT LOADED!
+</div>
+
 <div class="dashboard-container">
   <div class="dashboard-header">
-    <h1 class="dashboard-title">{{ title }}</h1>
-    <p class="dashboard-subtitle">Welcome back! Here's what's happening today.</p>
+    <h1>{{ title }}</h1>
+    <p>Welcome to the HRIS Dashboard</p>
   </div>
-
-  <!-- Dashboard Stats -->
+  
   <div class="stats-grid">
     <div class="stat-card" *ngFor="let stat of dashboardStats">
       <div class="stat-icon">{{ stat.icon }}</div>
       <div class="stat-content">
-        <h3 class="stat-value">{{ stat.value }}</h3>
-        <p class="stat-label">{{ stat.label }}</p>
-        <div class="stat-change" [class.trend-up]="stat.trend === 'up'" [class.trend-down]="stat.trend === 'down'">
-          {{ stat.change }}
-        </div>
+        <h3>{{ stat.label }}</h3>
+        <p class="stat-value">{{ stat.value }}</p>
+        <p class="stat-change" [class]="'trend-' + stat.trend">{{ stat.change }}</p>
       </div>
     </div>
   </div>
-
-  <div class="dashboard-content">
-    <!-- Quick Actions -->
-    <div class="quick-actions-section">
-      <h2 class="section-title">Quick Actions</h2>
-      <div class="quick-actions-grid">
-        <div class="action-card" *ngFor="let action of quickActions">
-          <div class="action-icon">{{ action.icon }}</div>
-          <h3 class="action-name">{{ action.name }}</h3>
-        </div>
-      </div>
-    </div>
-
-    <!-- Recent Activities -->
-    <div class="recent-activities-section">
-      <h2 class="section-title">Recent Activities</h2>
-      <div class="activities-list">
-        <div class="activity-item" *ngFor="let activity of recentActivities">
-          <div class="activity-icon" [class]="'activity-' + activity.type">
-            <span *ngIf="activity.type === 'success'">✅</span>
-            <span *ngIf="activity.type === 'info'">ℹ️</span>
-            <span *ngIf="activity.type === 'warning'">⚠️</span>
-          </div>
-          <div class="activity-content">
-            <p class="activity-action">{{ activity.action }}</p>
-            <p class="activity-meta">{{ activity.user }} • {{ activity.time }}</p>
-          </div>
-        </div>
-      </div>
+  
+  <div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="action-grid">
+      <button class="action-btn" *ngFor="let action of quickActions">
+        <span class="action-icon">{{ action.icon }}</span>
+        <span>{{ action.name }}</span>
+      </button>
     </div>
   </div>
-</div> 
+</div>

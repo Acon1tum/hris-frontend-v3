@@ -35,8 +35,14 @@ export class PermissionGuard implements CanActivate {
     const hasRole = this.authService.hasAnyRole(requiredRoles);
     
     if (!hasRole) {
-      // Redirect to unauthorized page or dashboard
-      this.router.navigate(['/dashboard']);
+      // Redirect to user's appropriate dashboard based on their role
+      const user = this.authService.getCurrentUser();
+      if (user) {
+        const landingPage = this.authService.getLandingPageByRole(user.role || 'User');
+        this.router.navigate([landingPage]);
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
       return false;
     }
 

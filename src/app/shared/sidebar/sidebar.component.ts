@@ -41,7 +41,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   // Replace menuItemsConfig with a grouped config by role
   menuItemsByRole: { [role: string]: MenuItem[] } = {
     Admin: [
-      { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
+      { name: 'Dashboard', icon: 'dashboard', path: '/admin-dashboard' },
       { name: 'System Administration', icon: 'admin_panel_settings', path: '/system-administration', children: [
         { name: 'User Management', icon: 'manage_accounts', path: '/system-administration/user-management' },
         { name: 'Audit Trail', icon: 'history', path: '/system-administration/audit-trail' },

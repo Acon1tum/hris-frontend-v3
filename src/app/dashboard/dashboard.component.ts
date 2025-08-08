@@ -1,4 +1,4 @@
-import { Component, HostBinding } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   @HostBinding('class.sidebar-collapsed') isSidebarCollapsed = false;
   @HostBinding('class.sidebar-open') isSidebarOpen = false;
   
@@ -34,6 +34,10 @@ export class DashboardComponent {
     { name: 'Generate Report', icon: '📊', route: '/report-generation' },
     { name: 'View Attendance', icon: '⏰', route: '/timekeeping-attendance' }
   ];
+
+  ngOnInit() {
+    console.log('Dashboard Component loaded!');
+  }
 
   onSidebarStateChange(state: {isOpen: boolean; isCollapsed: boolean}) {
     this.isSidebarCollapsed = state.isCollapsed;

@@ -163,7 +163,50 @@ export class AuthService {
 
   hasAnyRole(roles: string[]): boolean {
     const user = this.getCurrentUser();
-    return !!(user && user.role && roles.includes(user.role));
+    return user ? roles.some(role => this.hasRole(role)) : false;
+  }
+
+  /**
+   * Get the appropriate landing page based on user role
+   */
+  getLandingPageByRole(role: string): string {
+    console.log('Getting landing page for role:', role);
+    let landingPage: string;
+    
+    switch (role) {
+      case 'Admin':
+        landingPage = '/admin-dashboard';
+        break;
+      case 'HR':
+        landingPage = '/admin-dashboard'; // HR users also get admin dashboard access
+        break;
+      case 'Manager':
+        landingPage = '/dashboard'; // Regular dashboard for managers
+        break;
+      case 'Employee':
+        landingPage = '/dashboard'; // Regular dashboard for employees
+        break;
+      case 'Applicant':
+        landingPage = '/job-portal'; // Job portal for applicants
+        break;
+      default:
+        landingPage = '/dashboard'; // Default fallback
+        break;
+    }
+    
+    console.log('Landing page determined:', landingPage);
+    return landingPage;
+  }
+
+  /**
+   * Get the appropriate landing page for the current user
+   */
+  getCurrentUserLandingPage(): string {
+    const user = this.getCurrentUser();
+    if (!user) {
+      return '/login';
+    }
+    return this.getLandingPageByRole(user.role || 'User');
   }
 
   refreshToken(): Observable<string> {

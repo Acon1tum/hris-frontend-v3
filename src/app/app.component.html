@@ -13,20 +13,10 @@
         [isCollapsed]="isSidebarCollapsed"
         (stateChange)="onSidebarStateChange($event)">
       </app-sidebar>
-      <main class="main-content" 
-            [class.sidebar-open]="isSidebarOpen"
-            [class.sidebar-collapsed]="isSidebarCollapsed">
-        <div class="container" [class.container-expanded]="!isSidebarOpen || isSidebarCollapsed">
-          <div class="features-grid" *ngIf="!isFeaturePage()">
-            <div class="feature-card" *ngFor="let feature of features">
-              <div class="feature-icon">{{ feature.icon }}</div>
-              <h3 class="feature-title">{{ feature.name }}</h3>
-              <p class="feature-description">{{ feature.description }}</p>
-              <a [routerLink]="feature.route" class="btn btn-primary">Access Module</a>
-            </div>
-          </div>
-          <router-outlet></router-outlet>
-        </div>
+      
+      <!-- Router outlet for authenticated routes -->
+      <main class="main-content">
+        <router-outlet></router-outlet>
       </main>
     </div>
     

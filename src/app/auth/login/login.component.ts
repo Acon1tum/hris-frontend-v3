@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
 
   onLogin() {
     if (!this.loginData.username || !this.loginData.password) {
-      this.errorMessage = 'Please enter both username and password';
+      this.errorMessage = 'Please enter both username and password.';
       return;
     }
 
@@ -71,8 +71,9 @@ export class LoginComponent implements OnInit {
         // Emit login success event
         this.loginSuccess.emit();
 
-        // Navigate to dashboard
-        this.router.navigate(['/dashboard']);
+        // Navigate to appropriate dashboard based on role
+        const landingPage = this.authService.getLandingPageByRole(user.role || 'User');
+        this.router.navigate([landingPage]);
         this.isLoading = false;
       },
       error: (error) => {
@@ -90,6 +91,8 @@ export class LoginComponent implements OnInit {
       }
     });
   }
+
+
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
@@ -148,8 +151,9 @@ export class LoginComponent implements OnInit {
         // Emit login success event
         this.loginSuccess.emit();
 
-        // Navigate to dashboard
-        this.router.navigate(['/dashboard']);
+        // Navigate to appropriate dashboard based on role
+        const landingPage = this.authService.getLandingPageByRole(user.role || 'User');
+        this.router.navigate([landingPage]);
         this.isLoading = false;
       },
       error: (error) => {

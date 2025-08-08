@@ -7,7 +7,11 @@ import { OnlineJobLoginComponent } from './features/online-job-application-porta
 import { OnlineJobRegisterComponent } from './features/online-job-application-portal/online-job-register/online-job-register.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { 
+    path: '', 
+    redirectTo: '/login', 
+    pathMatch: 'full' 
+  },
   { path: 'login', component: LoginComponent },
   { 
     path: 'dashboard', 
@@ -16,6 +20,13 @@ export const routes: Routes = [
     data: { roles: ['Admin', 'HR', 'Employee', 'Manager', 'Applicant'] }
   },
   {
+    path: 'admin-dashboard',
+    loadComponent: () => import('./features/dashboard/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
+    canActivate: [PermissionGuard],
+    data: { roles: ['Admin', 'HR'] }
+  },
+  
+  { 
     path: 'system-administration',
     loadComponent: () => import('./features/system-administration/index.component').then(m => m.SystemAdministrationComponent),
     canActivate: [PermissionGuard],

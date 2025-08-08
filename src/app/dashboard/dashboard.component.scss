@@ -19,7 +19,7 @@
   margin-bottom: 2rem;
   text-align: center;
 
-  .dashboard-title {
+  h1 {
     font-size: 2.5rem;
     font-weight: 700;
     color: #2d3748;
@@ -30,7 +30,7 @@
     background-clip: text;
   }
 
-  .dashboard-subtitle {
+  p {
     font-size: 1.1rem;
     color: #718096;
     margin: 0;
@@ -84,17 +84,19 @@
   .stat-content {
     flex: 1;
 
+    h3 {
+      font-size: 0.9rem;
+      color: #718096;
+      margin: 0 0 0.5rem 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
     .stat-value {
       font-size: 1.75rem;
       font-weight: 700;
       color: #2d3748;
       margin: 0 0 0.25rem 0;
-    }
-
-    .stat-label {
-      font-size: 0.9rem;
-      color: #718096;
-      margin: 0 0 0.5rem 0;
     }
 
     .stat-change {
@@ -135,10 +137,19 @@
   margin: 0 0 1.5rem 0;
 }
 
-.quick-actions-section {
-  .quick-actions-grid {
+.quick-actions {
+  margin-top: 2rem;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .action-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
 
     @media (max-width: 480px) {
@@ -146,7 +157,7 @@
     }
   }
 
-  .action-card {
+  .action-btn {
     background: white;
     border-radius: 12px;
     padding: 1.5rem;
@@ -155,6 +166,10 @@
     border: 1px solid #e2e8f0;
     transition: all 0.3s ease;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
 
     &:hover {
       transform: translateY(-2px);
@@ -164,14 +179,12 @@
 
     .action-icon {
       font-size: 2rem;
-      margin-bottom: 0.75rem;
     }
 
-    .action-name {
+    span {
       font-size: 1rem;
       font-weight: 600;
       color: #2d3748;
-      margin: 0;
     }
   }
 }
